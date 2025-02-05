@@ -1,13 +1,16 @@
 import { getUnitNameEl, getInputfEl } from './js/element.js';
-const validator = new JustValidate('#form');
+import { validation } from "./js/vatidator.js";
+
+
 const $description = document.querySelector('.description');
-const $amountSize = document.querySelector('.amountSize');
 const $typeAmount = document.getElementById('typeAmount');
 const $date_inp = document.querySelector('.date-inp');
-
-const $choiceUnit = document.querySelector('.choiceUnit');
-
-const $inputGroupSelect01 = document.getElementById('inputGroupSelect01');
+const $unitName = document.querySelectorAll('.unitName');
+const $start_time = document.querySelector('.start-time');
+const $stop_time = document.querySelector('.stop-time');
+const $holidays = document.getElementById('inputGroupSelect01');
+const $submit = document.getElementById('button-submit');
+const $form = document.getElementById('form');
 
 getUnitNameEl('Тюмень');
 
@@ -40,22 +43,15 @@ const dayWeek = [
 ];
 getInputfEl('dayWeek', 'dayWeek-inp', dayWeek);
 
-const $wrappper = document.querySelector('.wrappper');
-$wrappper.style.display = 'none';
 
 // скрытие
+const $wrappper = document.querySelector('.wrappper');
+$wrappper.style.display = 'none';
 
 $description.addEventListener('change', function (e) {
   $wrappper.style.display = 'block';
   if (!e.target.value) $wrappper.style.display = 'none';
 });
-
-const submit = document.getElementById('button-submit');
-const $form = document.getElementById('form');
-
-const $typeAll = document.querySelector('.typeAll');
-
-//console.log(typeAmount);
 
 
 // $form.addEventListener('submit', function (e) {
@@ -71,27 +67,4 @@ const $typeAll = document.querySelector('.typeAll');
 //   console.log(unitName);
 // });
 
-const $unitName = document.querySelectorAll('.unitName');
-
-validator.addField($description, [
-  {
-    rule: 'required',
-    errorMessage: 'Введите описание выплаты',
-  },
-])
-.addField($amountSize, [
-  {
-    rule: 'required',
-    errorMessage: 'Введите размер доплаты',
-  },
-  {
-    rule: 'number',
-  },
-])
-.addField($date_inp , [
-  {
-    rule: 'required',
-    errorMessage: 'Укажите дату начала',
-  },
-])
-.addRequiredGroup ($choiceUnit, 'Выберите хотя бы одну пиццерию')
+validation ()
