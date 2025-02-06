@@ -1,7 +1,8 @@
+const validator = new JustValidate('#form');
+
 const $description = document.querySelector('.description');
 const $amountSize = document.querySelector('.amountSize');
 const $date_inp = document.querySelector('.date-inp');
-const validator = new JustValidate('#form');
 const $start_time = document.querySelector('.start-time');
 const $stop_time = document.querySelector('.stop-time');
 const $typeAmount = document.getElementById('typeAmount');
