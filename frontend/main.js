@@ -1,4 +1,4 @@
-import { getUnitNameEl, getInputfEl } from './js/element.js';
+import { getUnitNameEl, getInputfEl, renderTable } from './js/element.js';
 import { validation } from './js/vatidator.js';
 
 const $description = document.querySelector('.description');
@@ -45,7 +45,7 @@ const dayWeek = [
 getInputfEl('dayWeek', 'dayWeek-inp', dayWeek);
 const $dayWeek_inp = document.querySelectorAll('.dayWeek-inp');
 
-// скрытие
+//скрытие
 const $wrappper = document.querySelector('.wrappper');
 $wrappper.style.display = 'none';
 
@@ -55,9 +55,10 @@ $description.addEventListener('change', function (e) {
 });
 
 let dataArr  = JSON.parse (localStorage.getItem("dataArr")) ?? []
-console.log(dataArr);
 
 // обработка формы
+
+
 $form.addEventListener('submit', function (e) {
   let unitName = [];
   $unitName.forEach((el) => {
@@ -85,10 +86,10 @@ $form.addEventListener('submit', function (e) {
     stop_time: $stop_time.value,
   });
 
-  localStorage.setItem ('dataArr',JSON.stringify (dataArr))
-  
+  localStorage.setItem ('dataArr',JSON.stringify (dataArr))  
   console.log(JSON.parse (localStorage.getItem("dataArr")));
 });
 
+renderTable (dataArr)
 
-//validation();
+validation();
