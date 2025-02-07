@@ -1,3 +1,8 @@
+import { deletePayout } from './deletePayout.js';
+import { editPayout } from './editPayout.js';
+import { addPayout } from './addPayout.js';
+
+
 async function getData() {
   const response = await fetch(
     'http://178.46.153.198:1860/globalGet?payload=settingPremium',
@@ -89,4 +94,9 @@ export async function renderTable() {
     $trEl.append($tdEl);
     $tdEl.append(editButton, deleteButton);
   });
+
+  addPayout();
+  deletePayout ();
+  editPayout ()
+
 }
