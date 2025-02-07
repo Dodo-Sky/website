@@ -7,12 +7,11 @@ const $start_time = document.querySelector('.start-time');
 const $stop_time = document.querySelector('.stop-time');
 const $typeAmount = document.getElementById('typeAmount');
 const $holidays = document.getElementById('inputGroupSelect01');
+const $choiceUnit = document.querySelector('.choiceUnit');
+const $typeAll = document.querySelector('.typeAll');
+const $dayWeek = document.querySelector('.dayWeek');
 
-export function validation () {
-  const $choiceUnit = document.querySelector('.choiceUnit');
-  const $typeAll = document.querySelector('.typeAll');
-  const $dayWeek = document.querySelector('.dayWeek');
-
+export function validation() {
   validator
     .addField($description, [
       {

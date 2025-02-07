@@ -1,4 +1,4 @@
-import { renderTable } from './render.js';
+import { renderTable } from './renderTable.js';
 import { validator } from './validator.js';
 
 const $description = document.querySelector('.description');

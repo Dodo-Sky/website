@@ -1,12 +1,13 @@
-import { getUnitNameEl, getDayWeek, getStaffType } from './js/markupHtml.js';
-import { renderTable } from './js/render.js';
-import { addPayout } from './js/addPayout.js';
-import { validation } from './js/validator.js';
-import { deletePayout } from './js/deletePayout.js';
-import { editPayout } from './js/editPayout.js';
+import { getUnitNameEl, getDayWeek, getStaffType } from './settingPayout/markupHtml.js';
+import { renderTable } from './settingPayout/renderTable.js';
+import { addPayout } from './settingPayout/addPayout.js';
+import { validation } from './settingPayout/validator.js';
+import { deletePayout } from './settingPayout/deletePayout.js';
+import { editPayout } from './settingPayout/editPayout.js';
 
-async function start () {
-  //разметка
+// указываю порядок запуска функций
+async function start() {
+  //разметка в HTML
   await getUnitNameEl();
   getDayWeek();
   await getStaffType();
@@ -16,15 +17,14 @@ async function start () {
 
   // прочие функции
   addPayout();
-  await deletePayout ();
-  await editPayout ()
+  await deletePayout();
+  await editPayout();
 
   // валидация
   validation();
 }
 
-start ()
-
+start();
 
 //скрытие формы
 const $description = document.querySelector('.description');

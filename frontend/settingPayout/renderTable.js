@@ -2,7 +2,6 @@ import { deletePayout } from './deletePayout.js';
 import { editPayout } from './editPayout.js';
 import { addPayout } from './addPayout.js';
 
-
 async function getData() {
   const response = await fetch(
     'http://178.46.153.198:1860/globalGet?payload=settingPremium',
@@ -13,7 +12,7 @@ async function getData() {
 export async function renderTable() {
   let arrPremium = await getData();
 
-  const $tbody = document.querySelector('.table-light');
+  const $tbody = document.querySelector('.tableBody');
   let count = 1;
 
   arrPremium.forEach((el) => {
@@ -96,7 +95,6 @@ export async function renderTable() {
   });
 
   addPayout();
-  deletePayout ();
-  editPayout ()
-
+  deletePayout();
+  editPayout();
 }

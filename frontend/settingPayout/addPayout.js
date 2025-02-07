@@ -1,5 +1,5 @@
 import { validator } from './validator.js';
-import { renderTable } from './render.js';
+import { renderTable } from './renderTable.js';
 
 const URL = 'http://178.46.153.198:1860';
 
@@ -22,7 +22,6 @@ export function addPayout() {
     $unitName.forEach((el) => {
       if (el.checked) unitName.push(el.value);
     });
-    console.log(unitName);
     let staffTypeArr = [];
     $staffType.forEach((el) => {
       if (el.checked) staffTypeArr.push(el.value);

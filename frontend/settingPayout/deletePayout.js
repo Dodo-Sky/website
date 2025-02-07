@@ -1,4 +1,4 @@
-import { renderTable } from './render.js';
+import { renderTable } from './renderTable.js';
 
 export async function deletePayout () {
 const deleteButton = document.querySelectorAll('.deleteButton');
