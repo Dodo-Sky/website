@@ -1,6 +1,3 @@
-import { validation } from './validator.js';
-import { deletePayout } from './deletePayout.js';
-
 async function getData() {
   const response = await fetch(
     'http://178.46.153.198:1860/globalGet?payload=settingPremium',
@@ -78,7 +75,7 @@ export async function renderTable() {
     editButton.type = 'button';
     editButton.textContent = 'Редактировать';
     editButton.style.marginBottom = '10px';
-    editButton.setAttribute('data', el.id);
+    editButton.setAttribute('data-id', el.id);
     $trEl.append($tdEl);
 
     let deleteButton = document.createElement('button');
@@ -92,6 +89,4 @@ export async function renderTable() {
     $trEl.append($tdEl);
     $tdEl.append(editButton, deleteButton);
   });
-  validation();
-  deletePayout ();
 }

@@ -1,20 +1,30 @@
-import { getUnitNameEl, getDayWeek, getStaffType } from './js/element.js';
+import { getUnitNameEl, getDayWeek, getStaffType } from './js/markupHtml.js';
 import { renderTable } from './js/render.js';
 import { addPayout } from './js/addPayout.js';
+import { validation } from './js/validator.js';
+import { deletePayout } from './js/deletePayout.js';
+import { editPayout } from './js/editPayout.js';
 
-// асинхронная
-getUnitNameEl();
+async function start () {
+  //разметка
+  await getUnitNameEl();
+  getDayWeek();
+  await getStaffType();
 
-getDayWeek();
+  // прорисовка
+  await renderTable();
 
-// асинхронная
-getStaffType();
+  // прочие функции
+  addPayout();
+  await deletePayout ();
+  await editPayout ()
 
-// рендер таблицы асинхронная (валидацию сделал в рендере)
-renderTable();
+  // валидация
+  validation();
+}
 
-// обработка формы и добавление новых выплат
-addPayout ();
+start ()
+
 
 //скрытие формы
 const $description = document.querySelector('.description');

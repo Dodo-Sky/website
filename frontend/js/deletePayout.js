@@ -2,7 +2,6 @@ import { renderTable } from './render.js';
 
 export async function deletePayout () {
 const deleteButton = document.querySelectorAll('.deleteButton');
-console.log(deleteButton);
   deleteButton.forEach((button) => {
     button.addEventListener('click', async function (e) {
 
