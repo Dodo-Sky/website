@@ -1,4 +1,4 @@
-const validator = new JustValidate('#form');
+export const validator = new JustValidate('#form');
 
 const $description = document.querySelector('.description');
 const $amountSize = document.querySelector('.amountSize');
