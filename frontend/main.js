@@ -35,3 +35,7 @@ $description.addEventListener('change', function (e) {
   $wrappper.style.display = 'block';
   if (!e.target.value) $wrappper.style.display = 'none';
 });
+
+// включение подсказок
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
