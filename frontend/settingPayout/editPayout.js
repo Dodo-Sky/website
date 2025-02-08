@@ -10,17 +10,19 @@ const $stop_time = document.querySelector('.stop-time');
 const $typeAmount = document.getElementById('typeAmount');
 const $holidays = document.getElementById('inputGroupSelect01');
 
-export async function editPayout() {
+export async function initEditPayoutHandlers() {
   const editButton = document.querySelectorAll('.editButton');
 
   editButton.forEach((button) => {
     button.addEventListener('click', async function (e) {
-      
+      // перемещение наверх страницы
+      window.scrollTo({ top: 0 });
+
       //данные с сервера
       const arrPremium = await getServerApi('settingPremium');
       const $wrappper = document.querySelector('.wrappper');
       $wrappper.style.display = 'block';
-      document.getElementById('button-submit').textContent = 'Редактировать';
+      document.getElementById('button-submit').textContent = 'Сохранить данные';
 
       // формирование данных в форму с файла
       const id = e.target.dataset.id;

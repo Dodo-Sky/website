@@ -40,7 +40,6 @@ export async function putServerApi(elementId, payload) {
       },
       body: JSON.stringify(payload),
     });
-    console.log(response);
     if (response.ok) {
       alert('Запись обновлена данные сохранены на сервер');
     } else {

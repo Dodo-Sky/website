@@ -3,7 +3,7 @@ import { renderTable } from './renderTable.js';
 import { createServerApi } from '../apiServer.js';
 
 // обработка результата с формы после валидации
-export function addPayout() {
+export function initPayloadAddHandlers () {
   validator.onSuccess(async function () {
     const $description = document.querySelector('.description');
     const $typeAmount = document.getElementById('typeAmount');

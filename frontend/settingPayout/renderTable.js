@@ -1,15 +1,21 @@
-import { deletePayout } from './deletePayout.js';
-import { editPayout } from './editPayout.js';
-import { addPayout } from './addPayout.js';
+import { initDeletePayoutHandlers } from './deletePayout.js';
+import { initEditPayoutHandlers } from './editPayout.js';
+import { initPayloadAddHandlers } from './addPayout.js';
 import { getServerApi } from '../apiServer.js';
 
 export async function renderTable() {
-  //скрытие формы
+
+  // очистка формы
+  document.getElementById('button-reset').addEventListener('click', function () {
+    document.getElementById('form').reset();
+    document.querySelector('.wrappper').style.display = 'none';
+    document.getElementById('button-submit').textContent = 'Добавить новую запись';
+  });
+
+  //скрытие и раскрытие формы
   const $description = document.querySelector('.description');
   const $wrappper = document.querySelector('.wrappper');
   $wrappper.style.display = 'none';
-
-  // раскрытие формы
   $description.addEventListener('change', function (e) {
     $wrappper.style.display = 'block';
     if (!e.target.value) $wrappper.style.display = 'none';
@@ -104,7 +110,7 @@ export async function renderTable() {
     $tdEl.append(editButton, deleteButton);
   });
 
-  addPayout();
-  deletePayout();
-  editPayout();
+  initPayloadAddHandlers();
+  initDeletePayoutHandlers();
+  initEditPayoutHandlers();
 }
