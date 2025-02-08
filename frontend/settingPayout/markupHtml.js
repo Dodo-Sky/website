@@ -1,18 +1,11 @@
-import { getServerApi, putServerApi } from '../apiServer.js';
+import { getDataServer } from '../apiServer.js';
 
-const URL = 'http://178.46.153.198:1860';
 export async function getUnitNameEl() {
   const $choiceUnit = document.querySelector('.choiceUnit');
 
-  // список пиццерий с сервера
-  async function getData() {
-    const response = await fetch(`${URL}/unitName`);
-    return await response.json();
-  }
-  let units = await getData();
-  
-  units = units.filter (Boolean).filter (el => el !== 'Офис');
-  units = units.sort ();
+  let units = await getDataServer('unitName');
+  units = units.filter(Boolean).filter((el) => el !== 'Офис');
+  units = units.sort();
 
   for (const unit of units) {
     const $div_form_check = document.createElement('div');
@@ -37,13 +30,9 @@ export async function getUnitNameEl() {
 export async function getStaffType() {
   const $typeAll = document.querySelector('.typeAll');
 
-  // список типов сотрудников с сервера
-  async function getData() {
-    const response = await fetch(`${URL}/staffType`);
-    return await response.json();
-  }
-  let staffType = await getData();
-  staffType = staffType.filter (Boolean)
+  let staffType = await getDataServer('staffType');
+  staffType = staffType.filter(Boolean);
+  staffType = staffType.sort();
 
   for (const element of staffType) {
     const $div_form_check = document.createElement('div');

@@ -5,6 +5,12 @@ import { validation } from './settingPayout/validator.js';
 import { deletePayout } from './settingPayout/deletePayout.js';
 import { editPayout } from './settingPayout/editPayout.js';
 
+// включение подсказок с внешней библиотеки
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
+);
+
 // указываю порядок запуска функций
 async function start() {
   //разметка в HTML
@@ -20,24 +26,8 @@ async function start() {
   await deletePayout();
   await editPayout();
 
-  // валидация
+  // валидация формы
   validation();
-
 }
 
 start();
-
-
-//скрытие формы
-const $description = document.querySelector('.description');
-const $wrappper = document.querySelector('.wrappper');
-$wrappper.style.display = 'none';
-
-$description.addEventListener('change', function (e) {
-  $wrappper.style.display = 'block';
-  if (!e.target.value) $wrappper.style.display = 'none';
-});
-
-// включение подсказок
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

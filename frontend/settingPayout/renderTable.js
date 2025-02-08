@@ -1,16 +1,25 @@
 import { deletePayout } from './deletePayout.js';
 import { editPayout } from './editPayout.js';
 import { addPayout } from './addPayout.js';
-
-async function getData() {
-  const response = await fetch(
-    'http://178.46.153.198:1860/globalGet?payload=settingPremium',
-  );
-  return await response.json();
-}
+import { getServerApi } from '../apiServer.js';
 
 export async function renderTable() {
-  let arrPremium = await getData();
+  //скрытие формы
+  const $description = document.querySelector('.description');
+  const $wrappper = document.querySelector('.wrappper');
+  $wrappper.style.display = 'none';
+
+  // раскрытие формы
+  $description.addEventListener('change', function (e) {
+    $wrappper.style.display = 'block';
+    if (!e.target.value) $wrappper.style.display = 'none';
+  });
+
+  // очистка
+  document.querySelector('.table-light').innerHTML = '';
+
+  // загрузка данных с сервера
+  let arrPremium = await getServerApi('settingPremium');
 
   const $tbody = document.querySelector('.tableBody');
   let count = 1;
@@ -44,7 +53,7 @@ export async function renderTable() {
     $tdEl.textContent = unitName;
     $trEl.append($tdEl);
 
-    let holiday = el.holiday ? 'Оплачиваем' : ' Не оплачиваем'
+    let holiday = el.holiday ? 'Оплачиваем' : ' Не оплачиваем';
     $tdEl = document.createElement('td');
     $tdEl.textContent = holiday;
     $trEl.append($tdEl);

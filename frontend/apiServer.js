@@ -1,9 +1,24 @@
+// адрес сервера
 const URL = 'http://178.46.153.198:1860';
 
-// Загрузка данных с сервера (указываем имя переменной на сервере)
+// Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
 export async function getServerApi(variableName) {
   try {
     const response = await fetch(`${URL}/globalGet?payload=${variableName}`);
+    if (!response.ok) {
+      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+    } else {
+      return await response.json();
+    }
+  } catch (error) {
+    alert('Ошибка ' + error.message);
+  }
+}
+
+// Загрузка данных с сервера (указываем напрямую наименование переменной выгружаемой с сервера)
+export async function getDataServer(variableName) {
+  try {
+    const response = await fetch(`${URL}/${variableName}`);
     if (!response.ok) {
       alert('Ошибка обратитесь к администратору ' + (await response.text()));
     } else {
@@ -25,6 +40,7 @@ export async function putServerApi(elementId, payload) {
       },
       body: JSON.stringify(payload),
     });
+    console.log(response);
     if (response.ok) {
       alert('Запись обновлена данные сохранены на сервер');
     } else {

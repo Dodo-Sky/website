@@ -2,8 +2,6 @@ import { renderTable } from './renderTable.js';
 import { validator } from './validator.js';
 import { getServerApi, putServerApi } from '../apiServer.js';
 
-
-
 const $description = document.querySelector('.description');
 const $amountSize = document.querySelector('.amountSize');
 const $date_start = document.querySelector('.date-inp');
@@ -14,10 +12,12 @@ const $holidays = document.getElementById('inputGroupSelect01');
 
 export async function editPayout() {
   const editButton = document.querySelectorAll('.editButton');
-  const arrPremium = await getServerApi ('settingPremium');
 
   editButton.forEach((button) => {
     button.addEventListener('click', async function (e) {
+      
+      //данные с сервера
+      const arrPremium = await getServerApi('settingPremium');
       const $wrappper = document.querySelector('.wrappper');
       $wrappper.style.display = 'block';
       document.getElementById('button-submit').textContent = 'Редактировать';
@@ -98,14 +98,14 @@ export async function editPayout() {
           start_time: $start_time.value,
           stop_time: $stop_time.value,
         };
-        await putServerApi(premium.id, dataToServer)
+        await putServerApi(premium.id, dataToServer);
 
-        document.querySelector(".table-light").innerHTML = ""
-        renderTable()
-        $form.reset()
-        const $wrappper = document.querySelector(".wrappper")
-        $wrappper.style.display = "none"
-        document.getElementById("button-submit").textContent = "Добавить новую запись"
+        document.querySelector('.table-light').innerHTML = '';
+        renderTable();
+        $form.reset();
+        const $wrappper = document.querySelector('.wrappper');
+        $wrappper.style.display = 'none';
+        document.getElementById('button-submit').textContent = 'Добавить новую запись';
       });
     });
   });
