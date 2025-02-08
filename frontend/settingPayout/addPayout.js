@@ -1,7 +1,6 @@
 import { validator } from './validator.js';
 import { renderTable } from './renderTable.js';
-
-const URL = 'http://178.46.153.198:1860';
+import { createServerApi } from '../apiServer.js';
 
 // обработка результата с формы после валидации
 export function addPayout() {
@@ -30,13 +29,15 @@ export function addPayout() {
     $dayWeek_inp.forEach((el) => {
       if (el.checked) dayWeek.push(el.value);
     });
+    // перевожу значения в true false
+    let holiday = $holidays.value ? true : false;
 
     const dataToServer = {
       description: $description.value,
       amountSize: $amountSize.value,
       date_start: $date_inp.value,
       unitName,
-      holiday: $holidays.value,
+      holiday,
       typeAmount: $typeAmount.value,
       staffTypeArr,
       dayWeek,
@@ -44,18 +45,7 @@ export function addPayout() {
       stop_time: $stop_time.value,
     };
 
-    async function createConfig(payload) {
-      const url = 'http://178.46.153.198:1860/config';
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      //const data = await response.json();
-    }
-    await createConfig(dataToServer);
+    await createServerApi(dataToServer);
 
     // чистим таблицу
     document.querySelector('.table-light').innerHTML = '';

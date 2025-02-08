@@ -1,3 +1,5 @@
+import { getServerApi, putServerApi } from '../apiServer.js';
+
 const URL = 'http://178.46.153.198:1860';
 export async function getUnitNameEl() {
   const $choiceUnit = document.querySelector('.choiceUnit');
@@ -8,6 +10,7 @@ export async function getUnitNameEl() {
     return await response.json();
   }
   let units = await getData();
+  
   units = units.filter (Boolean).filter (el => el !== 'Офис');
   units = units.sort ();
 

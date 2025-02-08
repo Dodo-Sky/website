@@ -44,8 +44,9 @@ export async function renderTable() {
     $tdEl.textContent = unitName;
     $trEl.append($tdEl);
 
+    let holiday = el.holiday ? 'Оплачиваем' : ' Не оплачиваем'
     $tdEl = document.createElement('td');
-    $tdEl.textContent = el.holiday;
+    $tdEl.textContent = holiday;
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');

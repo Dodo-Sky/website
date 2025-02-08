@@ -1,5 +1,8 @@
 import { renderTable } from './renderTable.js';
 import { validator } from './validator.js';
+import { getServerApi, putServerApi } from '../apiServer.js';
+
+
 
 const $description = document.querySelector('.description');
 const $amountSize = document.querySelector('.amountSize');
@@ -11,24 +14,17 @@ const $holidays = document.getElementById('inputGroupSelect01');
 
 export async function editPayout() {
   const editButton = document.querySelectorAll('.editButton');
-
-  async function getData() {
-    const response = await fetch(
-      'http://178.46.153.198:1860/globalGet?payload=settingPremium',
-    );
-    return await response.json();
-  }
-  const arrPremium = await getData();
+  const arrPremium = await getServerApi ('settingPremium');
 
   editButton.forEach((button) => {
     button.addEventListener('click', async function (e) {
       const $wrappper = document.querySelector('.wrappper');
       $wrappper.style.display = 'block';
+      document.getElementById('button-submit').textContent = 'Редактировать';
 
       // формирование данных в форму с файла
       const id = e.target.dataset.id;
       const premium = arrPremium?.find((el) => el.id === id);
-      console.log(premium);
 
       const $unitName = document.querySelectorAll('.unitName');
       $unitName.forEach((el) => {
@@ -89,46 +85,27 @@ export async function editPayout() {
           if (el.checked) dayWeek.push(el.value);
         });
 
+        let holiday = $holidays.value ? true : false;
         const dataToServer = {
           description: $description.value,
           amountSize: $amountSize.value,
           date_start: $date_inp.value,
           unitName,
-          holiday: $holidays.value,
+          holiday,
           typeAmount: $typeAmount.value,
           staffTypeArr,
           dayWeek,
           start_time: $start_time.value,
           stop_time: $stop_time.value,
         };
-        console.log(dataToServer);
+        await putServerApi(premium.id, dataToServer)
 
-        // отправка на сервер
-        async function updateConfig(configId, payload) {
-          const url = `http://178.46.153.198:1860/config/${configId}`;
-          console.log(url);
-          const response = await fetch(url, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          });
-          const data = await response.json();
-          console.log(data);
-        }
-        await updateConfig(premium.id, dataToServer);
-
-        document.querySelector('.table-light').innerHTML = '';
-
-        renderTable();
-
-        // стираем форму
-        $form.reset();
-
-        // скрываем форму
-        const $wrappper = document.querySelector('.wrappper');
-        $wrappper.style.display = 'none';
+        document.querySelector(".table-light").innerHTML = ""
+        renderTable()
+        $form.reset()
+        const $wrappper = document.querySelector(".wrappper")
+        $wrappper.style.display = "none"
+        document.getElementById("button-submit").textContent = "Добавить новую запись"
       });
     });
   });

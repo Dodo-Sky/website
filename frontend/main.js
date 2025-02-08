@@ -22,9 +22,11 @@ async function start() {
 
   // валидация
   validation();
+
 }
 
 start();
+
 
 //скрытие формы
 const $description = document.querySelector('.description');
