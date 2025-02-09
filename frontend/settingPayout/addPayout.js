@@ -29,15 +29,13 @@ export function initPayloadAddHandlers () {
     $dayWeek_inp.forEach((el) => {
       if (el.checked) dayWeek.push(el.value);
     });
-    // перевожу значения в true false
-    let holiday = $holidays.value ? true : false;
 
     const dataToServer = {
       description: $description.value,
       amountSize: $amountSize.value,
       date_start: $date_inp.value,
       unitName,
-      holiday,
+      holiday: $holidays.value ? true : false,
       typeAmount: $typeAmount.value,
       staffTypeArr,
       dayWeek,
@@ -56,7 +54,7 @@ export function initPayloadAddHandlers () {
     // стираем форму
     $form.reset ();
 
-    // скрываем форму
+    // скрываем подвал формы
     const $wrappper = document.querySelector('.wrappper');
     $wrappper.style.display = 'none';
   });

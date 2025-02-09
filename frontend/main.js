@@ -8,7 +8,6 @@ const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
 );
 
-// указываю порядок запуска функций
 async function start() {
   //разметка в HTML
   await getUnitNameEl();

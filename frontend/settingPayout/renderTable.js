@@ -16,7 +16,8 @@ export async function renderTable() {
   const $description = document.querySelector('.description');
   const $wrappper = document.querySelector('.wrappper');
   $wrappper.style.display = 'none';
-  $description.addEventListener('change', function (e) {
+  $description.addEventListener('input', function (e) {
+    console.log(e);
     $wrappper.style.display = 'block';
     if (!e.target.value) $wrappper.style.display = 'none';
   });
@@ -59,9 +60,8 @@ export async function renderTable() {
     $tdEl.textContent = unitName;
     $trEl.append($tdEl);
 
-    let holiday = el.holiday ? 'Оплачиваем' : ' Не оплачиваем';
     $tdEl = document.createElement('td');
-    $tdEl.textContent = holiday;
+    $tdEl.textContent = el.holiday ? 'Оплачиваем' : ' Не оплачиваем';
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
