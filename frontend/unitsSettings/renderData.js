@@ -60,8 +60,8 @@ export async function renderData() {
         const tHead = components.getTagTHead();
         const tBody = components.getTagTB();
         const trEl = components.getTagTR();
-        const thName = components.getTagTHead('Наименование программы');
-        const thStatus = components.getTagTHead('Состояние');
+        const thName = components.getTagTH('Наименование программы');
+        const thStatus = components.getTagTH('Состояние');
         trEl.append(thName, thStatus);
         tHead.append(trEl);
         for (const program of unit.programs) {
@@ -92,9 +92,9 @@ export async function renderData() {
       const tHeadId = components.getTagTHead();
       const tBodyId = components.getTagTB();
       const trElId = components.getTagTR();
-      const thId = components.getTagTHead('Id телеграмм');
-      const thNameFunction = components.getTagTHead('Функция');
-      const thfio = components.getTagTHead('ФИО');
+      const thId = components.getTagTH('Id телеграмм');
+      const thNameFunction = components.getTagTH('Функция');
+      const thfio = components.getTagTH('ФИО');
       trElId.append(thId, thNameFunction, thfio);
       tHeadId.append(trElId);
 
