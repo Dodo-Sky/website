@@ -12,7 +12,7 @@ export async function getForm() {
       // Редактировать ID в телеграмм
       const formEl = components.getTagForm('form');
       const divRowEl = components.getTagDiv('mb-3');
-      let hEl = components.getTagHeading(5, 'Контактные данные');
+      let hEl = components.getTagH(5, 'Контактные данные');
       divRowEl.classList.add('row');
       formEl.append(divRowEl);
       const divElId = components.getTagDiv('col-md-3');
@@ -45,7 +45,7 @@ export async function getForm() {
       if (unit.type === 'Пиццерия') {
         const divEl = components.getTagDiv('mb-3');
         formEl.append(divEl);
-        hEl = components.getTagHeading(5, 'Список программ');
+        hEl = components.getTagH(5, 'Список программ');
         divEl.append(hEl);
         unit.programs.forEach((el) => {
           const divElfprograms = components.getTagDiv('mb-0');
@@ -64,12 +64,12 @@ export async function getForm() {
       if (unit.type === 'Пиццерия') {
         let divEl = components.getTagDiv('mb-4');
         formEl.append(divEl);
-        hEl = components.getTagHeading(5, 'Время работы');
+        hEl = components.getTagH(5, 'Время работы');
         divEl.append(hEl);
 
         function timeWorkDelivery() {
           const divElDel = components.getTagDiv('row');
-          let pEl = components.getTagParagraph('Время работы пиццерии на доставку');
+          let pEl = components.getTagP('Время работы пиццерии на доставку');
           pEl.classList.add('mb-0');
           divElDel.append(pEl);
           divEl.append(divElDel);
@@ -98,7 +98,7 @@ export async function getForm() {
 
         function timeWorkRestoran() {
           const divElDel = components.getTagDiv('row');
-          let pEl = components.getTagParagraph('Время работы ресторана');
+          let pEl = components.getTagP('Время работы ресторана');
           pEl.classList.add('mb-0');
           divElDel.append(pEl);
           divEl.append(divElDel);
