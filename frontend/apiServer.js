@@ -1,5 +1,10 @@
 // адрес сервера
+// с внешней ссылки
 const URL = 'http://178.46.153.198:1860';
+
+// по локальной сети
+//const URL = 'http://190.186.72.106:86';
+
 
 // Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
 export async function getServerApi(variableName) {
@@ -11,7 +16,7 @@ export async function getServerApi(variableName) {
       return await response.json();
     }
   } catch (error) {
-    alert('Ошибка ' + error.message);
+    alert(`Ошибка запроса ${variableName} ` + error.message);
   }
 }
 
@@ -25,7 +30,7 @@ export async function getDataServer(variableName) {
       return await response.json();
     }
   } catch (error) {
-    alert('Ошибка ' + error.message);
+    alert(`Ошибка запроса ${variableName} ` + error.message);
   }
 }
 

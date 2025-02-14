@@ -17,7 +17,6 @@ export async function renderTable() {
   const $wrappper = document.querySelector('.wrappper');
   $wrappper.style.display = 'none';
   $description.addEventListener('input', function (e) {
-    console.log(e);
     $wrappper.style.display = 'block';
     if (!e.target.value) $wrappper.style.display = 'none';
   });
@@ -48,41 +47,50 @@ export async function renderTable() {
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.amountSize;
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.date_start;
     $trEl.append($tdEl);
 
     let unitName = el.unitName.join(' ');
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = unitName;
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.holiday ? 'Оплачиваем' : ' Не оплачиваем';
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.typeAmount;
     $trEl.append($tdEl);
 
     let staffTypeArr = el.staffTypeArr.join(' ');
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = staffTypeArr;
     $trEl.append($tdEl);
 
     let dayWeek = el.dayWeek.join(' ');
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = dayWeek;
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.start_time;
     $trEl.append($tdEl);
 
     $tdEl = document.createElement('td');
+    $tdEl.classList.add('fs-6');
     $tdEl.textContent = el.stop_time;
     $trEl.append($tdEl);
 
