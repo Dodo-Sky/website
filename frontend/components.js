@@ -5,7 +5,7 @@ export {
   getTagP,
   getTagNav,
   getTagULNav,
-  etTagULDropdownMenu,
+  getTagULDropdownMenu,
   getTagLINav,
   getTagLIDropdownToggle,
   getTagLIDropdownItem,
@@ -67,7 +67,7 @@ function getTagULNav() {
   return element;
 }
 
-function etTagULDropdownMenu() {
+function getTagULDropdownMenu() {
   const element = document.createElement('ul');
   element.classList.add('dropdown-menu');
   return element;

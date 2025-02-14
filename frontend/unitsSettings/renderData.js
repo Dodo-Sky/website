@@ -12,7 +12,7 @@ export async function renderData() {
   const ulEL_nav = components.getTagULNav();
 
   const liEl_dropdown_toggle = components.getTagLIDropdownToggle('Пиццерии');
-  const ulEl_dropdown_menu = components.etTagULDropdownMenu();
+  const ulEl_dropdown_menu = components.getTagULDropdownMenu();
   liEl_dropdown_toggle.append(ulEl_dropdown_menu);
   for (const unit of unitsSettings) {
     if (unit.type !== 'Пиццерия') continue;
