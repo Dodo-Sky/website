@@ -4,19 +4,19 @@ export {
   getTagH,
   getTagP,
   getTagNav,
-  getTagULNav,
-  getTagULDropdownMenu,
-  getTagLINav,
-  getTagLIDropdownToggle,
-  getTagLIDropdownItem,
+  getTagUL_nav,
+  getTagUL_dropdownMenu,
+  getTagLI_nav,
+  getTagLI_dropdownToggle,
+  getTagLI_dropdownItem,
   getTagForm,
   getTagLabel,
-  getTagCheckboxLabel,
+  getTagCheckbox_label,
   getTagInput,
-  getTagInputCheckbox,
+  getTagInput_checkbox,
   getTagSelect,
   getTagOption,
-  getTagTableDiv,
+  getTagTable_div,
   getTagTable,
   getTagCaption,
   getTagTHead,
@@ -60,20 +60,20 @@ function getTagNav() {
   return element;
 }
 
-function getTagULNav() {
+function getTagUL_nav() {
   const element = document.createElement('ul');
   element.classList.add('nav');
   element.classList.add('nav-tabs');
   return element;
 }
 
-function getTagULDropdownMenu() {
+function getTagUL_dropdownMenu() {
   const element = document.createElement('ul');
   element.classList.add('dropdown-menu');
   return element;
 }
 
-function getTagLINav(textContent) {
+function getTagLI_nav(textContent) {
   const element = document.createElement('li');
   element.classList.add('nav-item');
   element.classList.add('nav-link');
@@ -81,7 +81,7 @@ function getTagLINav(textContent) {
   return element;
 }
 
-function getTagLIDropdownToggle(textContent) {
+function getTagLI_dropdownToggle(textContent) {
   const element = document.createElement('li');
   element.classList.add('nav-item');
   element.classList.add('nav-link');
@@ -91,7 +91,7 @@ function getTagLIDropdownToggle(textContent) {
   return element;
 }
 
-function getTagLIDropdownItem(textContent) {
+function getTagLI_dropdownItem(textContent) {
   const element = document.createElement('li');
   element.classList.add('dropdown-item');
   element.textContent = textContent;
@@ -113,7 +113,7 @@ function getTagLabel(idInput, textContent) {
   return element;
 }
 
-function getTagCheckboxLabel(idInput, textContent) {
+function getTagCheckbox_label(idInput, textContent) {
   const element = document.createElement('label');
   element.classList.add('form-check-label');
   element.setAttribute('for', idInput);
@@ -131,7 +131,7 @@ function getTagInput(idInput, type = 'text', value = '', placeholder = '') {
   return element;
 }
 
-function getTagInputCheckbox(idInput) {
+function getTagInput_checkbox(idInput) {
   const element = document.createElement('input');
   element.classList.add('form-check-input');
   element.setAttribute('id', idInput);
@@ -153,7 +153,7 @@ function getTagOption(textContent, value) {
 }
 
 // элементы таблиц
-function getTagTableDiv() {
+function getTagTable_div() {
   // горизонтальная прокрутка
   const element = document.createElement('div');
   element.classList.add('table-responsive');

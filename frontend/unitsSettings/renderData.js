@@ -9,18 +9,18 @@ export async function renderData() {
   const unitSettings_nav = document.querySelector(".unitSettings_nav");
 
   const navEl = components.getTagNav();
-  const ulEL_nav = components.getTagULNav();
+  const ulEL_nav = components.getTagUL_nav();
 
-  const liEl_dropdown_toggle = components.getTagLIDropdownToggle('Пиццерии');
-  const ulEl_dropdown_menu = components.getTagULDropdownMenu();
+  const liEl_dropdown_toggle = components.getTagLI_dropdownToggle('Пиццерии');
+  const ulEl_dropdown_menu = components.getTagUL_dropdownMenu();
   liEl_dropdown_toggle.append(ulEl_dropdown_menu);
   for (const unit of unitsSettings) {
     if (unit.type !== 'Пиццерия') continue;
-    const liEl_dropdown_item = components.getTagLIDropdownItem(unit.unitName);
+    const liEl_dropdown_item = components.getTagLI_dropdownItem(unit.unitName);
     ulEl_dropdown_menu.append(liEl_dropdown_item);
   }
-  const liEl_prz = components.getTagLINav('Тюмень-ПРЦ-3');
-  const liEl_ofis = components.getTagLINav('Офис');
+  const liEl_prz = components.getTagLI_nav('Тюмень-ПРЦ-3');
+  const liEl_ofis = components.getTagLI_nav('Офис');
   ulEL_nav.append(liEl_dropdown_toggle, liEl_prz, liEl_ofis);
   navEl.append(ulEL_nav);
   unitSettings_nav.append(navEl);
