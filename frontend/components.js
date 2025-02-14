@@ -4,7 +4,7 @@ export {
   getTagH,
   getTagP,
   getTagNav,
-  getTagULListNav,
+  getTagULNav,
   etTagULDropdownMenu,
   getTagLINav,
   getTagLIDropdownToggle,
@@ -60,7 +60,7 @@ function getTagNav() {
   return element;
 }
 
-function getTagULListNav() {
+function getTagULNav() {
   const element = document.createElement('ul');
   element.classList.add('nav');
   element.classList.add('nav-tabs');

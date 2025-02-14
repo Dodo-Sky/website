@@ -9,7 +9,7 @@ export async function renderData() {
   const unitSettings_nav = document.querySelector(".unitSettings_nav");
 
   const navEl = components.getTagNav();
-  const ulEL_nav = components.getTagULListNav();
+  const ulEL_nav = components.getTagULNav();
 
   const liEl_dropdown_toggle = components.getTagLIDropdownToggle('Пиццерии');
   const ulEl_dropdown_menu = components.etTagULDropdownMenu();
