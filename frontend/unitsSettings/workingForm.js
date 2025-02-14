@@ -54,7 +54,7 @@ export async function getForm() {
 
           let inputCheck = components.getTagInput_checkbox(el.name);
           if (el.isActive) inputCheck.checked = true;
-          let labelCheck = components.getTagCheckbox_label(el.name, el.name);
+          let labelCheck = components.getTagLabel_checkbox(el.name, el.name);
           divElfprograms.append(labelCheck, inputCheck);
           divEl.append(divElfprograms);
         });

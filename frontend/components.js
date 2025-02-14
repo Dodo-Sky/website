@@ -11,12 +11,12 @@ export {
   getTagLI_dropdownItem,
   getTagForm,
   getTagLabel,
-  getTagCheckbox_label,
+  getTagLabel_checkbox,
   getTagInput,
   getTagInput_checkbox,
   getTagSelect,
   getTagOption,
-  getTagTable_div,
+  getTagDiv_table,
   getTagTable,
   getTagCaption,
   getTagTHead,
@@ -113,7 +113,7 @@ function getTagLabel(idInput, textContent) {
   return element;
 }
 
-function getTagCheckbox_label(idInput, textContent) {
+function getTagLabel_checkbox(idInput, textContent) {
   const element = document.createElement('label');
   element.classList.add('form-check-label');
   element.setAttribute('for', idInput);
@@ -153,7 +153,7 @@ function getTagOption(textContent, value) {
 }
 
 // элементы таблиц
-function getTagTable_div() {
+function getTagDiv_table() {
   // горизонтальная прокрутка
   const element = document.createElement('div');
   element.classList.add('table-responsive');
