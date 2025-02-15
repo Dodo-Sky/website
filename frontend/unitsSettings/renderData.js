@@ -58,7 +58,7 @@ export async function renderData() {
         const table = components.getTagTable();
         const captionEl1 = components.getTagCaption('Список программ');
         const tHead = components.getTagTHead();
-        const tBody = components.getTagTB();
+        const tBody = components.getTagTBody();
         const trEl = components.getTagTR();
         const thName = components.getTagTH('Наименование программы');
         const thStatus = components.getTagTH('Состояние');
@@ -90,7 +90,7 @@ export async function renderData() {
       const tableId = components.getTagTable();
       const captionEl = components.getTagCaption('Список ID телеграмм');
       const tHeadId = components.getTagTHead();
-      const tBodyId = components.getTagTB();
+      const tBodyId = components.getTagTBody();
       const trElId = components.getTagTR();
       const thId = components.getTagTH('Id телеграмм');
       const thNameFunction = components.getTagTH('Функция');
@@ -112,7 +112,16 @@ export async function renderData() {
       let btnEdit = components.getTagButton('Редактировать подразделение', 'submit');
       btnEdit.setAttribute('data-id', unit.unitId);
       $content.append(btnEdit);
+
+      // $content.addEventListener("DOMContentLoaded", async function () {
+      //   await import("./workingForm.js");
+      //  });
+       
+
+  
     }
   });
   getForm();
 }
+
+renderData()

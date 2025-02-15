@@ -2,8 +2,15 @@ import { initDeletePayoutHandlers } from './deletePayout.js';
 import { initEditPayoutHandlers } from './editPayout.js';
 import { initPayloadAddHandlers } from './addPayout.js';
 import { getServerApi } from '../apiServer.js';
+import { getUnitNameEl, getDayWeek, getStaffType } from "./markupHtml.js";
+import { validation } from "./validator.js";
 
 export async function renderTable() {
+
+  await getUnitNameEl();
+  getDayWeek();
+  await getStaffType();
+
 
   // очистка формы
   document.getElementById('button-reset').addEventListener('click', function () {
@@ -121,4 +128,8 @@ export async function renderTable() {
   initPayloadAddHandlers();
   initDeletePayoutHandlers();
   initEditPayoutHandlers();
+
+  validation();
 }
+
+renderTable()

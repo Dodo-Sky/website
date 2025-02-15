@@ -20,7 +20,7 @@ export {
   getTagTable,
   getTagCaption,
   getTagTHead,
-  getTagTB,
+  getTagTBody,
   getTagTR,
   getTagTH,
   getTagTD,
@@ -181,7 +181,7 @@ function getTagTHead() {
   return element;
 }
 
-function getTagTB() {
+function getTagTBody() {
   const element = document.createElement('tbody');
   return element;
 }
