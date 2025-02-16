@@ -4,12 +4,17 @@ import * as components from "../components.js";
 
 export async function renderData() {
   const unitsSettings = await getServerApi("unitsSettings");
+  const content = document.querySelector('.contentSetting');
+  content.innerHTML = '';
+  const unitSettings_nav = components.getTagDiv ('unitSettings_nav');
+  content.append (unitSettings_nav);
+  const $content = components.getTagDiv ('unitSettings_content');
+  content.append ($content);
 
   // отрисовка верхней навигации
-  const unitSettings_nav = document.querySelector(".unitSettings_nav");
-
   const navEl = components.getTagNav();
   const ulEL_nav = components.getTagUL_nav();
+  ulEL_nav.classList.add('nav-tabs');
 
   const liEl_dropdown_toggle = components.getTagLI_dropdownToggle('Пиццерии');
   const ulEl_dropdown_menu = components.getTagUL_dropdownMenu();
@@ -36,7 +41,7 @@ export async function renderData() {
     }
 
     // отрисовка пиццерий
-    const $content = document.querySelector(".unitSettings_content");
+
     $content.innerHTML = "";
     for (const unit of unitsSettings) {
       if (unit.unitName !== e.target.textContent) continue;
@@ -113,15 +118,7 @@ export async function renderData() {
       btnEdit.setAttribute('data-id', unit.unitId);
       $content.append(btnEdit);
 
-      // $content.addEventListener("DOMContentLoaded", async function () {
-      //   await import("./workingForm.js");
-      //  });
-       
-
-  
     }
   });
   getForm();
 }
-
-renderData()

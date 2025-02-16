@@ -5,7 +5,6 @@ const URL = 'http://178.46.153.198:1860';
 // по локальной сети
 //const URL = 'http://190.186.72.106:86';
 
-
 // Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
 export async function getServerApi(variableName) {
   try {
@@ -18,6 +17,8 @@ export async function getServerApi(variableName) {
   } catch (error) {
     alert(`Ошибка запроса ${variableName} ` + error.message);
   }
+  // let test = [variableName, variableName, variableName]
+  // return test
 }
 
 // Загрузка данных с сервера (указываем напрямую наименование переменной выгружаемой с сервера)

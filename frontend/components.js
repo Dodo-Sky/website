@@ -24,6 +24,8 @@ export {
   getTagTR,
   getTagTH,
   getTagTD,
+  getCardNav,
+  getCardRow,
 };
 
 // Базовая разметка
@@ -63,7 +65,6 @@ function getTagNav() {
 function getTagUL_nav() {
   const element = document.createElement('ul');
   element.classList.add('nav');
-  element.classList.add('nav-tabs');
   return element;
 }
 
@@ -204,4 +205,48 @@ function getTagTD(textContent) {
   element.classList.add('fs-6');
   element.textContent = textContent;
   return element;
+}
+
+// карточки с навигацией
+function getCardRow () {
+  const divEl_row = document.createElement ('div');
+  divEl_row.classList.add ('row');
+  divEl_row.classList.add ('text-center');
+  divEl_row.classList.add ('justify-content-center');  
+
+  return divEl_row
+}
+
+function getCardNav (title, text) {
+  const colCard = document.createElement ('div');
+  colCard.classList.add ('col-auto');
+  colCard.classList.add ('mb-3');
+
+  const card = document.createElement ('div');
+  card.classList.add ('card');
+  card.classList.add ('h-100');
+
+  const cardBody = document.createElement ('div');
+  cardBody.classList.add ('card-body');
+  cardBody.classList.add ('bg-secondary-subtle');
+
+  const titleEl = document.createElement ('h5');
+  titleEl.classList.add ('card-title');
+  titleEl.textContent = title;
+
+  const textEl = document.createElement ('p');
+  textEl.classList.add ('card-text');
+  textEl.textContent = text;
+
+  const btnEl = document.createElement ('button');
+  btnEl.classList.add ('btn');
+  btnEl.classList.add ('btn-primary');
+  btnEl.classList.add ('btnNav');
+  btnEl.textContent = "Перейти";
+
+  cardBody.append (titleEl, textEl, btnEl);
+  card.append (cardBody);
+  colCard.append (card);
+
+  return colCard
 }

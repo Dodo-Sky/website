@@ -59,3 +59,4 @@ export function initPayloadAddHandlers () {
     $wrappper.style.display = 'none';
   });
 }
+initPayloadAddHandlers()

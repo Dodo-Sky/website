@@ -59,3 +59,4 @@ export function validation() {
     .addRequiredGroup($typeAll, 'Выберите тип сотрудника')
     .addRequiredGroup($dayWeek, 'Выберите день недели');
 }
+validation()
