@@ -14,6 +14,7 @@ export {
   getTagLabel_checkbox,
   getTagInput,
   getTagInput_checkbox,
+  getTagTextarea,
   getTagSelect,
   getTagOption,
   getTagDiv_table,
@@ -122,13 +123,11 @@ function getTagLabel_checkbox(idInput, textContent) {
   return element;
 }
 
-function getTagInput(idInput, type = 'text', value = '', placeholder = '') {
+function getTagInput(type = 'text', value = '',) {
   const element = document.createElement('input');
   element.classList.add('form-control');
-  element.setAttribute('id', idInput);
   element.setAttribute('type', type);
   element.setAttribute('value', value);
-  element.setAttribute('placeholder', placeholder);
   return element;
 }
 
@@ -137,6 +136,13 @@ function getTagInput_checkbox(idInput) {
   element.classList.add('form-check-input');
   element.setAttribute('id', idInput);
   element.setAttribute('type', 'checkbox');
+  return element;
+}
+
+function getTagTextarea() {
+  const element = document.createElement('textarea');
+  element.classList.add('form-control');
+  element.setAttribute('rows', 3);
   return element;
 }
 
@@ -213,7 +219,6 @@ function getCardRow () {
   divEl_row.classList.add ('row');
   divEl_row.classList.add ('text-center');
   divEl_row.classList.add ('justify-content-center');  
-
   return divEl_row
 }
 
@@ -247,6 +252,5 @@ function getCardNav (title, text) {
   cardBody.append (titleEl, textEl, btnEl);
   card.append (cardBody);
   colCard.append (card);
-
   return colCard
 }

@@ -14,7 +14,7 @@ export function showNavMain() {
 
   btnNavs = document.querySelectorAll(".btnNav");
   showNavManager();
-  showNavDirectorUnit();
+  showNavOfis();
   showNavAdmin();
 }
 
@@ -30,12 +30,18 @@ function showNavAdmin() {
 }
 
 // навигация менеджера офиса
-function showNavDirectorUnit() {
+function showNavOfis() {
   btnNavs.forEach((btn) => {
     btn.addEventListener("click", async function (e) {
-      console.log(e.target);
       if (e.target.previousSibling.previousSibling.textContent === "Менеджер офиса") {
-        await import("./navSettings.js");
+        // спинер
+        const content = document.getElementById("content");
+        content.innerHTML = `
+          <div class="spinner-border" role="status">
+          <span class="visually-hidden">Загрузка...</span>
+          </div>`;
+        const module = await import("./navSettings.js");
+        module.renderLeftNav();
       }
     });
   });
@@ -66,6 +72,16 @@ function showNavManager() {
     if (e.target.previousSibling?.previousSibling?.textContent === "Проблемные заказы") {
       const titte = components.getTagH(5, `Программа ${e.target.previousSibling.previousSibling.textContent} в разработке`);
       content.append(titte);
+    }
+  });
+
+  content.addEventListener("click", async function (e) {
+    if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
+      const tittle = components.getTagH (5, e.target.previousSibling?.previousSibling?.textContent)
+      tittle.classList.add ('text-center')
+      const module = await import("./defects/renderDefects.js");
+      module.render(tittle);
+
     }
   });
 }

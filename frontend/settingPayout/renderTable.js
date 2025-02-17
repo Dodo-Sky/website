@@ -3,8 +3,7 @@ import { getServerApi } from "../apiServer.js";
 import { getUnitNameEl, getDayWeek, getStaffType } from "./markupHtml.js";
 
 export async function renderTable() {
-
-  const contentSetting = document.querySelector('.contentSetting');
+  const contentSetting = document.querySelector(".contentSetting");
   contentSetting.innerHTML = `
           <h1>Настройки динамичной оплаты</h1>
         <form class="mb-4" action="#" id="form">
@@ -113,7 +112,8 @@ export async function renderTable() {
             <tbody class="table-light tableBody"></tbody>
           </table>
         </div>
-  `
+  `;
+
   await getUnitNameEl();
   getDayWeek();
   await getStaffType();
@@ -235,6 +235,7 @@ export async function renderTable() {
   initDeletePayoutHandlers();
   await import("./validator.js");
 
+  // включение подсказок с внешней библиотеки
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 }
-
-renderTable();

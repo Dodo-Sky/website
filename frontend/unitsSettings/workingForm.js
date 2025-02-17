@@ -1,8 +1,7 @@
 import { getServerApi } from "../apiServer.js";
 import * as components from "../components.js";
 
-export async function getForm() {
-  const unitsSettings = await getServerApi("unitsSettings");
+export async function getForm(unitsSettings) {
   const $unitSettings_content = document.querySelector(".unitSettings_content");
   $unitSettings_content.addEventListener("click", function (e) {
     if (e.target.textContent === "Редактировать подразделение") {
@@ -103,6 +102,7 @@ export async function getForm() {
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
+
         timeWorkDelivery();
         timeWorkRestoran();
       }

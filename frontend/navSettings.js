@@ -3,7 +3,6 @@ import { renderData } from "./unitsSettings/renderData.js";
 
 const content = document.getElementById("content");
 
-renderLeftNav();
 export function renderLeftNav() {
   content.innerHTML = "";
   const divEl_row = components.getTagDiv("row");
@@ -38,6 +37,7 @@ export function renderLeftNav() {
   getActiveSettingsMenu();
 }
 
+// отрисовка активные/неактивные кнопки левого меню навигации
 function makeActiveNav() {
   const navItems = document.querySelectorAll(".leftMenu");
   navItems.forEach((navItem) => {
@@ -48,6 +48,7 @@ function makeActiveNav() {
   });
 }
 
+//   запуск программ-настроек с левого меню навигации
 function getActiveSettingsMenu() {
   const contentSetting = document.querySelector(".contentSetting");
   const navItems = document.querySelectorAll(".leftMenu");
@@ -55,7 +56,8 @@ function getActiveSettingsMenu() {
     navItem.addEventListener("click", async function (e) {
       if (e.target.textContent === "Настройки динамичной оплаты") {
         contentSetting.innerHTML = "";
-        await import("./settingPayout/renderTable.js");
+        const module = await import("./settingPayout/renderTable.js")
+        module.renderTable()
       }
 
       if (e.target.textContent === "Настройка подразделений") {
@@ -66,6 +68,7 @@ function getActiveSettingsMenu() {
       if (e.target.textContent === "Настройки уведомления сырья") {
         contentSetting.innerHTML = "";
         const titte = components.getTagH(5, `Программа ${e.target.textContent} в разработке`);
+        titte.classList.add ('text-center')
         contentSetting.append(titte);
       }
     });
