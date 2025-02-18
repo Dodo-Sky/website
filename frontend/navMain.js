@@ -79,7 +79,7 @@ function showNavManager() {
     if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
       const tittle = components.getTagH (5, e.target.previousSibling?.previousSibling?.textContent)
       tittle.classList.add ('text-center')
-      const module = await import("./defects/renderDefects.js");
+      const module = await import("./defects/mainDefects.js");
       module.render(tittle);
 
     }
