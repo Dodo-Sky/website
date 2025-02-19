@@ -1,112 +1,190 @@
 import * as components from "../components.js";
-import { getForm } from "./form.js";
+import { editData } from "./edit.js";
 
-export function renderTable (defects) {
-    defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
-  
-    const tableContent = document.querySelector(".table-responsive");
-    tableContent.innerHTML = "";
-  
-    const tableEl = components.getTagTable();
-    tableContent.append(tableEl);
-  
-    const captionEl = components.getTagCaption("Программа контроля списания забракованных продуктов");
-    const theadEl = components.getTagTHead();
-    theadEl.classList.add("table-sm");
-  
-    let trEl = components.getTagTR();
-  
-    let thEl = components.getTagTH();
-    thEl.innerHTML = `
+export function renderTable(defects) {
+  defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
+
+  const tableContent = document.querySelector(".table-responsive");
+  tableContent.innerHTML = "";
+
+  const tableEl = components.getTagTable();
+  tableContent.append(tableEl);
+
+  const captionEl = components.getTagCaption("Программа контроля списания забракованных продуктов");
+
+  // Заголовок таблицы THead
+  const theadEl = components.getTagTHead();
+  theadEl.classList.add("table-sm");
+
+  let trEl = components.getTagTR();
+
+  let thEl = components.getTagTH();
+
+  thEl.innerHTML = `
   <div class="btn-group">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
       Время
     </button>
     <ul class="dropdown-menu">
+      <li class="dropdown-item">За прошедшие сутки</li>
       <li class="dropdown-item">За прошедшие 3 дня</li>
       <li class="dropdown-item">За последнюю неделю</li>
       <li class="dropdown-item">Показать за все время</li>
     </ul>
   </div>`;
-    trEl.append(thEl);
-  
-    thEl = components.getTagTH("Продукт");
-    trEl.append(thEl);
-    thEl = components.getTagTH("В мусорке?");
-    trEl.append(thEl);
-    thEl = components.getTagTH("Причина брака");
-    trEl.append(thEl);
-    thEl = components.getTagTH("Лицо допустившее брак");
-    trEl.append(thEl);
-  
-    thEl = components.getTagTH();
-    thEl.innerHTML = `
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-      Менеджер
-    </button>
-    <ul class="dropdown-menu">
-      <li class="dropdown-item">Показать все</li>
-      <li class="dropdown-item">Только просроченные менеджером</li>
-       <li class="dropdown-item">В работе менеджера (пустые)</li>
-    </ul>
-  </div>`;
-    trEl.append(thEl);
-  
-    thEl = components.getTagTH();
-    thEl.innerHTML = `
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-      Управляющий
-    </button>
-    <ul class="dropdown-menu">
-      <li class="dropdown-item">Показать все</li>
-      <li class="dropdown-item">Только просроченные управляющим</li>
-      <li class="dropdown-item">В работе управляющего (пустые)</li>
-    </ul>
-  </div>`;
-    trEl.append(thEl);
-  
-    thEl = components.getTagTH("Управление");
-    trEl.append(thEl);
-    theadEl.append(trEl);
-    const tBody = components.getTagTBody();
-  
-    defects.forEach((defect) => {
-      trEl = components.getTagTR();
-      tBody.append(trEl);
-      let tdEl = components.getTagTD(defect.soldAtLocal);
-      trEl.append(tdEl);
-      tdEl = components.getTagTD(defect.productName);
-      trEl.append(tdEl);
-      tdEl = components.getTagTD(defect.disposal);
-      trEl.append(tdEl);
-      tdEl = components.getTagTD(defect.reasonDefect);
-      trEl.append(tdEl);
-      tdEl = components.getTagTD(defect.nameViolator);
-      trEl.append(tdEl);
-  
-      tdEl = components.getTagTD(defect.decisionManager);
-      if (defect.decisionManager === "Просрочка") {
-        tdEl.classList.add("text-danger");
-      }
-      trEl.append(tdEl);
-  
-      tdEl = components.getTagTD(defect.control);
-      if (defect.control === "Просрочка") {
-        tdEl.classList.add("text-danger");
-      }
-      trEl.append(tdEl);
-  
-      tdEl = components.getTagTD();
-      let btnEl = components.getTagButton("Изменить");
-      btnEl.setAttribute("data-id", `${defect.soldAtLocal}+${defect.productId}`);
-      btnEl.setAttribute("data-bs-toggle", 'modal');
-      btnEl.setAttribute("data-bs-target", '#exampleModal');
-      tdEl.append(btnEl);
-      trEl.append(tdEl);
+  trEl.append(thEl);
 
-    });
-    tableEl.append(captionEl, theadEl, tBody);
-    getForm ()
+  thEl = components.getTagTH("Продукт");
+  trEl.append(thEl);
+  thEl = components.getTagTH("В мусорке?");
+  trEl.append(thEl);
+  thEl = components.getTagTH("Причина брака");
+  trEl.append(thEl);
+  thEl = components.getTagTH("Лицо допустившее брак");
+  trEl.append(thEl);
+
+  // решение менеджера
+  thEl = components.getTagTH();
+  let btn_group = components.getTagDiv("btn-group");
+  let btnManager = components.getTagButton("Менеджер");
+  btnManager.classList.add("position-relative");
+  btnManager.classList.add("btn-secondary");
+  btnManager.classList.remove("btn-primary");
+  btnManager.classList.add("dropdown-toggle");
+  btnManager.setAttribute("data-bs-toggle", "dropdown");
+  // количество задач в работе
+  let count = defects.filter((el) => !el.decisionManager).length;
+  if (count) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add("badge");
+    spanWork.classList.add("text-bg-secondary");
+    spanWork.textContent = count;
+    btnManager.append(spanWork);
   }
+  //  Количество просроченных менеджером задач
+  let countDelays = defects.filter((el) => el.decisionManager === "Просрочка").length;
+  if (countDelays) {
+    const spanEl = components.getTagSpan_badge(countDelays);
+    spanEl.textContent = countDelays;
+    btnManager.append(spanEl);
+  }
+  let ulDrop = components.getTagUL_dropdownMenu();
+  let liDrpop = components.getTagLI_dropdownItem("Показать все");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("Только просроченные менеджером");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("В работе менеджера (пустые)");
+  ulDrop.append(liDrpop);
+  btn_group.append(btnManager, ulDrop);
+  thEl.append(btn_group);
+  trEl.append(thEl);
+
+  // решение управляющего
+  thEl = components.getTagTH();
+  btn_group = components.getTagDiv("btn-group");
+  btnManager = components.getTagButton("Управляющий");
+  btnManager.classList.add("position-relative");
+  btnManager.classList.add("btn-secondary");
+  btnManager.classList.remove("btn-primary");
+  btnManager.classList.add("dropdown-toggle");
+  btnManager.setAttribute("data-bs-toggle", "dropdown");
+  // количество задач в работе
+  count = defects.filter((el) => !el.control).length;
+  if (count) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add("badge");
+    spanWork.classList.add("text-bg-secondary");
+    spanWork.textContent = count;
+    btnManager.append(spanWork);
+  }
+  // Количество просроченных управляющим задач
+  countDelays = defects.filter((el) => el.control === "Просрочка").length;
+  if (countDelays) {
+    const spanEl = components.getTagSpan_badge(countDelays);
+    spanEl.textContent = countDelays;
+    btnManager.append(spanEl);
+  }
+  ulDrop = components.getTagUL_dropdownMenu();
+  liDrpop = components.getTagLI_dropdownItem("Показать все");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("Только просроченные управляющим");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("В работе управляющего (пустые)");
+  ulDrop.append(liDrpop);
+  btn_group.append(btnManager, ulDrop);
+  thEl.append(btn_group);
+  trEl.append(thEl);
+
+  thEl = components.getTagTH("Управление");
+  trEl.append(thEl);
+  theadEl.append(trEl);
+
+  // Тело таблицы tBody
+  const tBody = components.getTagTBody();
+
+  defects.forEach((defect) => {
+    trEl = components.getTagTR();
+    tBody.append(trEl);
+    let soldAtLocal = components.getTagTD(defect.soldAtLocal);
+    trEl.append(soldAtLocal);
+    let productName = components.getTagTD(defect.productName);
+    trEl.append(productName);
+
+    let disposalTD = components.getTagTD();
+    let disposalInput = components.getTagInput("text", defect.disposal);
+    disposalInput.setAttribute("size", "20");
+    disposalInput.classList.add("defects-disposal");
+    disposalTD.append(disposalInput);
+    trEl.append(disposalTD);
+    defect.disposal;
+
+    let reasonDefectTD = components.getTagTD();
+    let reasonDefectTextarea = components.getTagTextarea();
+    reasonDefectTextarea.textContent = defect.reasonDefect;
+    reasonDefectTextarea.classList.add("defects-reasonDefect");
+    reasonDefectTextarea.setAttribute("cols", "75");
+    reasonDefectTD.append(reasonDefectTextarea);
+    trEl.append(reasonDefectTD);
+
+    let nameViolatorTD = components.getTagTD();
+    let nameViolatorTextarea = components.getTagTextarea();
+    nameViolatorTextarea.textContent = defect.nameViolator;
+    nameViolatorTextarea.classList.add("defects-nameViolator");
+    nameViolatorTextarea.setAttribute("cols", "45");
+    nameViolatorTD.append(nameViolatorTextarea);
+    trEl.append(nameViolatorTD);
+
+    let decisionManagerTD = components.getTagTD();
+    let decisionManagerTextarea = components.getTagTextarea();
+    decisionManagerTextarea.textContent = defect.decisionManager;
+    decisionManagerTextarea.classList.add("defects-decisionManager");
+    decisionManagerTextarea.setAttribute("cols", "45");
+    decisionManagerTD.append(decisionManagerTextarea);
+
+    if (defect.decisionManager === "Просрочка") {
+      decisionManagerTextarea.classList.add("text-danger");
+    }
+    trEl.append(decisionManagerTD);
+
+    let controlTD = components.getTagTD();
+    let controlTextarea = components.getTagTextarea();
+    controlTextarea.textContent = defect.control;
+    controlTextarea.classList.add("defects-control");
+    controlTextarea.setAttribute("cols", "45");
+    controlTD.append(controlTextarea);
+
+    if (defect.control === "Просрочка") {
+      controlTextarea.classList.add("text-danger");
+    }
+    trEl.append(controlTD);
+
+    let tdEl = components.getTagTD();
+    let btnEl = components.getTagButton("Сохранить");
+    btnEl.setAttribute("data-id", `${defect.soldAtLocal}+${defect.productId}`);
+    btnEl.disabled = true;
+    tdEl.append(btnEl);
+    trEl.append(tdEl);
+  });
+  tableEl.append(captionEl, theadEl, tBody);
+  editData();
+}

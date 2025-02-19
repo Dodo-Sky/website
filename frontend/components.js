@@ -1,5 +1,7 @@
 export {
   getTagDiv,
+  getTagSpan,
+  getTagSpan_badge,
   getTagButton,
   getTagH,
   getTagP,
@@ -36,6 +38,11 @@ function getTagDiv(addClass) {
   return element;
 }
 
+function getTagSpan() {
+  const element = document.createElement('span');
+  return element;
+}
+
 function getTagButton(textContent, type = 'button') {
   const element = document.createElement('button');
   element.setAttribute('type', type);
@@ -54,6 +61,18 @@ function getTagH(size, textContent) {
 function getTagP(textContent) {
   const element = document.createElement('p');
   element.textContent = textContent;
+  return element;
+}
+function getTagSpan_badge (textContent) {
+  const element = document.createElement('span');
+  element.textContent = textContent;
+  element.classList.add("badge");
+  element.classList.add("position-absolute");
+  element.classList.add("top-0");
+  element.classList.add("start-100");
+  element.classList.add("translate-middle");
+  element.classList.add("rounded-pill");
+  element.classList.add("bg-danger");
   return element;
 }
 

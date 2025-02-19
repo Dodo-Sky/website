@@ -58,9 +58,16 @@ function filterData(defects) {
   // сортировка по времени
   const tableContent = document.querySelector(".table-responsive");
   let filterData;
-
+  
   tableContent.addEventListener("click", function (e) {
     // сортировка по дате
+    if (e.target.textContent === "За прошедшие сутки") {
+      filterData = defectFilter.filter((el) => {
+        let now = new Date();
+        return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 1));
+      });
+      renderTable(filterData);
+    }
     if (e.target.textContent === "За прошедшие 3 дня") {
       filterData = defectFilter.filter((el) => {
         let now = new Date();
