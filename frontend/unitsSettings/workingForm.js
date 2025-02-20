@@ -1,5 +1,63 @@
-import { getServerApi } from "../apiServer.js";
+import { getServerApi, updateUnitSettings } from "../apiServer.js";
 import * as components from "../components.js";
+
+function createFormSubmitHandler(unitId) {
+  async function onFormSubmit(event) {
+    event.preventDefault();
+
+    const inventoryStocksInput = document.querySelector('[id="Уведомление по складским остаткам"]');
+    const problematicOrdersInput = document.querySelector('[id="Проблемные заказы"]');
+    const disciplineInput = document.querySelector('[id="Соблюдение дисциплины"]');
+    const defectsControlInput = document.querySelector('[id="Контроль брака"]');
+
+    const programs = [
+      { name: "Уведомление по складским остаткам", isActive: inventoryStocksInput.checked },
+      { name: "Проблемные заказы", isActive: problematicOrdersInput.checked },
+      { name: "Соблюдение дисциплины", isActive: disciplineInput.checked },
+      { name: "Контроль брака", isActive: defectsControlInput.checked },
+    ];
+
+    const deliveryWorkTimeStartInput = document.querySelector("#form > div.mb-4 > div:nth-child(2) > div:nth-child(2) > input");
+    const deliveryWorkTimeStopInput = document.querySelector("#form > div.mb-4 > div:nth-child(2) > div:nth-child(3) > input");
+
+    const restaurantWorkTimeStartInput = document.querySelector("#form > div.mb-4 > div:nth-child(3) > div:nth-child(2) > input");
+    const restaurantWorkTimeStopInput = document.querySelector("#form > div.mb-4 > div:nth-child(3) > div:nth-child(2) > input");
+
+    const idTelegramInputs = document.querySelectorAll("#form > div.mb-3.row > div.col-md-3 input");
+    const fullNameInputs = document.querySelectorAll("#form > div.mb-3.row > div.col-md-5 input");
+
+    const rowCount = Math.min(idTelegramInputs.length, fullNameInputs.length);
+
+    const staffData = [];
+    for (let i = 0; i < rowCount; i++) {
+      staffData.push({
+        idTelegram: idTelegramInputs[i].value,
+        fullName: fullNameInputs[i].value,
+      });
+    }
+
+    const timeWork = {
+      delivery: {
+        workingTimeStart: deliveryWorkTimeStartInput.value,
+        workingTimeStop: deliveryWorkTimeStopInput.value,
+      },
+      restoran: {
+        workingTimeStart: restaurantWorkTimeStartInput.value,
+        workingTimeStop: restaurantWorkTimeStopInput.value,
+      },
+    };
+
+    const requestData = {
+      programs,
+      timeWork,
+      staffData,
+    };
+
+    await updateUnitSettings({ unitId, settings: requestData });
+  }
+
+  return onFormSubmit;
+}
 
 export async function getForm(unitsSettings) {
   const $unitSettings_content = document.querySelector(".unitSettings_content");
@@ -107,8 +165,10 @@ export async function getForm(unitsSettings) {
         timeWorkRestoran();
       }
 
-      let btn = components.getTagButton("внести изменения", "submit");
+      let btn = components.getTagButton("Внести изменения", "submit");
       $unitSettings_content.append(btn);
+
+      btn.addEventListener("click", createFormSubmitHandler(unit.unitId));
     }
   });
 }

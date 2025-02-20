@@ -113,3 +113,23 @@ export async function deleteServerApi(id) {
     alert('Ошибка ' + error.message);
   }
 }
+
+export async function updateUnitSettings({unitId, settings}) {
+  const url = `${URL}/unitsSettings/${unitId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(settings),
+    });
+    if (response.ok) {
+      alert('Данные сохранены');
+    } else {
+      alert('Ошибка, обратитесь к администратору ' + (await response.text()));
+    }
+  } catch (error) {
+    alert('Ошибка ' + error.message);
+  }
+}
