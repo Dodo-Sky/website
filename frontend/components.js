@@ -3,6 +3,7 @@ export {
   getTagSpan,
   getTagSpan_badge,
   getTagButton,
+  getTagButton_dropdown,
   getTagH,
   getTagP,
   getTagNav,
@@ -48,6 +49,18 @@ function getTagButton(textContent, type = 'button') {
   element.setAttribute('type', type);
   element.classList.add(`btn`);
   element.classList.add(`btn-primary`);
+  element.textContent = textContent;
+  return element;
+}
+
+function getTagButton_dropdown(textContent) {
+  const element = document.createElement('button');
+  element.setAttribute('type', 'button');
+  element.setAttribute("data-bs-toggle", "dropdown");
+  element.classList.add(`btn`);
+  element.classList.add("position-relative");
+  element.classList.add("btn-secondary");
+  element.classList.add("dropdown-toggle");
   element.textContent = textContent;
   return element;
 }

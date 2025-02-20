@@ -8,30 +8,32 @@ export function renderTable(defects) {
   tableContent.innerHTML = "";
 
   const tableEl = components.getTagTable();
+  tableEl.classList.add("table-sm");
   tableContent.append(tableEl);
 
   const captionEl = components.getTagCaption("Программа контроля списания забракованных продуктов");
 
   // Заголовок таблицы THead
   const theadEl = components.getTagTHead();
-  theadEl.classList.add("table-sm");
-
+  // theadEl.style.position = 'sticky'
+  // theadEl.style.top = 0
+  // theadEl.classList.add("sticky-top");
   let trEl = components.getTagTR();
 
+  // Время
   let thEl = components.getTagTH();
-
-  thEl.innerHTML = `
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-      Время
-    </button>
-    <ul class="dropdown-menu">
-      <li class="dropdown-item">За прошедшие сутки</li>
-      <li class="dropdown-item">За прошедшие 3 дня</li>
-      <li class="dropdown-item">За последнюю неделю</li>
-      <li class="dropdown-item">Показать за все время</li>
-    </ul>
-  </div>`;
+  thEl.classList.add ('dropend')
+  let btnDropdown = components.getTagButton_dropdown("Время");
+  let ulDrop = components.getTagUL_dropdownMenu();
+  let liDrpop = components.getTagLI_dropdownItem("За прошедшие сутки");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("За прошедшие 3 дня");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("За последнюю неделю");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("Показать за все время");
+  ulDrop.append(liDrpop);
+  thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
   thEl = components.getTagTH("Продукт");
@@ -45,13 +47,8 @@ export function renderTable(defects) {
 
   // решение менеджера
   thEl = components.getTagTH();
-  let btn_group = components.getTagDiv("btn-group");
-  let btnManager = components.getTagButton("Менеджер");
-  btnManager.classList.add("position-relative");
-  btnManager.classList.add("btn-secondary");
-  btnManager.classList.remove("btn-primary");
-  btnManager.classList.add("dropdown-toggle");
-  btnManager.setAttribute("data-bs-toggle", "dropdown");
+  thEl.classList.add ('dropend')
+  btnDropdown = components.getTagButton_dropdown("Менеджер");
   // количество задач в работе
   let count = defects.filter((el) => !el.decisionManager).length;
   if (count) {
@@ -59,35 +56,29 @@ export function renderTable(defects) {
     spanWork.classList.add("badge");
     spanWork.classList.add("text-bg-secondary");
     spanWork.textContent = count;
-    btnManager.append(spanWork);
+    btnDropdown.append(spanWork);
   }
   //  Количество просроченных менеджером задач
   let countDelays = defects.filter((el) => el.decisionManager === "Просрочка").length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
-    btnManager.append(spanEl);
+    btnDropdown.append(spanEl);
   }
-  let ulDrop = components.getTagUL_dropdownMenu();
-  let liDrpop = components.getTagLI_dropdownItem("Показать все");
+  ulDrop = components.getTagUL_dropdownMenu();
+  liDrpop = components.getTagLI_dropdownItem("Показать все");
   ulDrop.append(liDrpop);
   liDrpop = components.getTagLI_dropdownItem("Только просроченные менеджером");
   ulDrop.append(liDrpop);
   liDrpop = components.getTagLI_dropdownItem("В работе менеджера (пустые)");
   ulDrop.append(liDrpop);
-  btn_group.append(btnManager, ulDrop);
-  thEl.append(btn_group);
+  thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
   // решение управляющего
   thEl = components.getTagTH();
-  btn_group = components.getTagDiv("btn-group");
-  btnManager = components.getTagButton("Управляющий");
-  btnManager.classList.add("position-relative");
-  btnManager.classList.add("btn-secondary");
-  btnManager.classList.remove("btn-primary");
-  btnManager.classList.add("dropdown-toggle");
-  btnManager.setAttribute("data-bs-toggle", "dropdown");
+  thEl.classList.add ('dropend')
+  btnDropdown = components.getTagButton_dropdown("Управляющий");
   // количество задач в работе
   count = defects.filter((el) => !el.control).length;
   if (count) {
@@ -95,14 +86,14 @@ export function renderTable(defects) {
     spanWork.classList.add("badge");
     spanWork.classList.add("text-bg-secondary");
     spanWork.textContent = count;
-    btnManager.append(spanWork);
+    btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
   countDelays = defects.filter((el) => el.control === "Просрочка").length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
-    btnManager.append(spanEl);
+    btnDropdown.append(spanEl);
   }
   ulDrop = components.getTagUL_dropdownMenu();
   liDrpop = components.getTagLI_dropdownItem("Показать все");
@@ -111,8 +102,7 @@ export function renderTable(defects) {
   ulDrop.append(liDrpop);
   liDrpop = components.getTagLI_dropdownItem("В работе управляющего (пустые)");
   ulDrop.append(liDrpop);
-  btn_group.append(btnManager, ulDrop);
-  thEl.append(btn_group);
+  thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
   thEl = components.getTagTH("Управление");
@@ -180,6 +170,7 @@ export function renderTable(defects) {
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
+    btnEl.classList.add("defects-btn-save");
     btnEl.setAttribute("data-id", `${defect.soldAtLocal}+${defect.productId}`);
     btnEl.disabled = true;
     tdEl.append(btnEl);

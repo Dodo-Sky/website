@@ -35,6 +35,28 @@ export async function getDataServer(variableName) {
   }
 }
 
+// Отправляем изменения по программе на сервер
+export async function postDataServer (programName, payload) {
+  try {
+    const url = `${URL}/${programName}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    let data = await response.json()
+    if (response.ok) {
+      return data
+    } else {
+      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+    }
+  } catch (error) {
+    alert('Ошибка ' + error.message);
+  }
+}
+
 // Изменение элемента в массиве объектов переменной на сервере (указываем id элемента а также новую информаицию для этого элемента)
 export async function putServerApi(elementId, payload) {
   try {
