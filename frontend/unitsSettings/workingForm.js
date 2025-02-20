@@ -23,16 +23,16 @@ export async function getForm(unitsSettings) {
       divElfio.textContent = "ФИО";
 
       unit.idTelegramm.forEach((el) => {
-        let inputEl = components.getTagInput("", "text", el.nameFunction);
+        let inputEl = components.getTagInput("text", el.nameFunction);
         inputEl.classList.add("mb-1");
         inputEl.disabled = true;
         divElPosizion.append(inputEl);
 
-        inputEl = components.getTagInput("", "number", el.id);
+        inputEl = components.getTagInput("number", el.id);
         inputEl.classList.add("mb-1");
         divElId.append(inputEl);
 
-        inputEl = components.getTagInput("", "text", el.fio);
+        inputEl = components.getTagInput("text", el.fio);
         inputEl.classList.add("mb-1");
         if (!el.fio) inputEl.disabled = true;
         divElfio.append(inputEl);
