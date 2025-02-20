@@ -6,13 +6,15 @@ export function showNavMain() {
   let cardRow = components.getCardRow();
   let adminUser = components.getCardNav("Администратор", "Настройка прав доступа");
   let ofisUser = components.getCardNav("Менеджер офиса", "Параметры с настройками");
+  let unitDirector = components.getCardNav("Управляющий", "Тут находятся программы");
   let managerUser = components.getCardNav("Менеджер смены", "Тут находятся программы");
-  cardRow.append(adminUser, ofisUser, managerUser);
+  cardRow.append(adminUser, ofisUser, unitDirector, managerUser);
   const content = document.getElementById("content");
   content.innerHTML = "";
   content.append(cardRow);
 
   btnNavs = document.querySelectorAll(".btnNav");
+  showNavUnitDirector();
   showNavManager();
   showNavOfis();
   showNavAdmin();
@@ -47,11 +49,11 @@ function showNavOfis() {
   });
 }
 
-// навигация менеджера смены
-function showNavManager() {
+// навигация управляющего
+function showNavUnitDirector() {
   btnNavs.forEach((btn) => {
     btn.addEventListener("click", async function (e) {
-      if (e.target.previousSibling.previousSibling.textContent === "Менеджер смены") {
+      if (e.target.previousSibling.previousSibling.textContent === "Управляющий") {
         let cardRow = components.getCardRow();
         let orders = components.getCardNav("Проблемные заказы");
         let diszipline = components.getCardNav("Соблюдение дисциплины");
@@ -77,6 +79,44 @@ function showNavManager() {
 
   content.addEventListener("click", async function (e) {
     if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
+      console.log('управляющий');
+      const tittle = components.getTagH (5, e.target.previousSibling?.previousSibling?.textContent)
+      tittle.classList.add ('text-center')
+      const module = await import("./defects/mainDefects.js");
+      module.render(tittle);
+
+    }
+  });
+}
+
+// навигация менеджера смены
+function showNavManager() {
+  btnNavs.forEach((btn) => {
+    btn.addEventListener("click", async function (e) {
+      if (e.target.previousSibling.previousSibling.textContent === "Менеджер смены") {
+        let cardRow = components.getCardRow();
+        let orders = components.getCardNav("Проблемные заказы");
+        let badSupply = components.getCardNav("Контроль брака");
+
+        cardRow.append(orders, badSupply);
+        content.innerHTML = "";
+        const titte = components.getTagH(5, "Выберите нужную вам программу");
+        titte.classList.add("text-center");
+        content.append(titte, cardRow);
+      }
+    });
+  });
+
+  content.addEventListener("click", function (e) {
+    if (e.target.previousSibling?.previousSibling?.textContent === "Проблемные заказы") {
+      const titte = components.getTagH(5, `Программа ${e.target.previousSibling.previousSibling.textContent} в разработке`);
+      content.append(titte);
+    }
+  });
+
+  content.addEventListener("click", async function (e) {
+    if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
+      console.log('мемнеджер смены');
       const tittle = components.getTagH (5, e.target.previousSibling?.previousSibling?.textContent)
       tittle.classList.add ('text-center')
       const module = await import("./defects/mainDefects.js");
