@@ -57,11 +57,10 @@ function showNavUnitDirector() {
         let cardRow = components.getCardRow();
         let orders = components.getCardNav("Проблемные заказы");
         let diszipline = components.getCardNav("Соблюдение дисциплины");
-        let badSupply = components.getCardNav("Контроль брака");
         let yearBonus = components.getCardNav("Годовой бонус");
         let frends = components.getCardNav("Приведи друга");
 
-        cardRow.append(orders, diszipline, badSupply, yearBonus, frends);
+        cardRow.append(orders, diszipline, yearBonus, frends);
         content.innerHTML = "";
         const titte = components.getTagH(5, "Выберите нужную вам программу");
         titte.classList.add("text-center");
@@ -74,17 +73,6 @@ function showNavUnitDirector() {
     if (e.target.previousSibling?.previousSibling?.textContent === "Проблемные заказы") {
       const titte = components.getTagH(5, `Программа ${e.target.previousSibling.previousSibling.textContent} в разработке`);
       content.append(titte);
-    }
-  });
-
-  content.addEventListener("click", async function (e) {
-    if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
-      console.log('управляющий');
-      const tittle = components.getTagH (5, e.target.previousSibling?.previousSibling?.textContent)
-      tittle.classList.add ('text-center')
-      const module = await import("./defects/mainDefects.js");
-      module.render(tittle);
-
     }
   });
 }
