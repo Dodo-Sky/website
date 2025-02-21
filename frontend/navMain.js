@@ -31,13 +31,13 @@ export function showNavMain() {
 const content = document.getElementById("content");
 content.addEventListener("click", async function (e) {
   // Запуск подразделов
-  if (e.target.previousSibling.previousSibling.textContent === "Управляющий") showNavUnitDirector();
-  if (e.target.previousSibling.previousSibling.textContent === "Администратор") showNavAdmin();
-  if (e.target.previousSibling.previousSibling.textContent === "Менеджер офиса") showNavOfis();
-  if (e.target.previousSibling.previousSibling.textContent === "Менеджер смены") showNavManager();
+  if (e.target?.previousSibling?.previousSibling?.textContent === "Управляющий") showNavUnitDirector();
+  if (e.target?.previousSibling?.previousSibling?.textContent === "Администратор") showNavAdmin();
+  if (e.target?.previousSibling?.previousSibling?.textContent === "Менеджер офиса") showNavOfis();
+  if (e.target?.previousSibling?.previousSibling?.textContent === "Менеджер смены") showNavManager();
 
   // Запуск программ
-  if (e.target.previousSibling.previousSibling.textContent === "Контроль брака") {
+  if (e.target?.previousSibling?.previousSibling?.textContent === "Контроль брака") {
     const nameProgramm =  e.target.previousSibling.previousSibling.textContent
     let breadcrumbs = breadcrumb.lastChild.textContent;
     const module = await import("./defects/mainDefects.js");
