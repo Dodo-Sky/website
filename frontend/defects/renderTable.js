@@ -17,7 +17,11 @@ export function renderTable(defects) {
   const theadEl = components.getTagTHead();
   // theadEl.style.position = 'sticky'
   // theadEl.style.top = 0
-  // theadEl.classList.add("sticky-top");
+  theadEl.classList.add("sticky-top");
+// theadEl.style.position = 'sticky'
+// theadEl.style.top = '15px'
+// theadEl.style.position = '-webkit-sticky'
+
   let trEl = components.getTagTR();
 
   // Время

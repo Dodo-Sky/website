@@ -134,12 +134,12 @@ export async function getForm(unitsSettings) {
 
           let divElStart = components.getTagDiv("col-auto");
           divElStart.classList.add("mb-3");
-          const startInput = components.getTagInput("", "time", unit.timeWork.delivery.workingTimeStart, "старт");
+          const startInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStart, "старт");
           divElStart.append(startInput);
 
           let divElStop = components.getTagDiv("col-auto");
           divElStop.classList.add("mb-3");
-          const stopInput = components.getTagInput("", "time", unit.timeWork.delivery.workingTimeStop, "стоп");
+          const stopInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStop, "стоп");
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
@@ -152,11 +152,11 @@ export async function getForm(unitsSettings) {
           divEl.append(divElDel);
 
           let divElStart = components.getTagDiv("col-auto");
-          const startInput = components.getTagInput("", "time", unit.timeWork.restoran.workingTimeStart, "старт");
+          const startInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStart, "старт");
           divElStart.append(startInput);
 
           let divElStop = components.getTagDiv("col-auto");
-          const stopInput = components.getTagInput("", "time", unit.timeWork.restoran.workingTimeStop, "стоп");
+          const stopInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStop, "стоп");
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
