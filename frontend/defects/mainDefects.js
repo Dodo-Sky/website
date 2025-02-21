@@ -4,7 +4,14 @@ import { renderTable } from "./renderTable.js";
 
 const content = document.getElementById("content");
 
-export async function render(name) {
+export async function render(name, breadcrumbs) {
+  const breadcrumb = document.querySelector(".breadcrumb");
+  breadcrumb.innerHTML = "";
+  let navMainEl = components.getTagLI_breadcrumb("Главная");
+  let navManaergEl = components.getTagLI_breadcrumb(breadcrumbs);
+  let navControlEl = components.getTagLI_breadcrumbActive("Контроль брака");
+  breadcrumb.append(navMainEl, navManaergEl, navControlEl);
+
   content.innerHTML = `
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
@@ -48,17 +55,17 @@ function getListUnits(defects) {
 
 function filterData(defects) {
   let defectFilter = defects.filter((el) => el.unitName === "Тюмень-1");
-  renderTable (defectFilter);
+  renderTable(defectFilter);
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
     defectFilter = defects.filter((el) => el.unitName === e.target.value);
-    renderTable (defectFilter);
+    renderTable(defectFilter);
   });
 
   // сортировка по времени
   const tableContent = document.querySelector(".table-responsive");
   let filterData;
-  
+
   tableContent.addEventListener("click", function (e) {
     // сортировка по дате
     if (e.target.textContent === "За прошедшие сутки") {

@@ -1,35 +1,15 @@
 import * as components from "./components.js";
-let btnNavs;
-const content = document.getElementById("content");
 
-// Навигация сверху
+// Навигация сверху (хлебные крошки)
 const breadcrumb = document.querySelector(".breadcrumb");
 const header = document.getElementById("header");
-
 header.addEventListener("click", function (e) {
   if (e.target.textContent === "Главная") showNavMain();
   if (e.target.textContent === "Администратор") showNavAdmin();
   if (e.target.textContent === "Менеджер офиса") showNavOfis();
   if (e.target.textContent === "Управляющий") showNavUnitDirector();
-  if (e.target.textContent === "Менеджер смены") getManagerNav();
+  if (e.target.textContent === "Менеджер смены") showNavManager();
 });
-
-function getManagerNav() {
-  let cardRow = components.getCardRow();
-  let orders = components.getCardNav("Проблемные заказы");
-  let badSupply = components.getCardNav("Контроль брака");
-
-  cardRow.append(orders, badSupply);
-  content.innerHTML = "";
-  const titte = components.getTagH(5, "Выберите нужную вам программу");
-  titte.classList.add("text-center");
-  content.append(titte, cardRow);
-
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер смены");
-  breadcrumb.append(navMainEl, navManaergEl);
-}
 
 export function showNavMain() {
   breadcrumb.innerHTML = "";
@@ -45,138 +25,88 @@ export function showNavMain() {
   cardRow.append(adminUser, ofisUser, unitDirector, managerUser);
   content.innerHTML = "";
   content.append(cardRow);
-
-  btnNavs = document.querySelectorAll(".btnNav");
-  showNavUnitDirector();
-  showNavManager();
-  showNavOfis();
-  showNavAdmin();
 }
+
+// старт программ
+const content = document.getElementById("content");
+content.addEventListener("click", async function (e) {
+  // Запуск подразделов
+  if (e.target.previousSibling.previousSibling.textContent === "Управляющий") showNavUnitDirector();
+  if (e.target.previousSibling.previousSibling.textContent === "Администратор") showNavAdmin();
+  if (e.target.previousSibling.previousSibling.textContent === "Менеджер офиса") showNavOfis();
+  if (e.target.previousSibling.previousSibling.textContent === "Менеджер смены") showNavManager();
+
+  // Запуск программ
+  if (e.target.previousSibling.previousSibling.textContent === "Контроль брака") {
+    const nameProgramm =  e.target.previousSibling.previousSibling.textContent
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import("./defects/mainDefects.js");
+    module.render(nameProgramm, breadcrumbs);    
+  };
+});
 
 // навигация администратор
 function showNavAdmin() {
-  btnNavs.forEach((btn) => {
-    btn.addEventListener("click", async function (e) {
-      if (e.target.previousSibling.previousSibling.textContent === "Администратор") {
-        console.log("Элдос этот раздел надо делать отдельно думать над логикой");
-
-        breadcrumb.innerHTML = "";
-        let navMainEl = components.getTagLI_breadcrumb("Главная");
-        let navManaergEl = components.getTagLI_breadcrumbActive("Администратор");
-        breadcrumb.append(navMainEl, navManaergEl);
-      }
-    });
-  });
+  console.log("Элдос этот раздел надо делать отдельно думать над логикой");
+  breadcrumb.innerHTML = "";
+  let navMainEl = components.getTagLI_breadcrumb("Главная");
+  let navManaergEl = components.getTagLI_breadcrumbActive("Администратор");
+  breadcrumb.append(navMainEl, navManaergEl);
 }
 
 // навигация менеджера офиса
-function showNavOfis() {
-  btnNavs.forEach((btn) => {
-    btn.addEventListener("click", async function (e) {
-      if (e.target.previousSibling.previousSibling.textContent === "Менеджер офиса") {
-        // спинер
-        const content = document.getElementById("content");
-        content.innerHTML = `
+async function showNavOfis() {
+  // спинер
+  const content = document.getElementById("content");
+  content.innerHTML = `
           <div class="spinner-border" role="status">
           <span class="visually-hidden">Загрузка...</span>
           </div>`;
-        const module = await import("./navSettings.js");
-        module.renderLeftNav();
+  const module = await import("./navSettings.js");
+  module.renderLeftNav();
 
-        breadcrumb.innerHTML = "";
-        let navMainEl = components.getTagLI_breadcrumb("Главная");
-        let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер офиса");
-        breadcrumb.append(navMainEl, navManaergEl);
-      }
-    });
-  });
+  breadcrumb.innerHTML = "";
+  let navMainEl = components.getTagLI_breadcrumb("Главная");
+  let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер офиса");
+  breadcrumb.append(navMainEl, navManaergEl);
 }
 
 // навигация управляющего
 function showNavUnitDirector() {
-  btnNavs.forEach((btn) => {
-    btn.addEventListener("click", async function (e) {
-      if (e.target.previousSibling.previousSibling.textContent === "Управляющий") {
-        let cardRow = components.getCardRow();
-        let orders = components.getCardNav("Проблемные заказы");
-        let diszipline = components.getCardNav("Соблюдение дисциплины");
-        let yearBonus = components.getCardNav("Годовой бонус");
-        let frends = components.getCardNav("Приведи друга");
+  let cardRow = components.getCardRow();
+  let orders = components.getCardNav("Проблемные заказы");
+  let diszipline = components.getCardNav("Соблюдение дисциплины");
+  let yearBonus = components.getCardNav("Годовой бонус");
+  let frends = components.getCardNav("Приведи друга");
+  let badSupply = components.getCardNav("Контроль брака");
 
-        cardRow.append(orders, diszipline, yearBonus, frends);
-        content.innerHTML = "";
-        const titte = components.getTagH(5, "Выберите нужную вам программу");
-        titte.classList.add("text-center");
-        content.append(titte, cardRow);
+  cardRow.append(orders, diszipline, yearBonus, frends, badSupply);
+  content.innerHTML = "";
+  const titte = components.getTagH(5, "Выберите нужную вам программу");
+  titte.classList.add("text-center");
+  content.append(titte, cardRow);
 
-        breadcrumb.innerHTML = "";
-        let navMainEl = components.getTagLI_breadcrumb("Главная");
-        let navManaergEl = components.getTagLI_breadcrumbActive("Управляющий");
-        breadcrumb.append(navMainEl, navManaergEl);
-      }
-    });
-  });
-
-  content.addEventListener("click", function (e) {
-    if (e.target.previousSibling?.previousSibling?.textContent === "Проблемные заказы") {
-      const titte = components.getTagH(5, `Программа ${e.target.previousSibling.previousSibling.textContent} в разработке`);
-      content.append(titte);
-    }
-  });
+  breadcrumb.innerHTML = "";
+  let navMainEl = components.getTagLI_breadcrumb("Главная");
+  let navManaergEl = components.getTagLI_breadcrumbActive("Управляющий");
+  breadcrumb.append(navMainEl, navManaergEl);
+  console.log(breadcrumb.lastChild.textContent);
 }
 
 // навигация менеджера смены
 function showNavManager() {
-  btnNavs.forEach((btn) => {
-    btn.addEventListener("click", async function (e) {
-      if (e.target.previousSibling.previousSibling.textContent === "Менеджер смены") {
-        getManagerNav();
-      }
-    });
-  });
+  let cardRow = components.getCardRow();
+  let orders = components.getCardNav("Проблемные заказы");
+  let badSupply = components.getCardNav("Контроль брака");
 
-  content.addEventListener("click", function (e) {
-    if (e.target.previousSibling?.previousSibling?.textContent === "Проблемные заказы") {
-      const titte = components.getTagH(5, `Программа ${e.target.previousSibling.previousSibling.textContent} в разработке`);
-      content.append(titte);
-    }
-  });
+  cardRow.append(orders, badSupply);
+  content.innerHTML = "";
+  const titte = components.getTagH(5, "Выберите нужную вам программу");
+  titte.classList.add("text-center");
+  content.append(titte, cardRow);
 
-  async function myFunction(e) {
-    if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
-      const tittle = components.getTagH(5, e.target.previousSibling?.previousSibling?.textContent);
-      tittle.classList.add("text-center");
-      const module = await import("./defects/mainDefects.js");
-      module.render(tittle);
-
-      breadcrumb.innerHTML = "";
-      let navMainEl = components.getTagLI_breadcrumb("Главная");
-      let navManaergEl = components.getTagLI_breadcrumb("Менеджер смены");
-      let navControlEl = components.getTagLI_breadcrumbActive("Контроль брака");
-      breadcrumb.append(navMainEl, navManaergEl, navControlEl);
-    }
-  }
-
-  content.removeEventListener("click", (event) => {
-    myFunction(event);
-  });
-
-  content.addEventListener("click", (event) => {
-    myFunction(event);
-  });
-
-  // content.addEventListener("click", async function (e) {
-  //   if (e.target.previousSibling?.previousSibling?.textContent === "Контроль брака") {
-  //     const tittle = components.getTagH(5, e.target.previousSibling?.previousSibling?.textContent);
-  //     tittle.classList.add("text-center");
-  //     const module = await import("./defects/mainDefects.js");
-  //     module.render(tittle);
-
-  //     breadcrumb.innerHTML = "";
-  //     let navMainEl = components.getTagLI_breadcrumb("Главная");
-  //     let navManaergEl = components.getTagLI_breadcrumb("Менеджер смены");
-  //     let navControlEl = components.getTagLI_breadcrumbActive("Контроль брака");
-  //     breadcrumb.append(navMainEl, navManaergEl, navControlEl);
-  //   }
-  // });
+  breadcrumb.innerHTML = "";
+  let navMainEl = components.getTagLI_breadcrumb("Главная");
+  let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер смены");
+  breadcrumb.append(navMainEl, navManaergEl);
 }
