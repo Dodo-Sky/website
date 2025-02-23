@@ -1,11 +1,12 @@
 import * as components from "../components.js";
 import { editData } from "./edit.js";
 
-export function renderTable(defects) {
+export async function renderTable(defects) {
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
 
-  const tableContent = document.querySelector(".table-responsive");
-  tableContent.innerHTML = "";
+  const tableContent = document.querySelector('.defects-table');
+  tableContent.innerHTML = ''
+  const staffData = JSON.parse (localStorage.getItem ('staffData'));
 
   const tableEl = components.getTagTable();
   tableEl.classList.add("table-sm");
@@ -15,18 +16,13 @@ export function renderTable(defects) {
 
   // Заголовок таблицы THead
   const theadEl = components.getTagTHead();
-  // theadEl.style.position = 'sticky'
-  // theadEl.style.top = 0
   theadEl.classList.add("sticky-top");
-// theadEl.style.position = 'sticky'
-// theadEl.style.top = '15px'
-// theadEl.style.position = '-webkit-sticky'
 
   let trEl = components.getTagTR();
 
   // Время
   let thEl = components.getTagTH();
-  thEl.classList.add ('dropend')
+  thEl.classList.add("dropend");
   let btnDropdown = components.getTagButton_dropdown("Время");
   let ulDrop = components.getTagUL_dropdownMenu();
   let liDrpop = components.getTagLI_dropdownItem("За прошедшие сутки");
@@ -51,7 +47,7 @@ export function renderTable(defects) {
 
   // решение менеджера
   thEl = components.getTagTH();
-  thEl.classList.add ('dropend')
+  thEl.classList.add("dropend");
   btnDropdown = components.getTagButton_dropdown("Менеджер");
   // количество задач в работе
   let count = defects.filter((el) => !el.decisionManager).length;
@@ -81,7 +77,7 @@ export function renderTable(defects) {
 
   // решение управляющего
   thEl = components.getTagTH();
-  thEl.classList.add ('dropend')
+  thEl.classList.add("dropend");
   btnDropdown = components.getTagButton_dropdown("Управляющий");
   // количество задач в работе
   count = defects.filter((el) => !el.control).length;
@@ -115,6 +111,7 @@ export function renderTable(defects) {
 
   // Тело таблицы tBody
   const tBody = components.getTagTBody();
+  tBody.classList.add ('tBody')
 
   defects.forEach((defect) => {
     trEl = components.getTagTR();
@@ -141,11 +138,17 @@ export function renderTable(defects) {
     trEl.append(reasonDefectTD);
 
     let nameViolatorTD = components.getTagTD();
-    let nameViolatorTextarea = components.getTagTextarea();
-    nameViolatorTextarea.textContent = defect.nameViolator;
+    let nameViolatorTextarea = components.getTagInput();
+    nameViolatorTextarea.value = defect.nameViolator;
     nameViolatorTextarea.classList.add("defects-nameViolator");
-    nameViolatorTextarea.setAttribute("cols", "45");
-    nameViolatorTD.append(nameViolatorTextarea);
+    nameViolatorTextarea.setAttribute("list", "datalistOptions");
+    let datalist = components.getTagDatalist();
+    datalist.setAttribute("id", "datalistOptions");
+    staffData.forEach((el) => {
+      let option = components.getTagOption("", el);
+      datalist.append(option);
+    });
+    nameViolatorTD.append(nameViolatorTextarea, datalist);
     trEl.append(nameViolatorTD);
 
     let decisionManagerTD = components.getTagTD();

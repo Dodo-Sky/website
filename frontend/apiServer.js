@@ -45,6 +45,7 @@ export async function postDataServer (programName, payload) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      // body: payload,
     });
     let data = await response.json()
     if (response.ok) {

@@ -12,7 +12,8 @@ export async function renderData() {
   <span class="visually-hidden">Загрузка...</span>
   </div>`;
 
-  const unitsSettings = await getServerApi("unitsSettings");
+  let unitsSettings = await getServerApi("unitsSettings");
+  unitsSettings.sort ((a,b) => a.unitName.localeCompare(b.unitName))
 
   const unitSettings_nav = components.getTagDiv("unitSettings_nav");
   content.append(unitSettings_nav);
@@ -31,6 +32,7 @@ export async function renderData() {
   const liEl_dropdown_toggle = components.getTagLI_dropdownToggle("Пиццерии");
   const ulEl_dropdown_menu = components.getTagUL_dropdownMenu();
   liEl_dropdown_toggle.append(ulEl_dropdown_menu);
+
   for (const unit of unitsSettings) {
     if (unit.type !== "Пиццерия") continue;
     const liEl_dropdown_item = components.getTagLI_dropdownItem(unit.unitName);

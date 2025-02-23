@@ -1,77 +1,18 @@
-import { getServerApi, updateUnitSettings } from "../apiServer.js";
+import { getServerApi, updateUnitSettings, postDataServer } from "../apiServer.js";
 import * as components from "../components.js";
-
-function createFormSubmitHandler(unitId) {
-  async function onFormSubmit(event) {
-    event.preventDefault();
-
-    const inventoryStocksInput = document.querySelector('[id="Уведомление по складским остаткам"]');
-    const problematicOrdersInput = document.querySelector('[id="Проблемные заказы"]');
-    const disciplineInput = document.querySelector('[id="Соблюдение дисциплины"]');
-    const defectsControlInput = document.querySelector('[id="Контроль брака"]');
-
-    const programs = [
-      { name: "Уведомление по складским остаткам", isActive: inventoryStocksInput.checked },
-      { name: "Проблемные заказы", isActive: problematicOrdersInput.checked },
-      { name: "Соблюдение дисциплины", isActive: disciplineInput.checked },
-      { name: "Контроль брака", isActive: defectsControlInput.checked },
-    ];
-
-    const deliveryWorkTimeStartInput = document.querySelector("#form > div.mb-4 > div:nth-child(2) > div:nth-child(2) > input");
-    const deliveryWorkTimeStopInput = document.querySelector("#form > div.mb-4 > div:nth-child(2) > div:nth-child(3) > input");
-
-    const restaurantWorkTimeStartInput = document.querySelector("#form > div.mb-4 > div:nth-child(3) > div:nth-child(2) > input");
-    const restaurantWorkTimeStopInput = document.querySelector("#form > div.mb-4 > div:nth-child(3) > div:nth-child(2) > input");
-
-    const idTelegramInputs = document.querySelectorAll("#form > div.mb-3.row > div.col-md-3 input");
-    const fullNameInputs = document.querySelectorAll("#form > div.mb-3.row > div.col-md-5 input");
-
-    const rowCount = Math.min(idTelegramInputs.length, fullNameInputs.length);
-
-    const staffData = [];
-    for (let i = 0; i < rowCount; i++) {
-      staffData.push({
-        idTelegram: idTelegramInputs[i].value,
-        fullName: fullNameInputs[i].value,
-      });
-    }
-
-    const timeWork = {
-      delivery: {
-        workingTimeStart: deliveryWorkTimeStartInput.value,
-        workingTimeStop: deliveryWorkTimeStopInput.value,
-      },
-      restoran: {
-        workingTimeStart: restaurantWorkTimeStartInput.value,
-        workingTimeStop: restaurantWorkTimeStopInput.value,
-      },
-    };
-
-    const requestData = {
-      programs,
-      timeWork,
-      staffData,
-    };
-
-    await updateUnitSettings({ unitId, settings: requestData });
-  }
-
-  return onFormSubmit;
-}
 
 export async function getForm(unitsSettings) {
   const $unitSettings_content = document.querySelector(".unitSettings_content");
   $unitSettings_content.addEventListener("click", function (e) {
     if (e.target.textContent === "Редактировать подразделение") {
-      console.log(e);
       $unitSettings_content.innerHTML = "";
       const unit = unitsSettings.find((el) => el.unitId === e.target.dataset.id);
 
       // Редактировать ID в телеграмм
       const formEl = components.getTagForm("form");
       const divRowEl = components.getTagDiv("mb-3");
-      let hEl = components.getTagH(5, "Контактные данные");
       divRowEl.classList.add("row");
+      let hEl = components.getTagH(5, "Контактные данные");
       formEl.append(divRowEl);
       const divElId = components.getTagDiv("col-md-3");
       divElId.textContent = "ID в телеграмм";
@@ -81,19 +22,23 @@ export async function getForm(unitsSettings) {
       divElfio.textContent = "ФИО";
 
       unit.idTelegramm.forEach((el) => {
-        let inputEl = components.getTagInput("text", el.nameFunction);
-        inputEl.classList.add("mb-1");
-        inputEl.disabled = true;
-        divElPosizion.append(inputEl);
+        let nameFunctionInput = components.getTagInput("text", el.nameFunction);
+        nameFunctionInput.classList.add("mb-1");
+        nameFunctionInput.disabled = true;
+        divElPosizion.append(nameFunctionInput);
 
-        inputEl = components.getTagInput("number", el.id);
-        inputEl.classList.add("mb-1");
-        divElId.append(inputEl);
+        let idInput = components.getTagInput("number", el.id);
+        idInput.classList.add("mb-1");
+        idInput.classList.add("idInput");
+        idInput.setAttribute("data-function", el.nameFunction);
+        divElId.append(idInput);
 
-        inputEl = components.getTagInput("text", el.fio);
-        inputEl.classList.add("mb-1");
-        if (!el.fio) inputEl.disabled = true;
-        divElfio.append(inputEl);
+        let fioInput = components.getTagInput("text", el.fio);
+        fioInput.classList.add("mb-1");
+        fioInput.classList.add("fioInput");
+        fioInput.setAttribute("data-function", el.nameFunction);
+        if (!el.fio) fioInput.disabled = true;
+        divElfio.append(fioInput);
       });
 
       $unitSettings_content.append(formEl);
@@ -110,10 +55,15 @@ export async function getForm(unitsSettings) {
           divElfprograms.classList.add("form-check");
           divElfprograms.classList.add("form-switch");
 
-          let inputCheck = components.getTagInput_checkbox(el.name);
-          if (el.isActive) inputCheck.checked = true;
+          let programmInput = components.getTagInput_checkbox(el.name);
+          programmInput.setAttribute("name", el.name);
+          programmInput.classList.add("programmInput");
+          programmInput.setAttribute("data-program", el.name);
+
+          if (el.isActive) programmInput.checked = true;
+          if (!el.isActive) programmInput.checked = false;
           let labelCheck = components.getTagLabel_checkbox(el.name, el.name);
-          divElfprograms.append(labelCheck, inputCheck);
+          divElfprograms.append(labelCheck, programmInput);
           divEl.append(divElfprograms);
         });
       }
@@ -134,12 +84,14 @@ export async function getForm(unitsSettings) {
 
           let divElStart = components.getTagDiv("col-auto");
           divElStart.classList.add("mb-3");
-          const startInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStart, "старт");
+          const startInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStart);
+          startInput.setAttribute("name", "deliveryStart");
           divElStart.append(startInput);
 
           let divElStop = components.getTagDiv("col-auto");
           divElStop.classList.add("mb-3");
-          const stopInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStop, "стоп");
+          const stopInput = components.getTagInput("time", unit.timeWork.delivery.workingTimeStop);
+          stopInput.setAttribute("name", "deliveryStop");
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
@@ -152,11 +104,13 @@ export async function getForm(unitsSettings) {
           divEl.append(divElDel);
 
           let divElStart = components.getTagDiv("col-auto");
-          const startInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStart, "старт");
+          const startInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStart);
+          startInput.setAttribute("name", "restoranStart");
           divElStart.append(startInput);
 
           let divElStop = components.getTagDiv("col-auto");
-          const stopInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStop, "стоп");
+          const stopInput = components.getTagInput("time", unit.timeWork.restoran.workingTimeStop);
+          stopInput.setAttribute("name", "restoranStop");
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
@@ -166,9 +120,64 @@ export async function getForm(unitsSettings) {
       }
 
       let btn = components.getTagButton("Внести изменения", "submit");
-      $unitSettings_content.append(btn);
+      btn.setAttribute("id", "submit");
+      formEl.append(btn);
 
-      btn.addEventListener("click", createFormSubmitHandler(unit.unitId));
+      // отправка формы на сервер
+      formEl.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        // формирование idTelegramm
+        let idTelegramm = [];
+        const idInputs = document.querySelectorAll(".idInput");
+        const fioInputs = document.querySelectorAll(".fioInput");
+        for (const idInput of idInputs) {
+          let fio;
+          for (const fioInput of fioInputs) {
+            if (fioInput.dataset.function !== idInput.dataset.function) continue;
+            fio = fioInput.value;
+          }
+          idTelegramm.push({
+            nameFunction: idInput.dataset.function,
+            id: +idInput.value,
+            fio,
+          });
+        }
+        // программы
+        const programmInputs = document.querySelectorAll(".programmInput");
+        let programs = [];
+        programmInputs.forEach((programmInput) => {
+          programs.push({
+            name: programmInput.dataset.program,
+            isActive: programmInput.checked ? true : false,
+          });
+        });
+
+        const formData = new FormData(formEl);
+        let dataToServer;
+        if (unit.type === "Пиццерия") {
+          dataToServer = {
+            idTelegramm,
+            unitId: unit.unitId,
+            timeWork: {
+              delivery: {
+                workingTimeStart: formData.get("deliveryStart"),
+                workingTimeStop: formData.get("deliveryStop"),
+              },
+              restoran: {
+                workingTimeStart: formData.get("restoranStart"),
+                workingTimeStop: formData.get("restoranStop"),
+              },
+            },
+            programs,
+          };
+        } else {
+          dataToServer = { idTelegramm, unitId: unit.unitId };
+        }
+        let responce = await postDataServer("unitsSettings", dataToServer);
+        if (responce) {
+          alert ('Изменения сохранены')
+        }
+      });
     }
   });
 }

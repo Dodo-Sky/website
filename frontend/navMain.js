@@ -1,14 +1,14 @@
 import * as components from "./components.js";
+const content = document.getElementById("content");
 
 // Навигация сверху (хлебные крошки)
 const breadcrumb = document.querySelector(".breadcrumb");
-const header = document.getElementById("header");
-header.addEventListener("click", function (e) {
-  if (e.target.textContent === "Главная") showNavMain();
-  if (e.target.textContent === "Администратор") showNavAdmin();
-  if (e.target.textContent === "Менеджер офиса") showNavOfis();
-  if (e.target.textContent === "Управляющий") showNavUnitDirector();
-  if (e.target.textContent === "Менеджер смены") showNavManager();
+breadcrumb.addEventListener("click", function (e) {
+  if (e.target?.textContent === "Главная") showNavMain();
+  if (e.target?.textContent === "Администратор") showNavAdmin();
+  if (e.target?.textContent === "Менеджер офиса") showNavOfis();
+  if (e.target?.textContent === "Управляющий") showNavUnitDirector();
+  if (e.target?.textContent === "Менеджер смены") showNavManager();
 });
 
 export function showNavMain() {
@@ -28,26 +28,26 @@ export function showNavMain() {
 }
 
 // старт программ
-const content = document.getElementById("content");
 content.addEventListener("click", async function (e) {
   // Запуск подразделов
-  if (e.target?.previousSibling?.previousSibling?.textContent === "Управляющий") showNavUnitDirector();
-  if (e.target?.previousSibling?.previousSibling?.textContent === "Администратор") showNavAdmin();
-  if (e.target?.previousSibling?.previousSibling?.textContent === "Менеджер офиса") showNavOfis();
-  if (e.target?.previousSibling?.previousSibling?.textContent === "Менеджер смены") showNavManager();
+  if (e.target?.dataset?.id === "Управляющий") showNavUnitDirector();
+  if (e.target?.dataset?.id === "Администратор") showNavAdmin();
+  if (e.target?.dataset?.id === "Менеджер офиса") showNavOfis();
+  if (e.target?.dataset?.id === "Менеджер смены") showNavManager();
 
   // Запуск программ
-  if (e.target?.previousSibling?.previousSibling?.textContent === "Контроль брака") {
-    const nameProgramm =  e.target.previousSibling.previousSibling.textContent
+  if (e.target?.dataset?.id === "Контроль брака") {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
     const module = await import("./defects/mainDefects.js");
-    module.render(nameProgramm, breadcrumbs);    
-  };
+    module.render(nameProgramm, breadcrumbs);
+  }
 });
 
 // навигация администратор
 function showNavAdmin() {
   console.log("Элдос этот раздел надо делать отдельно думать над логикой");
+
   breadcrumb.innerHTML = "";
   let navMainEl = components.getTagLI_breadcrumb("Главная");
   let navManaergEl = components.getTagLI_breadcrumbActive("Администратор");
@@ -76,11 +76,10 @@ function showNavUnitDirector() {
   let cardRow = components.getCardRow();
   let orders = components.getCardNav("Проблемные заказы");
   let diszipline = components.getCardNav("Соблюдение дисциплины");
-  let yearBonus = components.getCardNav("Годовой бонус");
-  let frends = components.getCardNav("Приведи друга");
+  let dismissed = components.getCardNav("Обзвон уволенных");
   let badSupply = components.getCardNav("Контроль брака");
 
-  cardRow.append(orders, diszipline, yearBonus, frends, badSupply);
+  cardRow.append(orders, diszipline, badSupply, dismissed);
   content.innerHTML = "";
   const titte = components.getTagH(5, "Выберите нужную вам программу");
   titte.classList.add("text-center");
@@ -90,7 +89,6 @@ function showNavUnitDirector() {
   let navMainEl = components.getTagLI_breadcrumb("Главная");
   let navManaergEl = components.getTagLI_breadcrumbActive("Управляющий");
   breadcrumb.append(navMainEl, navManaergEl);
-  console.log(breadcrumb.lastChild.textContent);
 }
 
 // навигация менеджера смены

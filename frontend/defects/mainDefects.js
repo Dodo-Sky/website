@@ -1,15 +1,29 @@
-import { getServerApi } from "../apiServer.js";
+import { getServerApi, getDataServer } from "../apiServer.js";
 import * as components from "../components.js";
 import { renderTable } from "./renderTable.js";
 
 const content = document.getElementById("content");
+
+// Проверка данных на отсутствие несохраненных данных
+function editDataNoChange(data) {
+  const btns = document.querySelector(".tBody").querySelectorAll(".btn");
+  let isCnanges = false;
+  btns.forEach((element) => {
+    if (!element.disabled) isCnanges = true;
+  });
+  if (isCnanges) {
+    alert("Сохраните данные");
+  } else {
+    renderTable (data);
+  }
+}
 
 export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector(".breadcrumb");
   breadcrumb.innerHTML = "";
   let navMainEl = components.getTagLI_breadcrumb("Главная");
   let navManaergEl = components.getTagLI_breadcrumb(breadcrumbs);
-  let navControlEl = components.getTagLI_breadcrumbActive("Контроль брака");
+  let navControlEl = components.getTagLI_breadcrumbActive(name);
   breadcrumb.append(navMainEl, navManaergEl, navControlEl);
 
   content.innerHTML = `
@@ -17,6 +31,8 @@ export async function render(name, breadcrumbs) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   const defects = await getServerApi("defects");
+  let staffData = await getDataServer("defecstStaff");
+  localStorage.setItem('staffData', JSON.stringify(staffData));
 
   let spiner = document.querySelector(".spinner-border");
   spiner.style.display = "none";
@@ -26,9 +42,12 @@ export async function render(name, breadcrumbs) {
   units.setAttribute("id", "units");
   row.append(units);
 
-  const divEl = components.getTagDiv_table();
+  const divEl = components.getTagDiv ('defects-table');
+  const title = components.getTagH(3, name);
+  title.classList.add("text-center");
+  //title.classList.add("sticky-top");
 
-  content.append(name, row, divEl);
+  content.append(title, row, divEl);
 
   getListUnits(defects);
   filterData(defects);
@@ -59,11 +78,11 @@ function filterData(defects) {
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
     defectFilter = defects.filter((el) => el.unitName === e.target.value);
-    renderTable(defectFilter);
+    editDataNoChange(defectFilter);
   });
 
   // сортировка по времени
-  const tableContent = document.querySelector(".table-responsive");
+  const tableContent = document.querySelector(".defects-table");
   let filterData;
 
   tableContent.addEventListener("click", function (e) {
@@ -73,21 +92,21 @@ function filterData(defects) {
         let now = new Date();
         return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 1));
       });
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "За прошедшие 3 дня") {
       filterData = defectFilter.filter((el) => {
         let now = new Date();
         return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 3));
       });
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "За последнюю неделю") {
       filterData = defectFilter.filter((el) => {
         let now = new Date();
         return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 7));
       });
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "Показать за все время" || e.target.textContent === "Показать все") {
       renderTable(defectFilter);
@@ -95,19 +114,19 @@ function filterData(defects) {
     // сортировка по менеджеру и управляющему
     if (e.target.textContent === "Только просроченные менеджером") {
       filterData = defectFilter.filter((el) => el.decisionManager === "Просрочка");
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "В работе менеджера (пустые)") {
       filterData = defectFilter.filter((el) => !el.decisionManager);
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "Только просроченные управляющим") {
       filterData = defectFilter.filter((el) => el.control === "Просрочка");
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
     if (e.target.textContent === "В работе управляющего (пустые)") {
       filterData = defectFilter.filter((el) => !el.control);
-      renderTable(filterData);
+      editDataNoChange(filterData);
     }
   });
 }

@@ -22,6 +22,7 @@ export {
   getTagTextarea,
   getTagSelect,
   getTagOption,
+  getTagDatalist,
   getTagDiv_table,
   getTagTable,
   getTagCaption,
@@ -144,7 +145,7 @@ function getTagLI_breadcrumb(textContent) {
   return element;
 }
 
-function getTagLI_breadcrumbActive (textContent) {
+function getTagLI_breadcrumbActive(textContent) {
   const element = document.createElement("li");
   element.classList.add("breadcrumb-item");
   element.classList.add("active");
@@ -211,6 +212,11 @@ function getTagOption(textContent, value) {
   return element;
 }
 
+function getTagDatalist() {
+  const element = document.createElement("datalist");
+  return element;
+}
+
 // элементы таблиц
 function getTagDiv_table() {
   // горизонтальная прокрутка
@@ -271,6 +277,8 @@ function getCardRow() {
   divEl_row.classList.add("row");
   divEl_row.classList.add("text-center");
   divEl_row.classList.add("justify-content-center");
+  divEl_row.setAttribute("id", "cardNav");
+
   return divEl_row;
 }
 
@@ -300,6 +308,7 @@ function getCardNav(title, text) {
   btnEl.classList.add("btn-primary");
   btnEl.classList.add("btnNav");
   btnEl.textContent = "Перейти";
+  btnEl.setAttribute("data-id", title);
 
   cardBody.append(titleEl, textEl, btnEl);
   card.append(cardBody);
