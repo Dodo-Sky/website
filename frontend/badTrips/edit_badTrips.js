@@ -1,14 +1,10 @@
-import * as components from "../components.js";
 import { getServerApi } from "../apiServer.js";
-import { postServer } from "./server.js";
+import { postServer } from "./server_badTrips.js";
 
 export async function editData() {
-  const defects = await getServerApi("defects");
-  makeButtonActive("disposal", defects);
-  makeButtonActive("reasonDefect", defects);
-  makeButtonActive("nameViolator", defects);
-  makeButtonActive("decisionManager", defects);
-  makeButtonActive("control", defects);
+  const dataFromServer = await getServerApi("ordersFilter");
+  makeButtonActive("graphistComment", dataFromServer);
+  makeButtonActive("directorComment", dataFromServer);
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
@@ -22,19 +18,19 @@ export async function editData() {
       }
     });
   });
-  postServer();
+ postServer();
 }
 
-function makeButtonActive(objectProperty, defects) {
-  const property = document.querySelectorAll(`.defects-${objectProperty}`);
+function makeButtonActive(objectProperty, dataFromServer) {
+  const property = document.querySelectorAll(`.badTrips-${objectProperty}`);
   property.forEach((el) => {
     el.addEventListener("input", async function (e) {
-      let defect = await defects.find((el) => e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === `${el.soldAtLocal}+${el.productId}`);
+      let element = await dataFromServer.find((el) => e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === el.orderId);
       let btn = e.target.parentNode.parentNode.lastChild.firstChild;
-      if (e.target.value !== defect[objectProperty]) {
+      if (e.target.value !== element[objectProperty]) {
         btn.disabled = false;
       }
-      if (e.target.value === defect[objectProperty]) {
+      if (e.target.value === element[objectProperty]) {
         btn.disabled = true;
       }
     });

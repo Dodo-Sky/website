@@ -39,7 +39,21 @@ content.addEventListener("click", async function (e) {
   if (e.target?.dataset?.id === "Контроль брака") {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import("./defects/mainDefects.js");
+    const module = await import("./defects/main_defects.js");
+    module.render(nameProgramm, breadcrumbs);
+  }
+
+  if (e.target?.dataset?.id === "Проблемные поездки") {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import("./badTrips/main_badTrips.js");
+    module.render(nameProgramm, breadcrumbs);
+  }
+
+  if (e.target?.dataset?.id === "ID телеграмм") {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import("./IdTelegramm/main_idTelegramm.js");
     module.render(nameProgramm, breadcrumbs);
   }
 });
@@ -74,12 +88,13 @@ async function showNavOfis() {
 // навигация управляющего
 function showNavUnitDirector() {
   let cardRow = components.getCardRow();
-  let orders = components.getCardNav("Проблемные заказы");
+  let orders = components.getCardNav("Проблемные поездки");
   let diszipline = components.getCardNav("Соблюдение дисциплины");
   let dismissed = components.getCardNav("Обзвон уволенных");
   let badSupply = components.getCardNav("Контроль брака");
+  let idTelegramm = components.getCardNav("ID телеграмм", "Настройте ID телеграмм сотрудников");
 
-  cardRow.append(orders, diszipline, badSupply, dismissed);
+  cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm);
   content.innerHTML = "";
   const titte = components.getTagH(5, "Выберите нужную вам программу");
   titte.classList.add("text-center");
@@ -94,7 +109,7 @@ function showNavUnitDirector() {
 // навигация менеджера смены
 function showNavManager() {
   let cardRow = components.getCardRow();
-  let orders = components.getCardNav("Проблемные заказы");
+  let orders = components.getCardNav("Проблемные поездки");
   let badSupply = components.getCardNav("Контроль брака");
 
   cardRow.append(orders, badSupply);

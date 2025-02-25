@@ -3,6 +3,7 @@ export {
   getTagSpan,
   getTagSpan_badge,
   getTagButton,
+  getTagButton_close,
   getTagButton_dropdown,
   getTagH,
   getTagP,
@@ -45,6 +46,15 @@ function getTagDiv(addClass) {
 function getTagSpan() {
   const element = document.createElement("span");
   return element;
+}
+
+
+function getTagButton_close() {
+  const element = document.createElement("button");
+  element.setAttribute("type", "button");
+  element.setAttribute("data-bs-dismiss", "modal");
+  element.classList.add ('btn-close')
+  return element; 
 }
 
 function getTagButton(textContent, type = "button") {

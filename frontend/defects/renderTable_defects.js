@@ -1,5 +1,5 @@
 import * as components from "../components.js";
-import { editData } from "./edit.js";
+import { editData } from "./edit_defects.js";
 
 export async function renderTable(defects) {
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));

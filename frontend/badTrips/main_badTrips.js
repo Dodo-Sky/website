@@ -1,22 +1,22 @@
-import { getServerApi, getDataServer } from "../apiServer.js";
+import { getServerApi } from "../apiServer.js";
 import * as components from "../components.js";
-import { renderTable } from "./renderTable.js";
-
-const content = document.getElementById("content");
+import { renderTable } from "./renderTable_badTrips.js";
 
 // Проверка данных на отсутствие несохраненных данных
 function editDataNoChange(data) {
-  const btns = document.querySelector(".tBody").querySelectorAll(".btn");
-  let isCnanges = false;
-  btns.forEach((element) => {
-    if (!element.disabled) isCnanges = true;
-  });
-  if (isCnanges) {
-    alert("Сохраните данные");
-  } else {
-    renderTable (data);
+    const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
+    let isCnanges = false;
+    btns.forEach((element) => {
+      if (!element.disabled) isCnanges = true;
+    });
+    if (isCnanges) {
+      alert("Сохраните данные");
+    } else {
+      renderTable (data);
+    }
   }
-}
+
+const content = document.getElementById("content");
 
 export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector(".breadcrumb");
@@ -30,10 +30,7 @@ export async function render(name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const defects = await getServerApi("defects");
-  let staffData = await getDataServer("defecstStaff");
-  localStorage.setItem('staffData', JSON.stringify(staffData));
-
+  const ordersFilter = await getServerApi("ordersFilter");
   let spiner = document.querySelector(".spinner-border");
   spiner.style.display = "none";
 
@@ -42,22 +39,22 @@ export async function render(name, breadcrumbs) {
   units.setAttribute("id", "units");
   row.append(units);
 
-  const divEl = components.getTagDiv ('defects-table');
+  const divEl = components.getTagDiv("badTrips-table");
   const title = components.getTagH(3, name);
   title.classList.add("text-center");
-  //title.classList.add("sticky-top");
+  title.classList.add("sticky-top");
 
   content.append(title, row, divEl);
 
-  getListUnits(defects);
-  filterData(defects);
+  getListUnits(ordersFilter);
+  filterData(ordersFilter);
 }
 
-function getListUnits(defects) {
+function getListUnits(ordersFilter) {
   let unitsName = [];
-  defects.forEach((defect) => {
-    if (!unitsName.includes(defect.unitName)) {
-      unitsName.push(defect.unitName);
+  ordersFilter.forEach((order) => {
+    if (!unitsName.includes(order.unitName)) {
+      unitsName.push(order.unitName);
     }
   });
   unitsName = unitsName.sort();
@@ -72,60 +69,60 @@ function getListUnits(defects) {
   unitsEl.append(select);
 }
 
-function filterData(defects) {
-  let defectFilter = defects.filter((el) => el.unitName === "Тюмень-1");
-  renderTable(defectFilter);
+function filterData(ordersFilter) {
+  let ordersFilterPizzeria = ordersFilter.filter((el) => el.unitName === "Тюмень-1");
+  renderTable(ordersFilterPizzeria);
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
-    defectFilter = defects.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(defectFilter);
+    ordersFilterPizzeria = ordersFilter.filter((el) => el.unitName === e.target.value);
+    editDataNoChange(ordersFilterPizzeria);
   });
 
   // сортировка по времени
-  const tableContent = document.querySelector(".defects-table");
+  const tableContent = document.querySelector(".badTrips-table");
   let filterData;
 
   tableContent.addEventListener("click", function (e) {
     // сортировка по дате
     if (e.target.textContent === "За прошедшие сутки") {
-      filterData = defectFilter.filter((el) => {
+      filterData = ordersFilterPizzeria.filter((el) => {
         let now = new Date();
-        return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 1));
+        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1));
       });
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "За прошедшие 3 дня") {
-      filterData = defectFilter.filter((el) => {
+      filterData = ordersFilterPizzeria.filter((el) => {
         let now = new Date();
-        return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 3));
+        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 3));
       });
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "За последнюю неделю") {
-      filterData = defectFilter.filter((el) => {
+      filterData = ordersFilterPizzeria.filter((el) => {
         let now = new Date();
-        return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 7));
+        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 7));
       });
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "Показать за все время" || e.target.textContent === "Показать все") {
-      renderTable(defectFilter);
+      renderTable(ordersFilterPizzeria);
     }
     // сортировка по менеджеру и управляющему
     if (e.target.textContent === "Только просроченные менеджером") {
-      filterData = defectFilter.filter((el) => el.decisionManager === "Просрочка");
+      filterData = ordersFilterPizzeria.filter((el) => el.graphistComment === "Просрочка");
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "В работе менеджера (пустые)") {
-      filterData = defectFilter.filter((el) => !el.decisionManager);
+      filterData = ordersFilterPizzeria.filter((el) => !el.graphistComment);
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "Только просроченные управляющим") {
-      filterData = defectFilter.filter((el) => el.control === "Просрочка");
+      filterData = ordersFilterPizzeria.filter((el) => el.directorComment === "Просрочка");
       editDataNoChange(filterData);
     }
     if (e.target.textContent === "В работе управляющего (пустые)") {
-      filterData = defectFilter.filter((el) => !el.control);
+      filterData = ordersFilterPizzeria.filter((el) => !el.directorComment);
       editDataNoChange(filterData);
     }
   });

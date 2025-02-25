@@ -114,7 +114,6 @@ export async function getForm(unitsSettings) {
           divElStop.append(stopInput);
           divElDel.append(divElStart, divElStop);
         }
-
         timeWorkDelivery();
         timeWorkRestoran();
       }
@@ -175,7 +174,7 @@ export async function getForm(unitsSettings) {
         }
         let responce = await postDataServer("unitsSettings", dataToServer);
         if (responce) {
-          alert ('Изменения сохранены')
+          alert("Изменения сохранены");
         }
       });
     }
