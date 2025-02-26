@@ -68,7 +68,6 @@ function getListUnits(defects) {
   unitsName = unitsName.sort();
   const select = components.getTagSelect();
   select.classList.add("selectUnit");
-  console.log(select);
   unitsName.forEach((unit) => {
     const option = components.getTagOption(unit, unit);
     select.append(option);

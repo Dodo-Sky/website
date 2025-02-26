@@ -1,5 +1,6 @@
 import * as components from "../components.js";
 import { renderData } from "../programs/unitsSettings/renderData.js";
+import { settings_badTrips } from "../programs/badTrips/settings_badTrips.js";
 
 const content = document.getElementById("content");
 
@@ -21,8 +22,10 @@ export function renderLeftNav() {
   navSettingPay.classList.add("leftMenu");
   const navSupply = components.getTagLI_nav("Настройки уведомления сырья");
   navSupply.classList.add("leftMenu");
+  const badTrips = components.getTagLI_nav("Проблемные поездки");
+  badTrips.classList.add("leftMenu");
 
-  nav.append(navUnits, navSettingPay, navSupply);
+  nav.append(navUnits, navSettingPay, navSupply, badTrips);
   divEl_navLeft.append(nav);
 
   //подготвка контейнера для контента настроек
@@ -71,6 +74,13 @@ function getActiveSettingsMenu() {
         titte.classList.add ('text-center')
         contentSetting.append(titte);
       }
+
+      if (e.target.textContent === "Проблемные поездки") {
+        contentSetting.innerHTML = "";
+        const title =  e.target.textContent
+        settings_badTrips (title)
+      }
+
     });
   });
 }
