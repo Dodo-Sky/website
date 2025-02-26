@@ -1,4 +1,4 @@
-import { getServerApi } from "../apiServer.js";
+import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_idTeleramm.js";
 
 export async function editData() {
@@ -17,7 +17,7 @@ export async function editData() {
       }
     });
   });
- postServer();
+  postServer();
 }
 
 function makeButtonActive(objectProperty, dataFromServer) {

@@ -1,6 +1,6 @@
 import { validator } from './validator.js';
 import { renderTable } from './renderTable.js';
-import { createServerApi } from '../apiServer.js';
+import { createServerApi } from '../../apiServer.js';
 
 // обработка результата с формы после валидации
 export function initPayloadAddHandlers () {

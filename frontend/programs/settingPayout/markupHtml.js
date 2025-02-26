@@ -1,4 +1,4 @@
-import { getDataServer } from '../apiServer.js';
+import { getDataServer } from '../../apiServer.js';
 
 export async function getUnitNameEl() {
   const $choiceUnit = document.querySelector('.choiceUnit');

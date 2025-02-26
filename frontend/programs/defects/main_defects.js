@@ -1,5 +1,5 @@
-import { getServerApi, getDataServer } from "../apiServer.js";
-import * as components from "../components.js";
+import { getServerApi, getDataServer } from "../../apiServer.js";
+import * as components from "../../components.js";
 import { renderTable } from "./renderTable_defects.js";
 
 const content = document.getElementById("content");
@@ -14,7 +14,7 @@ function editDataNoChange(data) {
   if (isCnanges) {
     alert("Сохраните данные");
   } else {
-    renderTable (data);
+    renderTable(data);
   }
 }
 
@@ -31,21 +31,26 @@ export async function render(name, breadcrumbs) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   const defects = await getServerApi("defects");
-  let staffData = await getDataServer("defecstStaff");
-  localStorage.setItem('staffData', JSON.stringify(staffData));
+  let staffData = await getDataServer("defecstStaff")
+  localStorage.setItem("staffData", JSON.stringify(staffData));
 
   let spiner = document.querySelector(".spinner-border");
   spiner.style.display = "none";
 
-  const row = components.getTagDiv("row");
+  let row = components.getTagDiv("row");
   const units = components.getTagDiv("col-auto");
   units.setAttribute("id", "units");
   row.append(units);
 
-  const divEl = components.getTagDiv ('defects-table');
+  const update = components.getTagDiv("col-auto");
+  const btnUpdate = components.getTagButton("Обновить");
+  btnUpdate.setAttribute("id", "update");
+  update.append(btnUpdate);
+  row.append(update);
+
+  const divEl = components.getTagDiv("defects-table");
   const title = components.getTagH(3, name);
   title.classList.add("text-center");
-  //title.classList.add("sticky-top");
 
   content.append(title, row, divEl);
 
@@ -63,6 +68,7 @@ function getListUnits(defects) {
   unitsName = unitsName.sort();
   const select = components.getTagSelect();
   select.classList.add("selectUnit");
+  console.log(select);
   unitsName.forEach((unit) => {
     const option = components.getTagOption(unit, unit);
     select.append(option);
@@ -80,6 +86,19 @@ function filterData(defects) {
     defectFilter = defects.filter((el) => el.unitName === e.target.value);
     editDataNoChange(defectFilter);
   });
+
+  // обновить 
+  let btnUpdate = document.getElementById ('update')
+  let selectUnit = document.querySelector('.selectUnit');
+  btnUpdate.addEventListener('click', async function (e) {
+    const defects = await getServerApi("defects");
+    defectFilter = defects.filter((el) => el.unitName === selectUnit.value);
+    filterData = defectFilter.filter((el) => {
+      let now = new Date();
+      return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - 1));
+    });
+    editDataNoChange(filterData);
+});
 
   // сортировка по времени
   const tableContent = document.querySelector(".defects-table");

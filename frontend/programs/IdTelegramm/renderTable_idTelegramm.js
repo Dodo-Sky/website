@@ -1,4 +1,4 @@
-import * as components from "../components.js";
+import * as components from "../../components.js";
 import { editData } from "./edtt_idTelegramm.js";
 
 export async function renderTable(arrayData) {

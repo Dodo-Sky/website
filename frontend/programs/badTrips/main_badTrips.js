@@ -1,5 +1,5 @@
-import { getServerApi } from "../apiServer.js";
-import * as components from "../components.js";
+import { getServerApi } from "../../apiServer.js";
+import * as components from "../../components.js";
 import { renderTable } from "./renderTable_badTrips.js";
 
 // Проверка данных на отсутствие несохраненных данных
@@ -30,14 +30,20 @@ export async function render(name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const ordersFilter = await getServerApi("ordersFilter");
+  const couriersOrder = await getServerApi("couriersOrder");
   let spiner = document.querySelector(".spinner-border");
   spiner.style.display = "none";
 
-  const row = components.getTagDiv("row");
+  let row = components.getTagDiv("row");
   const units = components.getTagDiv("col-auto");
   units.setAttribute("id", "units");
   row.append(units);
+
+  const update = components.getTagDiv("col-auto");
+  const btnUpdate = components.getTagButton("Обновить");
+  btnUpdate.setAttribute("id", "update");
+  update.append(btnUpdate);
+  row.append(update);
 
   const divEl = components.getTagDiv("badTrips-table");
   const title = components.getTagH(3, name);
@@ -46,13 +52,13 @@ export async function render(name, breadcrumbs) {
 
   content.append(title, row, divEl);
 
-  getListUnits(ordersFilter);
-  filterData(ordersFilter);
+  getListUnits(couriersOrder);
+  filterData(couriersOrder);
 }
 
-function getListUnits(ordersFilter) {
+function getListUnits(couriersOrder) {
   let unitsName = [];
-  ordersFilter.forEach((order) => {
+  couriersOrder.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
       unitsName.push(order.unitName);
     }
@@ -69,13 +75,26 @@ function getListUnits(ordersFilter) {
   unitsEl.append(select);
 }
 
-function filterData(ordersFilter) {
-  let ordersFilterPizzeria = ordersFilter.filter((el) => el.unitName === "Тюмень-1");
+function filterData(couriersOrder) {
+  let ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === "Тюмень-1");
   renderTable(ordersFilterPizzeria);
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
-    ordersFilterPizzeria = ordersFilter.filter((el) => el.unitName === e.target.value);
+    ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === e.target.value);
     editDataNoChange(ordersFilterPizzeria);
+  });
+
+    // обновить 
+    let btnUpdate = document.getElementById ('update')
+    let selectUnit = document.querySelector('.selectUnit');
+    btnUpdate.addEventListener('click', async function (e) {
+      const couriersOrder = await getServerApi ("couriersOrder");
+      let data = couriersOrder.filter((el) => el.unitName === selectUnit.value);
+      filterData = data.filter((el) => {
+        let now = new Date();
+        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1));
+      });
+      editDataNoChange(filterData);
   });
 
   // сортировка по времени

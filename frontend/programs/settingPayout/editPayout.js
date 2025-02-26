@@ -1,6 +1,6 @@
 import { renderTable } from './renderTable.js';
 import { validator } from './validator.js';
-import { getServerApi, putServerApi } from '../apiServer.js';
+import { getServerApi, putServerApi } from '../../apiServer.js';
 
 const $description = document.querySelector('.description');
 const $amountSize = document.querySelector('.amountSize');

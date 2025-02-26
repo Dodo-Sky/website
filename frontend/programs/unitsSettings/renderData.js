@@ -1,6 +1,6 @@
-import { getServerApi } from "../apiServer.js";
+import { getServerApi } from "../../apiServer.js";
 import { getForm } from "./workingForm.js";
-import * as components from "../components.js";
+import * as components from "../../components.js";
 
 export async function renderData() {
   const content = document.querySelector(".contentSetting");

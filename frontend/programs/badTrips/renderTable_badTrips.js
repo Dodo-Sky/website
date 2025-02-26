@@ -1,4 +1,4 @@
-import * as components from "../components.js";
+import * as components from "../../components.js";
 import { editData } from "./edit_badTrips.js";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');

@@ -1,4 +1,4 @@
-import * as components from "./components.js";
+import * as components from "../components.js";
 const content = document.getElementById("content");
 
 // Навигация сверху (хлебные крошки)
@@ -39,21 +39,21 @@ content.addEventListener("click", async function (e) {
   if (e.target?.dataset?.id === "Контроль брака") {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import("./defects/main_defects.js");
+    const module = await import("../programs/defects/main_defects.js");
     module.render(nameProgramm, breadcrumbs);
   }
 
   if (e.target?.dataset?.id === "Проблемные поездки") {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import("./badTrips/main_badTrips.js");
+    const module = await import("../programs/badTrips/main_badTrips.js");
     module.render(nameProgramm, breadcrumbs);
   }
 
   if (e.target?.dataset?.id === "ID телеграмм") {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import("./IdTelegramm/main_idTelegramm.js");
+    const module = await import("../programs/IdTelegramm/main_idTelegramm.js");
     module.render(nameProgramm, breadcrumbs);
   }
 });

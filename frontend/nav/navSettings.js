@@ -1,5 +1,5 @@
-import * as components from "./components.js";
-import { renderData } from "./unitsSettings/renderData.js";
+import * as components from "../components.js";
+import { renderData } from "../programs/unitsSettings/renderData.js";
 
 const content = document.getElementById("content");
 
@@ -56,7 +56,7 @@ function getActiveSettingsMenu() {
     navItem.addEventListener("click", async function (e) {
       if (e.target.textContent === "Настройки динамичной оплаты") {
         contentSetting.innerHTML = "";
-        const module = await import("./settingPayout/renderTable.js")
+        const module = await import("../programs/settingPayout/renderTable.js")
         module.renderTable()
       }
 

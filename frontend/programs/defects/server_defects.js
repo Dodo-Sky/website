@@ -1,4 +1,4 @@
-import { postDataServer } from "../apiServer.js";
+import { postDataServer } from "../../apiServer.js";
 const programName = "defects";
 
 export function postServer() {

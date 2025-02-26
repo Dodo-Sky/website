@@ -1,5 +1,5 @@
 import { initDeletePayoutHandlers } from "./deletePayout.js";
-import { getServerApi } from "../apiServer.js";
+import { getServerApi } from "../../apiServer.js";
 import { getUnitNameEl, getDayWeek, getStaffType } from "./markupHtml.js";
 
 export async function renderTable() {

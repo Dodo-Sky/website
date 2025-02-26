@@ -1,5 +1,5 @@
 import { renderTable } from './renderTable.js';
-import { deleteServerApi } from '../apiServer.js';
+import { deleteServerApi } from '../../apiServer.js';
 
 export async function initDeletePayoutHandlers () {
 const deleteButton = document.querySelectorAll('.deleteButton');

@@ -1,14 +1,14 @@
-import { getServerApi } from "../apiServer.js";
+import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_badTrips.js";
 
 export async function editData() {
-  const dataFromServer = await getServerApi("ordersFilter");
+  const dataFromServer = await getServerApi("couriersOrder");
   makeButtonActive("graphistComment", dataFromServer);
   makeButtonActive("directorComment", dataFromServer);
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
-    const btns = document.querySelector(".tBody").querySelectorAll(".btn");
+    const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
     btns.forEach((btn) => {
       if (!btn.disabled) {
         // Recommended https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event

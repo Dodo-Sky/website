@@ -1,4 +1,3 @@
-import { showNavMain } from "./navMain.js";
+import { showNavMain } from "./nav/navMain.js";
 
 showNavMain();
-

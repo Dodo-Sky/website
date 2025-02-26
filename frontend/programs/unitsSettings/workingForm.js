@@ -1,5 +1,5 @@
-import { getServerApi, updateUnitSettings, postDataServer } from "../apiServer.js";
-import * as components from "../components.js";
+import { getServerApi, updateUnitSettings, postDataServer } from "../../apiServer.js";
+import * as components from "../../components.js";
 
 export async function getForm(unitsSettings) {
   const $unitSettings_content = document.querySelector(".unitSettings_content");

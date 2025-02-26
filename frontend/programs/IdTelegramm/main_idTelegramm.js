@@ -1,5 +1,5 @@
-import { getServerApi } from "../apiServer.js";
-import * as components from "../components.js";
+import { getServerApi } from "../../apiServer.js";
+import * as components from "../../components.js";
 import { renderTable } from "./renderTable_idTelegramm.js";
 
 //Проверка данных на отсутствие несохраненных данных
