@@ -1,20 +1,20 @@
 import { getServerApi } from "../../apiServer.js";
 import * as components from "../../components.js";
-import { renderTable } from "./renderTable_badTrips.js";
+import { renderTable } from "./renderTable_ discipline.js";
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time) {
-  const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
-  let isCnanges = false;
-  btns.forEach((element) => {
-    if (!element.disabled) isCnanges = true;
-  });
-  if (isCnanges) {
-    alert("Сохраните данные");
-  } else {
-    renderTable(data, time);
-  }
-}
+// function editDataNoChange(data, time) {
+//   const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
+//   let isCnanges = false;
+//   btns.forEach((element) => {
+//     if (!element.disabled) isCnanges = true;
+//   });
+//   if (isCnanges) {
+//     alert("Сохраните данные");
+//   } else {
+//     renderTable(data, time);
+//   }
+// }
 
 const content = document.getElementById("content");
 
@@ -30,7 +30,7 @@ export async function render(name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const couriersOrder = await getServerApi("couriersOrder");
+  const discipline = await getServerApi("discipline");
   let spiner = document.querySelector(".spinner-border");
   spiner.style.display = "none";
 
@@ -45,20 +45,20 @@ export async function render(name, breadcrumbs) {
   update.append(btnUpdate);
   row.append(update);
 
-  const divEl = components.getTagDiv("badTrips-table");
+  const divEl = components.getTagDiv("discipline-table");
   const title = components.getTagH(3, name);
   title.classList.add("text-center");
   title.classList.add("sticky-top");
 
   content.append(title, row, divEl);
 
-  getListUnits(couriersOrder);
-  filterData(couriersOrder);
+  getListUnits(discipline);
+  filterData(discipline);
 }
 
-function getListUnits(couriersOrder) {
+function getListUnits(discipline) {
   let unitsName = [];
-  couriersOrder.forEach((order) => {
+  discipline.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
       unitsName.push(order.unitName);
     }
@@ -75,12 +75,12 @@ function getListUnits(couriersOrder) {
   unitsEl.append(select);
 }
 
-function filterData(couriersOrder) {
-  let ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === "Тюмень-1");
+function filterData(discipline) {
+  let ordersFilterPizzeria = discipline.filter((el) => el.unitName === "Тюмень-1");
   renderTable(ordersFilterPizzeria, "все время");
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
-    ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === e.target.value);
+    ordersFilterPizzeria = discipline.filter((el) => el.unitName === e.target.value);
     editDataNoChange(ordersFilterPizzeria, "все время");
   });
 
@@ -88,8 +88,8 @@ function filterData(couriersOrder) {
   let btnUpdate = document.getElementById("update");
   let selectUnit = document.querySelector(".selectUnit");
   btnUpdate.addEventListener("click", async function (e) {
-    const couriersOrder = await getServerApi("couriersOrder");
-    let data = couriersOrder.filter((el) => el.unitName === selectUnit.value);
+    const discipline = await getServerApi("discipline");
+    let data = discipline.filter((el) => el.unitName === selectUnit.value);
     filterData = data.filter((el) => {
       let now = new Date();
       return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1));

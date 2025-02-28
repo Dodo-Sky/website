@@ -8,7 +8,7 @@ export function renderLeftNav() {
   content.innerHTML = "";
   const divEl_row = components.getTagDiv("row");
   const divEl_navLeft = components.getTagDiv("navLeft");
-  divEl_navLeft.classList.add("col-md-2");
+  divEl_navLeft.classList.add("col-md-3");
 
   const nav = components.getTagUL_nav();
   nav.classList.add("flex-column");
@@ -30,7 +30,7 @@ export function renderLeftNav() {
 
   //подготвка контейнера для контента настроек
   const divEl_content = components.getTagDiv("contentSetting");
-  divEl_content.classList.add("col-md-10");
+  divEl_content.classList.add("col-md-9");
 
   divEl_row.append(divEl_navLeft, divEl_content);
   content.append(divEl_row);

@@ -8,7 +8,7 @@ export async function settings_badTrips(title) {
   const titleEl = components.getTagH(4, title);
   contentSetting.append(titleEl);
   const description = components.getTagSpan();
-  description.textContent = "С согласования с директором установите размер ExtraTime по каждой пиццерии";
+  description.textContent = "С согласования с директором установите размер дополнительное время (ExtraTime) по каждой пиццерии";
   contentSetting.append(description);
   const extraTime = await getServerApi("extraTime");
   const form = components.getTagForm("form");

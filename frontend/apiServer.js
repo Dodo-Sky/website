@@ -36,9 +36,9 @@ export async function getDataServer(variableName) {
 }
 
 // Отправляем изменения по программе на сервер
-export async function postDataServer (programName, payload) {
+export async function postDataServer (variableName, payload) {
   try {
-    const url = `${URL}/${programName}`;
+    const url = `${URL}/${variableName}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {

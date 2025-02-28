@@ -1,5 +1,5 @@
 import * as components from "../../components.js";
-import { editData } from "./edit_badTrips.js";
+//import { editData } from "./edit_badTrips.js";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
@@ -7,15 +7,15 @@ const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootst
 export async function renderTable(arrayData, time) {
   console.log(time);
   console.log(arrayData);
-  arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
+  arrayData.sort((a, b) => new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal));
 
-  const tableContent = document.querySelector(".badTrips-table");
+  const tableContent = document.querySelector(".discipline-table");
   tableContent.innerHTML = "";
 
   const tableEl = components.getTagTable();
   tableEl.classList.add("table-sm");
   tableContent.append(tableEl);
-  const captionEl = components.getTagCaption("Программа контроля за проблемными поездками курьеров");
+  const captionEl = components.getTagCaption("Программа контроля за соблюдение дисциплины персоналом");
 
   // Заголовок таблицы THead
   const theadEl = components.getTagTHead();
@@ -48,20 +48,20 @@ export async function renderTable(arrayData, time) {
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
-  thEl = components.getTagTH("ФИО курьера");
+  thEl = components.getTagTH("ФИО сотрудника");
   trEl.append(thEl);
 
-  thEl = components.getTagTH("№ заказа");
+  thEl = components.getTagTH("Описание нарушения");
   trEl.append(thEl);
-  thEl = components.getTagTH("Коментарий курьера");
+  thEl = components.getTagTH("Коментарий сотрудника");
   trEl.append(thEl);
 
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Менеджер");
+  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
   // количество задач в работе
-  count = arrayData.filter((el) => !el.graphistComment).length;
+  count = arrayData.filter((el) => !el.managerDecision).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add("badge");
@@ -70,7 +70,7 @@ export async function renderTable(arrayData, time) {
     btnDropdown.append(spanWork);
   }
   //  Количество просроченных менеджером задач
-  let countDelays = arrayData.filter((el) => el.graphistComment === "Просрочка").length;
+  let countDelays = arrayData.filter((el) => el.managerDecision === "Просрочка").length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -89,9 +89,9 @@ export async function renderTable(arrayData, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Управляющий");
+  btnDropdown = components.getTagButton_dropdown("Контроль управляющего");
   // количество задач в работе
-  count = arrayData.filter((el) => !el.directorComment).length;
+  count = arrayData.filter((el) => !el.unitDirectorControl).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add("badge");
@@ -100,7 +100,7 @@ export async function renderTable(arrayData, time) {
     btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
-  countDelays = arrayData.filter((el) => el.directorComment === "Просрочка").length;
+  countDelays = arrayData.filter((el) => el.unitDirectorControl === "Просрочка").length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -127,7 +127,7 @@ export async function renderTable(arrayData, time) {
   arrayData.forEach((order) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(order.handedOverToDeliveryAt);
+    let time = components.getTagTD(order.scheduledShiftStartAtLocal);
     trEl.append(time);
     let fio = components.getTagTD(order.fio);
     trEl.append(fio);
@@ -135,76 +135,61 @@ export async function renderTable(arrayData, time) {
     let sertificate = order.wasLateDeliveryVoucherGiven ? `<b>Выдан</b>` : "Нет";
     let isFalseDelivery = order.isFalseDelivery ? "<b>Да</b> - уточните у курьера где он сделал отметку о выдаче заказе" : "Нет";
 
-    // Номер заказа с модальным окном
-    let orderNumber = components.getTagTD();
-    if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
-    if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
+    // Тип правонарушения с модальным окном
+    let typeViolation = components.getTagTD();
+    // if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
+    // if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
     let fade = components.getTagDiv("modal");
     fade.classList.add("fade");
-    fade.setAttribute("id", order.orderId);
+    fade.setAttribute("id", order.scheduleId);
     fade.setAttribute("tabindex", "-1");
     fade.setAttribute("data-bs-backdrop", "static");
     fade.setAttribute("data-bs-keyboard", "false");
     let divDialog = components.getTagDiv("modal-dialog");
     let divContent = components.getTagDiv("modal-content");
     let divHeader = components.getTagDiv("modal-header");
-    let titleH1 = components.getTagH(1, "Подробная информация о поездке курьера");
+    let titleH1 = components.getTagH(1, "Подробная информация о правонарушении");
     titleH1.classList.add("modal-title");
     titleH1.classList.add("fs-5");
     let closeBtn = components.getTagButton_close();
     let modalBody = components.getTagDiv("modal-body");
     modalBody.innerHTML = `
     <b>Общие данные</b><br>
-    ФИО курьера: ${order.fio}<br>
-    Номер заказа: ${order.orderNumber}<br>
-    Рекомендации: ${order.decisionManager}<br>
-    Тип проблемы: ${order.typeOfOffense}<br><br>
+    ФИО сотрудника: ${order.fio}<br>
+    Описание правонарушения: ${order.typeViolation}<br>
 
     <b>Временные данные</b><br>
-    Время начала поездки: ${order.handedOverToDeliveryAt}<br>
-    Время окончания поездки: ${order.orderFulfilmentFlagAt}<br>
-    Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
-    extraTime: ${order.extraTime}  минут <br>
-    Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
-    Просрочка: <b>${order.expiration} минут</b><br><br>
-
-    <b>Параметры поездки</b><br>
-    Сектор доставки: ${order.sectorName}<br>
-    Выдан ли сертификат? ${sertificate}<br>
-    <a href="#" data-bs-toggle="tooltip" title="Была ли доставка заказа некорректной. Причины некорректных заказов:
-
-Неверная отметка геолокации: если курьер отметился у клиента в радиусе более, чем 300 метров.
-
-Не реальное время поездки курьера:
-
-Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная доставка</a>: ${isFalseDelivery}
-    `;
+    Начало смены по графику: ${order.scheduledShiftStartAtLocal}<br>
+    Начало смены - факт: ${order.clockInAtLocal}<br>
+    Окончание смены по графику: ${order.clockOutAtLocal}  минут <br>
+    Окончание смены - факт: ${order.clockOutAtLocal}  минут <br>
+`;
     fade.append(divDialog);
     divDialog.append(divContent);
     divHeader.append(titleH1, closeBtn);
     divContent.append(divHeader, modalBody);
-    let btnOrder = components.getTagButton(order.orderNumber);
+    let btnOrder = components.getTagButton(order.typeViolation);
     btnOrder.setAttribute("data-bs-toggle", "modal");
-    btnOrder.setAttribute("data-bs-target", `#${order.orderId}`);
+    btnOrder.setAttribute("data-bs-target", `#${order.scheduleId}`);
     btnOrder.classList.add("btn-secondary");
-    orderNumber.append(btnOrder, fade);
-    trEl.append(orderNumber);
+    typeViolation.append(btnOrder, fade);
+    trEl.append(typeViolation);
 
-    let courierComment = components.getTagTD(order.courierComment);
+    let courierComment = components.getTagTD(order.commentStaff);
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
     let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = order.graphistComment;
-    graphistCommentTextarea.classList.add("badTrips-graphistComment");
+    graphistCommentTextarea.textContent = order.managerDecision;
+    graphistCommentTextarea.classList.add("discipline-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
     let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = order.directorComment;
-    directorCommentTextarea.classList.add("badTrips-directorComment");
+    directorCommentTextarea.textContent = order.unitDirectorControl;
+    directorCommentTextarea.classList.add("discipline-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
@@ -212,11 +197,11 @@ export async function renderTable(arrayData, time) {
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
     btnEl.classList.add("arrayData-btn-save");
-    btnEl.setAttribute("data-id", order.orderId);
+    btnEl.setAttribute("data-id", order.scheduleId);
     btnEl.disabled = true;
     tdEl.append(btnEl);
     trEl.append(tdEl);
   });
   tableEl.append(captionEl, theadEl, tBody);
-  editData();
+  //editData();
 }

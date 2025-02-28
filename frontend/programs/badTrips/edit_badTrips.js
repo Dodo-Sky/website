@@ -8,7 +8,7 @@ export async function editData() {
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
-    const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
+    const btns = document.querySelector(".tBody").querySelectorAll(".btn");
     btns.forEach((btn) => {
       if (!btn.disabled) {
         // Recommended https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
