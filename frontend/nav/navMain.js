@@ -1,3 +1,4 @@
+import { getLoginForm, isLoggedIn } from "../auth/login.js";
 import * as components from "../components.js";
 const content = document.getElementById("content");
 
@@ -15,6 +16,10 @@ export function showNavMain() {
   breadcrumb.innerHTML = "";
   let navMainEl = components.getTagLI_breadcrumbActive("Главная");
   breadcrumb.append(navMainEl);
+  if (!isLoggedIn()) {
+    content.innerHTML = getLoginForm(() => window.location.reload());
+    return
+  } 
 
   // первый уровень после авторизации
   let cardRow = components.getCardRow();
@@ -122,4 +127,8 @@ function showNavManager() {
   let navMainEl = components.getTagLI_breadcrumb("Главная");
   let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер смены");
   breadcrumb.append(navMainEl, navManaergEl);
+}
+
+function showLogin() {
+  content.innerHTML = "страница логина"
 }
