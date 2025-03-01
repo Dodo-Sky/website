@@ -104,7 +104,7 @@ function showNavUnitDirector() {
   let diszipline = components.getCardNav("Соблюдение дисциплины");
   let dismissed = components.getCardNav("Обзвон уволенных");
   let badSupply = components.getCardNav("Контроль брака");
-  let idTelegramm = components.getCardNav("ID телеграмм", "Настройте ID телеграмм сотрудников");
+  let idTelegramm = components.getCardNav("ID телеграмм");
 
   cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm);
   content.innerHTML = "";

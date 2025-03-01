@@ -159,7 +159,10 @@ export async function renderTable(arrayData, time) {
     Тип проблемы: ${order.typeOfOffense}<br><br>
 
     <b>Временные данные</b><br>
-    Время начала поездки: ${new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17)}<br>
+
+    Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
+
+Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17)}<br>
     Время окончания поездки: ${new Date (order.orderFulfilmentFlagAt).toLocaleString().slice (0, 17)}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
@@ -175,7 +178,7 @@ export async function renderTable(arrayData, time) {
 
 Не реальное время поездки курьера:
 
-Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная доставка</a>: ${isFalseDelivery}
+Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная</a> доставка: ${isFalseDelivery}
     `;
     fade.append(divDialog);
     divDialog.append(divContent);
@@ -196,6 +199,9 @@ export async function renderTable(arrayData, time) {
     graphistCommentTextarea.textContent = order.graphistComment;
     graphistCommentTextarea.classList.add("badTrips-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
+    if (order.graphistComment === "Просрочка") {
+      graphistCommentTextarea.classList.add("text-danger");
+    }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
@@ -204,6 +210,9 @@ export async function renderTable(arrayData, time) {
     directorCommentTextarea.textContent = order.directorComment;
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
+    if (order.directorComment === "Просрочка") {
+      directorCommentTextarea.classList.add("text-danger");
+    }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 

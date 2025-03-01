@@ -4,7 +4,7 @@ import { editData } from "./edit_defects.js";
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
-export async function renderTable(defects) {
+export async function renderTable(defects, time) {
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
 
   const tableContent = document.querySelector(".defects-table");
@@ -25,9 +25,18 @@ export async function renderTable(defects) {
 
   // Время
   let thEl = components.getTagTH();
-  //thEl.classList.add ('class="w-25 p-3"')
   thEl.classList.add("dropend");
-  let btnDropdown = components.getTagButton_dropdown("Время");
+  let btnDropdown = components.getTagButton_dropdown(time);
+  btnDropdown.classList.add ('btn-time');
+  // количество задач в период
+  let count1 = defects.length;
+  if (count1) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add("badge");
+    spanWork.classList.add("text-bg-secondary");
+    spanWork.textContent = count1;
+    btnDropdown.append(spanWork);
+  }
   let ulDrop = components.getTagUL_dropdownMenu();
   let liDrpop = components.getTagLI_dropdownItem("За прошедшие сутки");
   ulDrop.append(liDrpop);

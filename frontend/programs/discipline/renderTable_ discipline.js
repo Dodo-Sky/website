@@ -1,12 +1,10 @@
 import * as components from "../../components.js";
-//import { editData } from "./edit_badTrips.js";
+import { editData } from "./edit_discipline.js";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 export async function renderTable(arrayData, time) {
-  console.log(time);
-  console.log(arrayData);
   arrayData.sort((a, b) => new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal));
 
   const tableContent = document.querySelector(".discipline-table");
@@ -180,27 +178,33 @@ export async function renderTable(arrayData, time) {
     let graphistComment = components.getTagTD();
     let graphistCommentTextarea = components.getTagTextarea();
     graphistCommentTextarea.textContent = schedule.managerDecision;
-    graphistCommentTextarea.classList.add("discipline-graphistComment");
+    graphistCommentTextarea.classList.add("discipline-managerDecision");
     graphistCommentTextarea.setAttribute("cols", "75");
+    if (schedule.managerDecision === "Просрочка") {
+      graphistCommentTextarea.classList.add("text-danger");
+    }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
     let directorCommentTextarea = components.getTagTextarea();
     directorCommentTextarea.textContent = schedule.unitDirectorControl;
-    directorCommentTextarea.classList.add("discipline-directorComment");
+    directorCommentTextarea.classList.add("discipline-unitDirectorControl");
     directorCommentTextarea.setAttribute("cols", "75");
+    if (schedule.unitDirectorControl === "Просрочка") {
+      directorCommentTextarea.classList.add("text-danger");
+    }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
     btnEl.classList.add("arrayData-btn-save");
-    btnEl.setAttribute("data-id", schedule.scheduleId);
+    btnEl.setAttribute("data-id", schedule.scheduleId ?? schedule.staffId + schedule.clockInAtLocal);
     btnEl.disabled = true;
     tdEl.append(btnEl);
     trEl.append(tdEl);
   });
   tableEl.append(captionEl, theadEl, tBody);
-  //editData();
+  editData();
 }
