@@ -1,14 +1,52 @@
 // адрес сервера
 // с внешней ссылки
 const URL = 'http://178.46.153.198:1860';
+// const URL = 'http://localhost:1880';
+export function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function loginServerApi(login, password, onSuccess) {
+  const response = await fetch(`${URL}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ login, password }),
+  });
+  const data = await response.json();
+  console.log(data);
+  if (data.error === 'invalid credentials') {
+    alert('Ошибка. Неправильные логин или пароль');
+  }
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+    onSuccess?.();
+  }
+}
+
+export async function handleUnauthorizedResponse(response) {
+  try {
+    const responseData = await response.json()
+  } catch (error) {
+    console.error("Invalid JSON")
+    return
+  }
+  if (responseData?.error === 'unauthorized') {
+    localStorage.removeItem('token')
+    window.location.reload()
+  }
+}
 
 // по локальной сети
 //const URL = 'http://190.186.72.106:86';
-
 // Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
 export async function getServerApi(variableName) {
   try {
-    const response = await fetch(`${URL}/globalGet?payload=${variableName}`);
+    const response = await fetch(`${URL}/globalGet?payload=${variableName}`, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) {
       alert('Ошибка обратитесь к администратору ' + (await response.text()));
     } else {
@@ -35,7 +73,6 @@ export async function getDataServer(variableName) {
   }
 }
 
-// Отправляем изменения по программе на сервер
 export async function postDataServer (variableName, payload) {
   try {
     const url = `${URL}/${variableName}`;
@@ -47,9 +84,9 @@ export async function postDataServer (variableName, payload) {
       body: JSON.stringify(payload),
       // body: payload,
     });
-    let data = await response.json()
+    let data = await response.json();
     if (response.ok) {
-      return data
+      return data;
     } else {
       alert('Ошибка обратитесь к администратору ' + (await response.text()));
     }
@@ -115,7 +152,7 @@ export async function deleteServerApi(id) {
   }
 }
 
-export async function updateUnitSettings({unitId, settings}) {
+export async function updateUnitSettings({ unitId, settings }) {
   const url = `${URL}/unitsSettings/${unitId}`;
   try {
     const response = await fetch(url, {
