@@ -1,5 +1,5 @@
 import { postDataServer } from "../../apiServer.js";
-const programName = "ordersFilter";
+const variableName = "couriersOrder";
 
 export function postServer() {
   const bnts = document.querySelectorAll(".arrayData-btn-save");
@@ -16,7 +16,7 @@ export function postServer() {
       };
 
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
-      let responce = await postDataServer(programName, changeServer);
+      let responce = await postDataServer(variableName, changeServer);
       if (responce.orderId === e.target.dataset.id) {
         btn.disabled = true;
       }
