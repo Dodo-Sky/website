@@ -53,13 +53,15 @@ export async function renderTable(arrayData, time) {
 
   thEl = components.getTagTH("Описание нарушения");
   trEl.append(thEl);
+  thEl = components.getTagTH("Подробности");
+  trEl.append(thEl);
   thEl = components.getTagTH("Коментарий сотрудника");
   trEl.append(thEl);
 
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
+  btnDropdown = components.getTagButton_dropdown("Менеджер");
   // количество задач в работе
   count = arrayData.filter((el) => !el.managerDecision).length;
   if (count) {
@@ -89,7 +91,7 @@ export async function renderTable(arrayData, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Контроль управляющего");
+  btnDropdown = components.getTagButton_dropdown("Управляющий");
   // количество задач в работе
   count = arrayData.filter((el) => !el.unitDirectorControl).length;
   if (count) {
@@ -124,24 +126,21 @@ export async function renderTable(arrayData, time) {
   const tBody = components.getTagTBody();
   tBody.classList.add("tBody");
 
-  arrayData.forEach((order) => {
+  arrayData.forEach((schedule) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(order.scheduledShiftStartAtLocal);
+    let time = components.getTagTD(new Date (schedule.scheduledShiftStartAtLocal).toLocaleString().slice (0, 17));
     trEl.append(time);
-    let fio = components.getTagTD(order.fio);
+    let fio = components.getTagTD(schedule.fio);
     trEl.append(fio);
-
-    let sertificate = order.wasLateDeliveryVoucherGiven ? `<b>Выдан</b>` : "Нет";
-    let isFalseDelivery = order.isFalseDelivery ? "<b>Да</b> - уточните у курьера где он сделал отметку о выдаче заказе" : "Нет";
+    let typeViolation = components.getTagTD(schedule.typeViolation);
+    trEl.append(typeViolation);
 
     // Тип правонарушения с модальным окном
-    let typeViolation = components.getTagTD();
-    // if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
-    // if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
+    let more = components.getTagTD();
     let fade = components.getTagDiv("modal");
     fade.classList.add("fade");
-    fade.setAttribute("id", order.scheduleId);
+    fade.setAttribute("id", schedule.scheduleId);
     fade.setAttribute("tabindex", "-1");
     fade.setAttribute("data-bs-backdrop", "static");
     fade.setAttribute("data-bs-keyboard", "false");
@@ -155,32 +154,32 @@ export async function renderTable(arrayData, time) {
     let modalBody = components.getTagDiv("modal-body");
     modalBody.innerHTML = `
     <b>Общие данные</b><br>
-    ФИО сотрудника: ${order.fio}<br>
-    Описание правонарушения: ${order.typeViolation}<br>
+    ФИО сотрудника: ${schedule.fio}<br>
+    Описание правонарушения: ${schedule.typeViolation}<br> <br>
 
     <b>Временные данные</b><br>
-    Начало смены по графику: ${order.scheduledShiftStartAtLocal}<br>
-    Начало смены - факт: ${order.clockInAtLocal}<br>
-    Окончание смены по графику: ${order.clockOutAtLocal}  минут <br>
-    Окончание смены - факт: ${order.clockOutAtLocal}  минут <br>
+    Начало смены по графику: ${new Date (schedule.scheduledShiftStartAtLocal).toLocaleString().slice (0, 17)}<br>
+    Начало смены - факт: ${new Date (schedule.clockInAtLocal).toLocaleString().slice (0, 17)}<br>
+    Окончание смены по графику: ${new Date (schedule.scheduledShiftEndAtLocal).toLocaleString().slice (0, 17)} <br>
+    Окончание смены - факт: ${new Date (schedule.clockOutAtLocal).toLocaleString().slice (0, 17)} <br>
 `;
     fade.append(divDialog);
     divDialog.append(divContent);
     divHeader.append(titleH1, closeBtn);
     divContent.append(divHeader, modalBody);
-    let btnOrder = components.getTagButton(order.typeViolation);
+    let btnOrder = components.getTagButton('подробнее');
     btnOrder.setAttribute("data-bs-toggle", "modal");
-    btnOrder.setAttribute("data-bs-target", `#${order.scheduleId}`);
+    btnOrder.setAttribute("data-bs-target", `#${schedule.scheduleId}`);
     btnOrder.classList.add("btn-secondary");
-    typeViolation.append(btnOrder, fade);
-    trEl.append(typeViolation);
+    more.append(btnOrder, fade);
+    trEl.append(more);
 
-    let courierComment = components.getTagTD(order.commentStaff);
+    let courierComment = components.getTagTD(schedule.commentStaff);
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
     let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = order.managerDecision;
+    graphistCommentTextarea.textContent = schedule.managerDecision;
     graphistCommentTextarea.classList.add("discipline-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
     graphistComment.append(graphistCommentTextarea);
@@ -188,7 +187,7 @@ export async function renderTable(arrayData, time) {
 
     let directorComment = components.getTagTD();
     let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = order.unitDirectorControl;
+    directorCommentTextarea.textContent = schedule.unitDirectorControl;
     directorCommentTextarea.classList.add("discipline-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
     directorComment.append(directorCommentTextarea);
@@ -197,7 +196,7 @@ export async function renderTable(arrayData, time) {
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
     btnEl.classList.add("arrayData-btn-save");
-    btnEl.setAttribute("data-id", order.scheduleId);
+    btnEl.setAttribute("data-id", schedule.scheduleId);
     btnEl.disabled = true;
     tdEl.append(btnEl);
     trEl.append(tdEl);

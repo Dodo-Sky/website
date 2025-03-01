@@ -5,8 +5,6 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 export async function renderTable(arrayData, time) {
-  console.log(time);
-  console.log(arrayData);
   arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
 
   const tableContent = document.querySelector(".badTrips-table");
@@ -127,7 +125,7 @@ export async function renderTable(arrayData, time) {
   arrayData.forEach((order) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(order.handedOverToDeliveryAt);
+    let time = components.getTagTD(new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17));
     trEl.append(time);
     let fio = components.getTagTD(order.fio);
     trEl.append(fio);
@@ -161,8 +159,8 @@ export async function renderTable(arrayData, time) {
     Тип проблемы: ${order.typeOfOffense}<br><br>
 
     <b>Временные данные</b><br>
-    Время начала поездки: ${order.handedOverToDeliveryAt}<br>
-    Время окончания поездки: ${order.orderFulfilmentFlagAt}<br>
+    Время начала поездки: ${new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17)}<br>
+    Время окончания поездки: ${new Date (order.orderFulfilmentFlagAt).toLocaleString().slice (0, 17)}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTimeMin} минут <br>

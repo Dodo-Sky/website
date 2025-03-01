@@ -125,7 +125,7 @@ export async function renderTable(defects) {
   defects.forEach((defect) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let soldAtLocal = components.getTagTD(defect.soldAtLocal);
+    let soldAtLocal = components.getTagTD(new Date (defect.soldAtLocal).toLocaleString().slice (0, 17));
     trEl.append(soldAtLocal);
     let productName = components.getTagTD(defect.productName);
     trEl.append(productName);

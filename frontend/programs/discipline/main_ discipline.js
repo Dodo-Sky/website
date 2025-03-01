@@ -2,19 +2,19 @@ import { getServerApi } from "../../apiServer.js";
 import * as components from "../../components.js";
 import { renderTable } from "./renderTable_ discipline.js";
 
-// Проверка данных на отсутствие несохраненных данных
-// function editDataNoChange(data, time) {
-//   const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
-//   let isCnanges = false;
-//   btns.forEach((element) => {
-//     if (!element.disabled) isCnanges = true;
-//   });
-//   if (isCnanges) {
-//     alert("Сохраните данные");
-//   } else {
-//     renderTable(data, time);
-//   }
-// }
+//Проверка данных на отсутствие несохраненных данных
+function editDataNoChange(data, time) {
+  const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
+  let isCnanges = false;
+  btns.forEach((element) => {
+    if (!element.disabled) isCnanges = true;
+  });
+  if (isCnanges) {
+    alert("Сохраните данные");
+  } else {
+    renderTable(data, time);
+  }
+}
 
 const content = document.getElementById("content");
 
@@ -76,12 +76,12 @@ function getListUnits(discipline) {
 }
 
 function filterData(discipline) {
-  let ordersFilterPizzeria = discipline.filter((el) => el.unitName === "Тюмень-1");
-  renderTable(ordersFilterPizzeria, "все время");
+  let dataUnit = discipline.filter((el) => el.unitName === "Тюмень-1");
+  renderTable(dataUnit, "все время");
 
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
-    ordersFilterPizzeria = discipline.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(ordersFilterPizzeria, "все время");
+    dataUnit = discipline.filter((el) => el.unitName === e.target.value);
+    editDataNoChange(dataUnit, "все время");
   });
 
   // обновить
@@ -92,56 +92,56 @@ function filterData(discipline) {
     let data = discipline.filter((el) => el.unitName === selectUnit.value);
     filterData = data.filter((el) => {
       let now = new Date();
-      return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1));
+      return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 1));
     });
     editDataNoChange(filterData, "за сутки");
   });
 
   // сортировка по времени
-  const tableContent = document.querySelector(".badTrips-table");
+  const tableContent = document.querySelector(".discipline-table");
   let filterData;
 
   tableContent.addEventListener("click", function (e) {
     // сортировка по дате
     if (e.target.textContent === "За прошедшие сутки") {
-      filterData = ordersFilterPizzeria.filter((el) => {
+      filterData = dataUnit.filter((el) => {
         let now = new Date();
-        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1));
+        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 1));
       });
       editDataNoChange(filterData, "за сутки");
     }
     if (e.target.textContent === "За прошедшие 3 дня") {
-      filterData = ordersFilterPizzeria.filter((el) => {
+      filterData = dataUnit.filter((el) => {
         let now = new Date();
-        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 3));
+        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 3));
       });
       editDataNoChange(filterData, "за 3 дня");
     }
     if (e.target.textContent === "За последнюю неделю") {
-      filterData = ordersFilterPizzeria.filter((el) => {
+      filterData = dataUnit.filter((el) => {
         let now = new Date();
-        return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 7));
+        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 7));
       });
       editDataNoChange(filterData, "за неделю");
     }
     if (e.target.textContent === "Показать за все время" || e.target.textContent === "Показать все") {
-      renderTable(ordersFilterPizzeria, "все время");
+      renderTable(dataUnit, "все время");
     }
     // сортировка по менеджеру и управляющему
     if (e.target.textContent === "Только просроченные менеджером") {
-      filterData = ordersFilterPizzeria.filter((el) => el.graphistComment === "Просрочка");
+      filterData = dataUnit.filter((el) => el.managerDecision === "Просрочка");
       editDataNoChange(filterData, "все время");
     }
     if (e.target.textContent === "В работе менеджера (пустые)") {
-      filterData = ordersFilterPizzeria.filter((el) => !el.graphistComment);
+      filterData = dataUnit.filter((el) => !el.managerDecision);
       editDataNoChange(filterData, "все время");
     }
     if (e.target.textContent === "Только просроченные управляющим") {
-      filterData = ordersFilterPizzeria.filter((el) => el.directorComment === "Просрочка");
+      filterData = dataUnit.filter((el) => el.unitDirectorControl === "Просрочка");
       editDataNoChange(filterData, "все время");
     }
     if (e.target.textContent === "В работе управляющего (пустые)") {
-      filterData = ordersFilterPizzeria.filter((el) => !el.directorComment);
+      filterData = dataUnit.filter((el) => !el.unitDirectorControl);
       editDataNoChange(filterData, "все время");
     }
   });
