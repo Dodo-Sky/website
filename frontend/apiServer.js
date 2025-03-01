@@ -64,7 +64,7 @@ export async function getServerApi(variableName) {
 // Загрузка данных с сервера (указываем напрямую наименование переменной выгружаемой с сервера)
 export async function getDataServer(variableName) {
   try {
-    const response = await fetch(`${URL}/globalGet?payload=${variableName}`, {
+    const response = await fetch(`${URL}/${variableName}`, {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
