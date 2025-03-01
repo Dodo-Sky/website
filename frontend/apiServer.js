@@ -1,6 +1,6 @@
 // адрес сервера
 // с внешней ссылки
-const URL = 'http://178.46.153.198:1860';
+const URL = 'http://178.46.153.198:1860/api';
 // const URL = 'http://localhost:1880';
 export function getAuthHeaders() {
   const token = localStorage.getItem('token');
@@ -26,9 +26,9 @@ export async function loginServerApi(login, password, onSuccess) {
   }
 }
 
-export async function handleUnauthorizedResponse(response) {
+export function handleUnauthorizedResponse(responseDataJSON) {
   try {
-    const responseData = await response.json()
+    const responseData = JSON.parse(responseDataJSON)
   } catch (error) {
     console.error("Invalid JSON")
     return
@@ -48,7 +48,9 @@ export async function getServerApi(variableName) {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     } else {
       return await response.json();
     }
@@ -62,9 +64,13 @@ export async function getServerApi(variableName) {
 // Загрузка данных с сервера (указываем напрямую наименование переменной выгружаемой с сервера)
 export async function getDataServer(variableName) {
   try {
-    const response = await fetch(`${URL}/${variableName}`);
+    const response = await fetch(`${URL}/${variableName}`, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     } else {
       return await response.json();
     }
@@ -80,6 +86,7 @@ export async function postDataServer (variableName, payload) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
       // body: payload,
@@ -88,7 +95,9 @@ export async function postDataServer (variableName, payload) {
     if (response.ok) {
       return data;
     } else {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
     alert('Ошибка ' + error.message);
@@ -103,13 +112,16 @@ export async function putServerApi(elementId, payload) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
     });
     if (response.ok) {
       alert('Запись обновлена данные сохранены на сервер');
     } else {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
     alert('Ошибка ' + error.message);
@@ -124,13 +136,16 @@ export async function createServerApi(payload) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
     });
     if (response.ok) {
       alert('Запись обновлена данные сохранены на сервер');
     } else {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
     alert('Ошибка ' + error.message);
@@ -143,9 +158,12 @@ export async function deleteServerApi(id) {
     const url = `${URL}/config/${id}`;
     const response = await fetch(url, {
       method: 'DELETE',
+      ...getAuthHeaders(),
     });
     if (!response.ok) {
-      alert('Ошибка обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
     alert('Ошибка ' + error.message);
@@ -159,13 +177,16 @@ export async function updateUnitSettings({ unitId, settings }) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(settings),
     });
     if (response.ok) {
       alert('Данные сохранены');
     } else {
-      alert('Ошибка, обратитесь к администратору ' + (await response.text()));
+      const responseData = await response.text()
+      handleUnauthorizedResponse(responseData)
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
     alert('Ошибка ' + error.message);
