@@ -22,6 +22,7 @@ export async function loginServerApi(login, password, onSuccess) {
   }
   if (data.token) {
     localStorage.setItem('token', data.token);
+    localStorage.setItem('role', data.role);
     onSuccess?.();
   }
 }
@@ -29,13 +30,13 @@ export async function loginServerApi(login, password, onSuccess) {
 export function handleUnauthorizedResponse(responseDataJSON) {
   try {
     const responseData = JSON.parse(responseDataJSON)
+    if (responseData?.error === 'unauthorized') {
+      localStorage.removeItem('token')
+      window.location.reload()
+    }  
   } catch (error) {
     console.error("Invalid JSON")
     return
-  }
-  if (responseData?.error === 'unauthorized') {
-    localStorage.removeItem('token')
-    window.location.reload()
   }
 }
 
