@@ -186,6 +186,10 @@ export async function renderTable(defects, time) {
     controlTextarea.textContent = defect.control;
     controlTextarea.classList.add("defects-control");
     controlTextarea.setAttribute("cols", "45");
+    let role = localStorage.getItem ('role')
+    if (role === 'менеджер смены') {
+      controlTextarea.disabled = true;
+    }
     controlTD.append(controlTextarea);
 
     if (defect.control === "Просрочка") {
