@@ -5,8 +5,6 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 export async function renderTable(arrayData, time) {
-  console.log(time);
-  console.log(arrayData);
   arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
 
   const tableContent = document.querySelector(".badTrips-table");
@@ -127,7 +125,7 @@ export async function renderTable(arrayData, time) {
   arrayData.forEach((order) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(order.handedOverToDeliveryAt);
+    let time = components.getTagTD(new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17));
     trEl.append(time);
     let fio = components.getTagTD(order.fio);
     trEl.append(fio);
@@ -137,8 +135,6 @@ export async function renderTable(arrayData, time) {
 
     // Номер заказа с модальным окном
     let orderNumber = components.getTagTD();
-    if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
-    if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
     let fade = components.getTagDiv("modal");
     fade.classList.add("fade");
     fade.setAttribute("id", order.orderId);
@@ -161,8 +157,11 @@ export async function renderTable(arrayData, time) {
     Тип проблемы: ${order.typeOfOffense}<br><br>
 
     <b>Временные данные</b><br>
-    Время начала поездки: ${order.handedOverToDeliveryAt}<br>
-    Время окончания поездки: ${order.orderFulfilmentFlagAt}<br>
+
+    Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
+
+Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date (order.handedOverToDeliveryAt).toLocaleString().slice (0, 17)}<br>
+    Время окончания поездки: ${new Date (order.orderFulfilmentFlagAt).toLocaleString().slice (0, 17)}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
@@ -177,7 +176,7 @@ export async function renderTable(arrayData, time) {
 
 Не реальное время поездки курьера:
 
-Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная доставка</a>: ${isFalseDelivery}
+Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная</a> доставка: ${isFalseDelivery}
     `;
     fade.append(divDialog);
     divDialog.append(divContent);
@@ -186,7 +185,12 @@ export async function renderTable(arrayData, time) {
     let btnOrder = components.getTagButton(order.orderNumber);
     btnOrder.setAttribute("data-bs-toggle", "modal");
     btnOrder.setAttribute("data-bs-target", `#${order.orderId}`);
-    btnOrder.classList.add("btn-secondary");
+
+    if (order.expiration >= 20) btnOrder.classList.add ('btn-outline-danger');
+    if (order.expiration >= 10 && order.expiration < 20) btnOrder.classList.add ('btn-outline-warning');
+    btnOrder.classList.add ('btn-outline-secondary');
+    btnOrder.classList.remove ('btn-primary');
+
     orderNumber.append(btnOrder, fade);
     trEl.append(orderNumber);
 
@@ -198,6 +202,9 @@ export async function renderTable(arrayData, time) {
     graphistCommentTextarea.textContent = order.graphistComment;
     graphistCommentTextarea.classList.add("badTrips-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
+    if (order.graphistComment === "Просрочка") {
+      graphistCommentTextarea.classList.add("text-danger");
+    }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
@@ -206,6 +213,9 @@ export async function renderTable(arrayData, time) {
     directorCommentTextarea.textContent = order.directorComment;
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
+    if (order.directorComment === "Просрочка") {
+      directorCommentTextarea.classList.add("text-danger");
+    }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 

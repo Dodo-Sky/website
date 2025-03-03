@@ -1,31 +1,32 @@
 import { getServerApi } from "../../apiServer.js";
-import { postServer } from "./server_badTrips.js";
+import { postServer } from "./server_ discipline.js";
 
 export async function editData() {
-  const dataFromServer = await getServerApi("couriersOrder");
-  makeButtonActive("graphistComment", dataFromServer);
-  makeButtonActive("directorComment", dataFromServer);
-  
+  const dataFromServer = await getServerApi("discipline");
+  makeButtonActive("managerDecision", dataFromServer);
+  makeButtonActive("unitDirectorControl", dataFromServer);
+
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
     const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
     btns.forEach((btn) => {
       if (!btn.disabled) {
-        // Recommended https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
         event.preventDefault();
-        // Included for legacy support, e.g. Chrome/Edge < 119
         event.returnValue = true;
       }
     });
   });
- postServer();
+  postServer();
 }
 
 function makeButtonActive(objectProperty, dataFromServer) {
-  const property = document.querySelectorAll(`.badTrips-${objectProperty}`);
+  const property = document.querySelectorAll(`.discipline-${objectProperty}`);
   property.forEach((el) => {
     el.addEventListener("input", async function (e) {
-      let element = await dataFromServer.find((el) => e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === el.orderId);
+      let element = await dataFromServer.find((elem) => {
+        if (elem.scheduleId) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.scheduleId;
+        if (!elem.scheduleId) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.staffId + elem.clockInAtLocal;
+      });
       let btn = e.target.parentNode.parentNode.lastChild.firstChild;
       if (e.target.value !== element[objectProperty]) {
         btn.disabled = false;

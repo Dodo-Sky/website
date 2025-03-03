@@ -1,12 +1,10 @@
 import * as components from "../../components.js";
-//import { editData } from "./edit_badTrips.js";
+import { editData } from "./edit_discipline.js";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 export async function renderTable(arrayData, time) {
-  console.log(time);
-  console.log(arrayData);
   arrayData.sort((a, b) => new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal));
 
   const tableContent = document.querySelector(".discipline-table");
@@ -51,7 +49,7 @@ export async function renderTable(arrayData, time) {
   thEl = components.getTagTH("ФИО сотрудника");
   trEl.append(thEl);
 
-  thEl = components.getTagTH("Описание нарушения");
+  thEl = components.getTagTH("Тип нарушения");
   trEl.append(thEl);
   thEl = components.getTagTH("Коментарий сотрудника");
   trEl.append(thEl);
@@ -59,7 +57,7 @@ export async function renderTable(arrayData, time) {
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
+  btnDropdown = components.getTagButton_dropdown("Менеджер");
   // количество задач в работе
   count = arrayData.filter((el) => !el.managerDecision).length;
   if (count) {
@@ -89,7 +87,7 @@ export async function renderTable(arrayData, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Контроль управляющего");
+  btnDropdown = components.getTagButton_dropdown("Управляющий");
   // количество задач в работе
   count = arrayData.filter((el) => !el.unitDirectorControl).length;
   if (count) {
@@ -124,24 +122,21 @@ export async function renderTable(arrayData, time) {
   const tBody = components.getTagTBody();
   tBody.classList.add("tBody");
 
-  arrayData.forEach((order) => {
+  arrayData.forEach((schedule) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(order.scheduledShiftStartAtLocal);
+    let time = components.getTagTD(new Date (schedule.scheduledShiftStartAtLocal).toLocaleString().slice (0, 17));
     trEl.append(time);
-    let fio = components.getTagTD(order.fio);
+    let fio = components.getTagTD(schedule.fio);
     trEl.append(fio);
-
-    let sertificate = order.wasLateDeliveryVoucherGiven ? `<b>Выдан</b>` : "Нет";
-    let isFalseDelivery = order.isFalseDelivery ? "<b>Да</b> - уточните у курьера где он сделал отметку о выдаче заказе" : "Нет";
+    // let typeViolation = components.getTagTD(schedule.typeViolation);
+    // trEl.append(typeViolation);
 
     // Тип правонарушения с модальным окном
     let typeViolation = components.getTagTD();
-    // if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
-    // if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
     let fade = components.getTagDiv("modal");
     fade.classList.add("fade");
-    fade.setAttribute("id", order.scheduleId);
+    fade.setAttribute("id", schedule.scheduleId);
     fade.setAttribute("tabindex", "-1");
     fade.setAttribute("data-bs-backdrop", "static");
     fade.setAttribute("data-bs-keyboard", "false");
@@ -155,53 +150,62 @@ export async function renderTable(arrayData, time) {
     let modalBody = components.getTagDiv("modal-body");
     modalBody.innerHTML = `
     <b>Общие данные</b><br>
-    ФИО сотрудника: ${order.fio}<br>
-    Описание правонарушения: ${order.typeViolation}<br>
+    ФИО сотрудника: ${schedule.fio}<br>
+    Описание правонарушения: ${schedule.description}<br> <br>
 
     <b>Временные данные</b><br>
-    Начало смены по графику: ${order.scheduledShiftStartAtLocal}<br>
-    Начало смены - факт: ${order.clockInAtLocal}<br>
-    Окончание смены по графику: ${order.clockOutAtLocal}  минут <br>
-    Окончание смены - факт: ${order.clockOutAtLocal}  минут <br>
+    Начало смены по графику: ${new Date (schedule.scheduledShiftStartAtLocal).toLocaleString().slice (0, 17)}<br>
+    Начало смены - факт: ${new Date (schedule.clockInAtLocal).toLocaleString().slice (0, 17)}<br>
+    Окончание смены по графику: ${new Date (schedule.scheduledShiftEndAtLocal).toLocaleString().slice (0, 17)} <br>
+    Окончание смены - факт: ${new Date (schedule.clockOutAtLocal).toLocaleString().slice (0, 17)} <br>
 `;
     fade.append(divDialog);
     divDialog.append(divContent);
     divHeader.append(titleH1, closeBtn);
     divContent.append(divHeader, modalBody);
-    let btnOrder = components.getTagButton(order.typeViolation);
+    let btnOrder = components.getTagButton(schedule.typeViolation);
+    if (schedule.typeViolation === 'Прогул') btnOrder.classList.add ('btn-outline-danger');
+    if (schedule.typeViolation === 'Опоздание') btnOrder.classList.add ('btn-outline-warning');
+    btnOrder.classList.add ('btn-outline-secondary');
+    btnOrder.classList.remove ('btn-primary');
     btnOrder.setAttribute("data-bs-toggle", "modal");
-    btnOrder.setAttribute("data-bs-target", `#${order.scheduleId}`);
-    btnOrder.classList.add("btn-secondary");
+    btnOrder.setAttribute("data-bs-target", `#${schedule.scheduleId}`);
     typeViolation.append(btnOrder, fade);
     trEl.append(typeViolation);
 
-    let courierComment = components.getTagTD(order.commentStaff);
+    let courierComment = components.getTagTD(schedule.commentStaff);
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
     let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = order.managerDecision;
-    graphistCommentTextarea.classList.add("discipline-graphistComment");
+    graphistCommentTextarea.textContent = schedule.managerDecision;
+    graphistCommentTextarea.classList.add("discipline-managerDecision");
     graphistCommentTextarea.setAttribute("cols", "75");
+    // if (schedule.managerDecision === "Просрочка") {
+    //   graphistCommentTextarea.classList.add("text-danger");
+    // }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
     let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = order.unitDirectorControl;
-    directorCommentTextarea.classList.add("discipline-directorComment");
+    directorCommentTextarea.textContent = schedule.unitDirectorControl;
+    directorCommentTextarea.classList.add("discipline-unitDirectorControl");
     directorCommentTextarea.setAttribute("cols", "75");
+    // if (schedule.unitDirectorControl === "Просрочка") {
+    //   directorCommentTextarea.classList.add("text-danger");
+    // }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
     btnEl.classList.add("arrayData-btn-save");
-    btnEl.setAttribute("data-id", order.scheduleId);
+    btnEl.setAttribute("data-id", schedule.scheduleId ?? schedule.staffId + schedule.clockInAtLocal);
     btnEl.disabled = true;
     tdEl.append(btnEl);
     trEl.append(tdEl);
   });
   tableEl.append(captionEl, theadEl, tBody);
-  //editData();
+  editData();
 }
