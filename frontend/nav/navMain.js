@@ -102,12 +102,12 @@ function showNavUnitDirector() {
   let cardRow = components.getCardRow();
   let orders = components.getCardNav("Проблемные поездки");
   let diszipline = components.getCardNav("Соблюдение дисциплины");
-  let dismissed = components.getCardNav("Обзвон уволенных");
+  // let dismissed = components.getCardNav("Обзвон уволенных");
   let badSupply = components.getCardNav("Контроль брака");
   let idTelegramm = components.getCardNav("ID телеграмм");
 
-  cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm);
-  content.innerHTML = "";
+  cardRow.append(orders, diszipline, badSupply, idTelegramm);
+  content.innerHTML = ""; 
   const titte = components.getTagH(5, "Выберите нужную вам программу");
   titte.classList.add("text-center");
   content.append(titte, cardRow);

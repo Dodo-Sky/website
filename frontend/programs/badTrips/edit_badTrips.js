@@ -5,7 +5,7 @@ export async function editData() {
   const dataFromServer = await getServerApi("couriersOrder");
   makeButtonActive("graphistComment", dataFromServer);
   makeButtonActive("directorComment", dataFromServer);
-
+  
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
     const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");

@@ -16,16 +16,35 @@ export async function renderTable(arrayData) {
   theadEl.classList.add("sticky-top");
   let trEl = components.getTagTR();
 
-  let thEl = components.getTagTH("ФИО сотрудника");
+  // ФИО
+  let thEl = components.getTagTH();
+  thEl.classList.add("dropend");
+  let btnDropdown = components.getTagButton_dropdown("ФИО сотрудника");
+  btnDropdown.classList.add("btn-time");
+  // количество задач в период
+  let count = arrayData.length;
+  if (count) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add("badge");
+    spanWork.classList.add("text-bg-secondary");
+    spanWork.textContent = count;
+    btnDropdown.append(spanWork);
+  }
+  thEl.append(btnDropdown);
   trEl.append(thEl);
+
   thEl = components.getTagTH("Телефон");
   trEl.append(thEl);
   thEl = components.getTagTH("Статус");
   trEl.append(thEl);
 
-  thEl = components.getTagTH();
-  let btnDropdown = components.getTagButton("ID телеграмм");
-  btnDropdown.classList.add("position-relative");
+
+  // ID телеграмм
+   thEl = components.getTagTH();
+  thEl.classList.add("dropend");
+   btnDropdown = components.getTagButton_dropdown("ID телеграмм");
+
+    btnDropdown.classList.add("position-relative");
   btnDropdown.classList.add("btn-secondary");
   let countDelays = arrayData.filter((el) => !el.idTelegramm).length;
   if (countDelays) {
@@ -33,7 +52,21 @@ export async function renderTable(arrayData) {
     spanEl.textContent = countDelays;
     btnDropdown.append(spanEl);
   }
-  thEl.append(btnDropdown);
+
+  let countId = arrayData.length;
+  if (count) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add("badge");
+    spanWork.classList.add("text-bg-secondary");
+    spanWork.textContent = countId;
+    btnDropdown.append(spanWork);
+  }
+  let ulDrop = components.getTagUL_dropdownMenu();
+  let liDrpop = components.getTagLI_dropdownItem("Все сотрудники");
+  ulDrop.append(liDrpop);
+  liDrpop = components.getTagLI_dropdownItem("Без id");
+  ulDrop.append(liDrpop);
+  thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
   thEl = components.getTagTH("Управление");
@@ -55,7 +88,7 @@ export async function renderTable(arrayData) {
 
     let idTelegramm = components.getTagTD();
     let inputTelegramm = components.getTagInput("number", staff.idTelegramm);
-    inputTelegramm.classList.add ('idTelegramm-idTelegramm')
+    inputTelegramm.classList.add("idTelegramm-idTelegramm");
     idTelegramm.append(inputTelegramm);
     trEl.append(idTelegramm);
 

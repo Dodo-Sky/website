@@ -1,7 +1,12 @@
 // адрес сервера
+
 // с внешней ссылки
-const URL = 'http://178.46.153.198:1860/api';
+//const URL = 'http://178.46.153.198:1860/api';
 // const URL = 'http://localhost:1880';
+
+// по локальной сети
+const URL = 'http://190.186.72.106:86/api';
+
 export function getAuthHeaders() {
   const token = localStorage.getItem('token');
   return { Authorization: `Bearer ${token}` };
@@ -39,8 +44,6 @@ export function handleUnauthorizedResponse(responseDataJSON) {
   }
 }
 
-// по локальной сети
-//const URL = 'http://190.186.72.106:86';
 // Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
 export async function getServerApi(variableName) {
   try {
@@ -92,7 +95,6 @@ export async function postDataServer (variableName, payload) {
       // body: payload,
     });
     let data = await response.json();
-    console.log([data, response]);
     if (response.ok) {
       return data;
     } else {

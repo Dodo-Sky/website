@@ -82,29 +82,41 @@ function getListUnits(staffData) {
 
 function filterData(staffData) {
   let staffDataPizzeria = staffData.filter((el) => el.unitName === "Тюмень-1");
-  let filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
+  let filterStaff
+
+  filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
   renderTable(filterStaff);
 
-  let liEl = document.querySelectorAll(".idTelegramm-nav");
   document.querySelector(".selectUnit").addEventListener("change", function (e) {
     staffDataPizzeria = staffData.filter((el) => el.unitName === e.target.value);
     liEl.forEach((element) => element.classList.remove("active"));
-    document.querySelector('.couriers').classList.add("active");
-    let filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
+    document.querySelector(".couriers").classList.add("active");
+    filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
     editDataNoChange(filterStaff);
   });
 
+  let liEl = document.querySelectorAll(".idTelegramm-nav");
   liEl.forEach((el) => {
     el.addEventListener("click", function (e) {
       liEl.forEach((element) => element.classList.remove("active"));
       e.target.classList.add("active");
       if (e.target.textContent === "ID телеграмм курьеров") {
-        let filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
+        filterStaff = staffDataPizzeria.filter((el) => el.positionName === "Автомобильный");
         editDataNoChange(filterStaff);
       } else {
-        let filterStaff = staffDataPizzeria.filter((el) => el.positionName !== "Автомобильный");
+        filterStaff = staffDataPizzeria.filter((el) => el.positionName !== "Автомобильный");
         editDataNoChange(filterStaff);
       }
     });
+  });
+
+  document.getElementById("content").addEventListener("click", function (e) {
+    if (e.target.textContent === "Без id") {
+      let filterIdTelegramm = filterStaff.filter((el) => !el.idTelegramm);
+      editDataNoChange(filterIdTelegramm);
+    }
+    if (e.target.textContent === "Все сотрудники") {
+      editDataNoChange(filterStaff);
+    }
   });
 }

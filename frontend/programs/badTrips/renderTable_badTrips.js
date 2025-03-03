@@ -135,8 +135,6 @@ export async function renderTable(arrayData, time) {
 
     // Номер заказа с модальным окном
     let orderNumber = components.getTagTD();
-    if (order.expiration >= 10 && order.expiration < 20) orderNumber.classList.add("bg-danger-subtle");
-    if (order.expiration >= 20) orderNumber.classList.add("bg-danger");
     let fade = components.getTagDiv("modal");
     fade.classList.add("fade");
     fade.setAttribute("id", order.orderId);
@@ -187,7 +185,12 @@ export async function renderTable(arrayData, time) {
     let btnOrder = components.getTagButton(order.orderNumber);
     btnOrder.setAttribute("data-bs-toggle", "modal");
     btnOrder.setAttribute("data-bs-target", `#${order.orderId}`);
-    btnOrder.classList.add("btn-secondary");
+
+    if (order.expiration >= 20) btnOrder.classList.add ('btn-outline-danger');
+    if (order.expiration >= 10 && order.expiration < 20) btnOrder.classList.add ('btn-outline-warning');
+    btnOrder.classList.add ('btn-outline-secondary');
+    btnOrder.classList.remove ('btn-primary');
+
     orderNumber.append(btnOrder, fade);
     trEl.append(orderNumber);
 

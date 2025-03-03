@@ -1,5 +1,5 @@
 import { getServerApi } from "../../apiServer.js";
-//import { postServer } from "./server_badTrips.js";
+import { postServer } from "./server_ discipline.js";
 
 export async function editData() {
   const dataFromServer = await getServerApi("discipline");
@@ -16,7 +16,7 @@ export async function editData() {
       }
     });
   });
-  //postServer();
+  postServer();
 }
 
 function makeButtonActive(objectProperty, dataFromServer) {
