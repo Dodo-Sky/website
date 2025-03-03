@@ -1,7 +1,16 @@
-import { loginServerApi } from "../apiServer.js";
+import { loginServerApi } from '../apiServer.js';
 
 export function isLoggedIn() {
   return localStorage.getItem('token') !== null;
+}
+
+export function clearAuthData() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
+}
+
+export function getUserRole() {
+  return localStorage.getItem('role');
 }
 
 export function getLoginForm(onSuccess) {
@@ -77,17 +86,17 @@ export function getLoginForm(onSuccess) {
 
   loginButton.addEventListener('click', async function (e) {
     e.preventDefault();
-    const login = loginInput.value
-    const password = passwordInput.value
+    const login = loginInput.value;
+    const password = passwordInput.value;
     if (!login) {
-        alert("Введите логин")
-        return
+      alert('Введите логин');
+      return;
     }
     if (!password) {
-        alert("Введите пароль")
-        return
+      alert('Введите пароль');
+      return;
     }
-    loginServerApi(login, password, onSuccess)
+    loginServerApi(login, password, onSuccess);
   });
   return container;
 }
