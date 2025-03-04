@@ -5,15 +5,13 @@ export async function editData() {
   const dataFromServer = await getServerApi("couriersOrder");
   makeButtonActive("graphistComment", dataFromServer);
   makeButtonActive("directorComment", dataFromServer);
-  
+
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
     const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
     btns.forEach((btn) => {
       if (!btn.disabled) {
-        // Recommended https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
         event.preventDefault();
-        // Included for legacy support, e.g. Chrome/Edge < 119
         event.returnValue = true;
       }
     });

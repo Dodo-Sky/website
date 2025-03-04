@@ -185,6 +185,17 @@ export async function renderTable(arrayData, time) {
     let btnOrder = components.getTagButton(order.orderNumber);
     btnOrder.setAttribute("data-bs-toggle", "modal");
     btnOrder.setAttribute("data-bs-target", `#${order.orderId}`);
+    btnOrder.classList.add ('position-relative');
+
+    if (order.wasLateDeliveryVoucherGiven) {
+      const spanEl = components.getTagSpan_badge('серт');
+      btnOrder.append(spanEl);
+    }
+
+    if (order.isFalseDelivery) {
+      const spanEl = components.getTagSpan_badge('некорр');
+      btnOrder.append(spanEl);
+    }
 
     if (order.expiration >= 20) btnOrder.classList.add ('btn-outline-danger');
     if (order.expiration >= 10 && order.expiration < 20) btnOrder.classList.add ('btn-outline-warning');
