@@ -1,9 +1,11 @@
-import { clearAuthData, getLoginForm, getUserRole, isLoggedIn } from '../auth/login.js'
+import { clearAuthData, getLoginForm, getUserRole, isLoggedIn, getUserFioAndUnitName } from '../auth/login.js'
 import * as components from '../components.js'
 const content = document.getElementById('content')
 
 // Навигация сверху (хлебные крошки)
 const breadcrumb = document.querySelector('.breadcrumb')
+const authInfo = document.querySelector('.auth-info')
+
 breadcrumb.addEventListener('click', function (e) {
   if (e.target?.textContent === 'Главная') showNavMain()
   if (e.target?.textContent === 'Администратор') showNavAdmin()
@@ -50,6 +52,9 @@ export function showNavMain() {
   }
   content.innerHTML = ''
   content.append(cardRow)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // старт программ
@@ -98,6 +103,9 @@ function showNavAdmin() {
   let navMainEl = components.getTagLI_breadcrumb('Главная')
   let navManaergEl = components.getTagLI_breadcrumbActive('Администратор')
   breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация менеджера офиса
@@ -115,27 +123,33 @@ async function showNavOfis() {
   let navMainEl = components.getTagLI_breadcrumb('Главная')
   let navManaergEl = components.getTagLI_breadcrumbActive('Менеджер офиса')
   breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация управляющего
 function showNavUnitDirector() {
-  let cardRow = components.getCardRow();
-  let orders = components.getCardNav("Проблемные поездки");
-  let diszipline = components.getCardNav("Соблюдение дисциплины");
+  let cardRow = components.getCardRow()
+  let orders = components.getCardNav('Проблемные поездки')
+  let diszipline = components.getCardNav('Соблюдение дисциплины')
   // let dismissed = components.getCardNav("Обзвон уволенных");
-  let badSupply = components.getCardNav("Контроль брака");
-  let idTelegramm = components.getCardNav("ID телеграмм");
+  let badSupply = components.getCardNav('Контроль брака')
+  let idTelegramm = components.getCardNav('ID телеграмм')
 
-  cardRow.append(orders, diszipline, badSupply, idTelegramm);
-  content.innerHTML = ""; 
-  const titte = components.getTagH(5, "Выберите нужную вам программу");
-  titte.classList.add("text-center");
-  content.append(titte, cardRow);
+  cardRow.append(orders, diszipline, badSupply, idTelegramm)
+  content.innerHTML = ''
+  const titte = components.getTagH(5, 'Выберите нужную вам программу')
+  titte.classList.add('text-center')
+  content.append(titte, cardRow)
 
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Управляющий");
-  breadcrumb.append(navMainEl, navManaergEl);
+  breadcrumb.innerHTML = ''
+  let navMainEl = components.getTagLI_breadcrumb('Главная')
+  let navManaergEl = components.getTagLI_breadcrumbActive('Управляющий')
+  breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация менеджера смены
@@ -154,6 +168,9 @@ function showNavManager() {
   let navMainEl = components.getTagLI_breadcrumb('Главная')
   let navManaergEl = components.getTagLI_breadcrumbActive('Менеджер смены')
   breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 function showLogin() {
