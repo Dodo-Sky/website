@@ -1,8 +1,11 @@
-// адрес сервера
+import { URL } from "./config.js";
 
+// адрес сервера
 // с внешней ссылки
-// const URL = 'http://178.46.153.198:1860/api';
-const URL = 'http://localhost:1880';
+
+//const URL = 'https://dodo.aitiko.ru/api';
+//const URL = 'http://178.46.153.198:1860/api';
+//const URL = 'http://localhost:1880';
 
 // по локальной сети
 // const URL = 'http://190.186.72.106:86/api';
@@ -28,6 +31,8 @@ export async function loginServerApi(login, password, onSuccess) {
   if (data.token) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('role', data.role);
+    localStorage.setItem('fio', data.fio)
+    localStorage.setItem('unitName', data.unitName)
     onSuccess?.();
   }
 }
