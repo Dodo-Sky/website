@@ -143,7 +143,7 @@ export async function renderTable(arrayData, time) {
     let divDialog = components.getTagDiv("modal-dialog");
     let divContent = components.getTagDiv("modal-content");
     let divHeader = components.getTagDiv("modal-header");
-    let titleH1 = components.getTagH(1, "Подробная информация о правонарушении");
+    let titleH1 = components.getTagH(1, "Подробная информация о нарушении дисциплины");
     titleH1.classList.add("modal-title");
     titleH1.classList.add("fs-5");
     let closeBtn = components.getTagButton_close();
@@ -151,7 +151,7 @@ export async function renderTable(arrayData, time) {
     modalBody.innerHTML = `
     <b>Общие данные</b><br>
     ФИО сотрудника: ${schedule.fio}<br>
-    Описание правонарушения: ${schedule.description}<br> <br>
+    Описание: ${schedule.description}<br> <br>
 
     <b>Временные данные</b><br>
     Начало смены по графику: ${new Date (schedule.scheduledShiftStartAtLocal).toLocaleString().slice (0, 17)}<br>
@@ -192,6 +192,11 @@ export async function renderTable(arrayData, time) {
     directorCommentTextarea.textContent = schedule.unitDirectorControl;
     directorCommentTextarea.classList.add("discipline-unitDirectorControl");
     directorCommentTextarea.setAttribute("cols", "75");
+
+    let role = localStorage.getItem ('role')
+    if (role === 'менеджер смены') {
+      directorCommentTextarea.disabled = true;
+    }  
     // if (schedule.unitDirectorControl === "Просрочка") {
     //   directorCommentTextarea.classList.add("text-danger");
     // }

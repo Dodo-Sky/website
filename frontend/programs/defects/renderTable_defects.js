@@ -66,7 +66,7 @@ export async function renderTable(defects, time) {
   thEl.setAttribute("data-bs-title", "This top tooltip is themed via CSS variables.");
 
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
+  btnDropdown = components.getTagButton_dropdown("Менеджер");
   // количество задач в работе
   let count = defects.filter((el) => !el.decisionManager).length;
   if (count) {
@@ -96,7 +96,7 @@ export async function renderTable(defects, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Решение управляющего");
+  btnDropdown = components.getTagButton_dropdown("Управляющий");
   // количество задач в работе
   count = defects.filter((el) => !el.control).length;
   if (count) {
