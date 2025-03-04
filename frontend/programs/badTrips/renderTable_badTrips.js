@@ -213,6 +213,10 @@ export async function renderTable(arrayData, time) {
     directorCommentTextarea.textContent = order.directorComment;
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
+    let role = localStorage.getItem ('role')
+    if (role === 'менеджер смены') {
+      directorCommentTextarea.disabled = true;
+    }  
     if (order.directorComment === "Просрочка") {
       directorCommentTextarea.classList.add("text-danger");
     }
