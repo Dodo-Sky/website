@@ -12,6 +12,7 @@ breadcrumb.addEventListener("click", function (e) {
   if (e.target?.textContent === "Менеджер смены") showNavManager();
 });
 
+
 export function showNavMain() {
   breadcrumb.innerHTML = "";
   let navMainEl = components.getTagLI_breadcrumbActive("Главная");
@@ -48,8 +49,12 @@ export function showNavMain() {
       clearAuthData();
       window.location.reload();
   }
-  content.innerHTML = "";
-  content.append(cardRow);
+
+  content.innerHTML = ''
+  content.append(cardRow)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // старт программ
@@ -94,10 +99,13 @@ content.addEventListener("click", async function (e) {
 function showNavAdmin() {
   console.log("Элдос этот раздел надо делать отдельно думать над логикой");
 
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Администратор");
-  breadcrumb.append(navMainEl, navManaergEl);
+  breadcrumb.innerHTML = ''
+  let navMainEl = components.getTagLI_breadcrumb('Главная')
+  let navManaergEl = components.getTagLI_breadcrumbActive('Администратор')
+  breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация менеджера офиса
@@ -107,53 +115,63 @@ async function showNavOfis() {
   content.innerHTML = `
           <div class="spinner-border" role="status">
           <span class="visually-hidden">Загрузка...</span>
-          </div>`;
-  const module = await import("./navSettings.js");
-  module.renderLeftNav();
+          </div>`
+  const module = await import('./navSettings.js')
+  module.renderLeftNav()
 
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер офиса");
-  breadcrumb.append(navMainEl, navManaergEl);
+  breadcrumb.innerHTML = ''
+  let navMainEl = components.getTagLI_breadcrumb('Главная')
+  let navManaergEl = components.getTagLI_breadcrumbActive('Менеджер офиса')
+  breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация управляющего
 function showNavUnitDirector() {
-  let cardRow = components.getCardRow();
-  let orders = components.getCardNav("Проблемные поездки");
-  let diszipline = components.getCardNav("Соблюдение дисциплины");
+  let cardRow = components.getCardRow()
+  let orders = components.getCardNav('Проблемные поездки')
+  let diszipline = components.getCardNav('Соблюдение дисциплины')
   // let dismissed = components.getCardNav("Обзвон уволенных");
-  let badSupply = components.getCardNav("Контроль брака");
-  let idTelegramm = components.getCardNav("ID телеграмм");
 
-  cardRow.append(orders, diszipline, badSupply, idTelegramm);
-  content.innerHTML = "";
-  const titte = components.getTagH(5, "Выберите нужную вам программу");
-  titte.classList.add("text-center");
-  content.append(titte, cardRow);
+  let badSupply = components.getCardNav('Контроль брака')
+  let idTelegramm = components.getCardNav('ID телеграмм')
 
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Управляющий");
-  breadcrumb.append(navMainEl, navManaergEl);
+  cardRow.append(orders, diszipline, badSupply, idTelegramm)
+  content.innerHTML = ''
+  const titte = components.getTagH(5, 'Выберите нужную вам программу')
+  titte.classList.add('text-center')
+  content.append(titte, cardRow)
+
+  breadcrumb.innerHTML = ''
+  let navMainEl = components.getTagLI_breadcrumb('Главная')
+  let navManaergEl = components.getTagLI_breadcrumbActive('Управляющий')
+  breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 // навигация менеджера смены
 function showNavManager() {
-  let cardRow = components.getCardRow();
-  let diszipline = components.getCardNav("Соблюдение дисциплины");
-  let badSupply = components.getCardNav("Контроль брака");
+  let cardRow = components.getCardRow()
+  let orders = components.getCardNav('Проблемные поездки')
+  let badSupply = components.getCardNav('Контроль брака')
 
-  cardRow.append(diszipline, badSupply);
-  content.innerHTML = "";
-  const titte = components.getTagH(5, "Выберите нужную вам программу");
-  titte.classList.add("text-center");
-  content.append(titte, cardRow);
+  cardRow.append(orders, badSupply)
+  content.innerHTML = ''
+  const titte = components.getTagH(5, 'Выберите нужную вам программу')
+  titte.classList.add('text-center')
+  content.append(titte, cardRow)
 
-  breadcrumb.innerHTML = "";
-  let navMainEl = components.getTagLI_breadcrumb("Главная");
-  let navManaergEl = components.getTagLI_breadcrumbActive("Менеджер смены");
-  breadcrumb.append(navMainEl, navManaergEl);
+  breadcrumb.innerHTML = ''
+  let navMainEl = components.getTagLI_breadcrumb('Главная')
+  let navManaergEl = components.getTagLI_breadcrumbActive('Менеджер смены')
+  breadcrumb.append(navMainEl, navManaergEl)
+
+  authInfo.innerHTML = ''
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
 
 function showLogin() {
