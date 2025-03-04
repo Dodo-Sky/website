@@ -9,6 +9,10 @@ export function clearAuthData() {
   localStorage.removeItem('role');
 }
 
+export function getUserFioAndUnitName() {
+  return `${localStorage.getItem('fio')} | ${localStorage.getItem('unitName')}`
+}
+
 export function getUserRole() {
   return localStorage.getItem('role');
 }
