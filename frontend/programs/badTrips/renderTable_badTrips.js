@@ -154,7 +154,8 @@ export async function renderTable(arrayData, time) {
     ФИО курьера: ${order.fio}<br>
     Номер заказа: ${order.orderNumber}<br>
     Рекомендации: ${order.decisionManager}<br>
-    Тип проблемы: ${order.typeOfOffense}<br><br>
+    Тип проблемы: ${order.typeOfOffense}<br>
+    Количество заказов за поездку: ${order.tripOrdersCount}<br><br>
 
     <b>Временные данные</b><br>
 
