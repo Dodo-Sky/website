@@ -90,8 +90,23 @@ export async function renderDataToPizzeria(dataFromServer, time) {
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
-  thEl = components.getTagTH('Дата возврата');
+  // дата возврата
+  thEl = components.getTagTH();
+  thEl.classList.add('dropend');
+  btnDropdown = components.getTagButton_dropdown('Дата возврата');
+  // Количество успешных возвратов
+  countDelays = dataFromServer.filter((el) => el.dateBack).length;
+  if (countDelays) {
+    const spanEl = components.getTagSpan_badge(countDelays);
+    spanEl.classList.add ('bg-success');
+    spanEl.classList.remove ('bg-danger');
+
+    spanEl.textContent = countDelays;
+    btnDropdown.append(spanEl);
+  }
+  thEl.append(btnDropdown);
   trEl.append(thEl);
+
   thEl = components.getTagTH('Звоним дальше?');
   trEl.append(thEl);
   thEl = components.getTagTH('Тип сотрудника');

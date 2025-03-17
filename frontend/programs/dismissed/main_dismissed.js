@@ -40,7 +40,6 @@ export async function render(name, breadcrumbs) {
   });
 
   getNavbar(dataFromServer, navbar);
-  render_interviewTable(dataFromServer);
 }
 
 function getNavbar(dataFromServer, navbar) {
@@ -53,6 +52,7 @@ function getNavbar(dataFromServer, navbar) {
   const selectEl = components.getTagSelect();
   selectEl.classList.add('nav-link');
   selectEl.classList.add('nav-Navbar');
+  selectEl.classList.add('active');
   let unitsName = [...new Set(dataFromServer.map((el) => el.unitName))];
   unitsName = unitsName.filter((el) => el !== 'Офис').sort();
   unitsName.forEach((unit) => {
@@ -62,7 +62,6 @@ function getNavbar(dataFromServer, navbar) {
   navItem.append(selectEl);
 
   const liEl_prz = components.getTagLI_nav('Выходное интервью');
-  liEl_prz.classList.add('active');
   liEl_prz.classList.add('nav-Navbar');
   const liEl_ofis = components.getTagLI_nav('Отмена решения');
   liEl_ofis.classList.add('nav-Navbar');
@@ -89,6 +88,10 @@ function filterData(dataFromServer, navbar) {
   let dataUnit;
   let dataFromServerToContact = getDataToContact(dataFromServer);
   let selectEl = navbar.querySelector('.form-select');
+
+  dataUnit = dataFromServerToContact.filter((el) => el.unitName === 'Тюмень-1');
+  renderDataToPizzeria (dataUnit, 'все время');
+
   selectEl.addEventListener('change', function (e) {
     dataUnit = dataFromServerToContact.filter((el) => el.unitName === e.target.value);
     editDataNoChange(dataUnit, 'все время');
@@ -128,22 +131,17 @@ function filterData(dataFromServer, navbar) {
       editDataNoChange(dataUnit, 'все время');
     }
 
-
-     // сортировка по менеджеру и управляющему
+    // сортировка по менеджеру и управляющему
     if (e.target.textContent === 'Только просроченные управляющим') {
-      filterData = dataUnit.filter(
-        (el) => el.result === 'Просрочка',
-      );
+      filterData = dataUnit.filter((el) => el.result === 'Просрочка');
       editDataNoChange(filterData, 'все время');
     }
     if (e.target.textContent === 'В работе управляющего (пустые)') {
       filterData = dataUnit.filter((el) => !el.result);
       editDataNoChange(filterData, 'все время');
     }
-
   });
 }
-
 
 //Проверка данных на отсутствие несохраненных данных
 function editDataNoChange(data, time) {
@@ -193,4 +191,3 @@ function getDataToContact(dismissed) {
   }
   return result;
 }
-
