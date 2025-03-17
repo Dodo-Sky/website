@@ -93,6 +93,13 @@ content.addEventListener('click', async function (e) {
     const module = await import('../programs/discipline/main_ discipline.js')
     module.render(nameProgramm, breadcrumbs)
   }
+
+  if (e.target?.dataset?.id === 'Обзвон уволенных') {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent
+    let breadcrumbs = breadcrumb.lastChild.textContent
+    const module = await import('../programs/dismissed/main_dismissed.js')
+    module.render(nameProgramm, breadcrumbs)
+  }
 })
 
 // навигация администратор
@@ -133,11 +140,11 @@ function showNavUnitDirector() {
   let cardRow = components.getCardRow()
   let orders = components.getCardNav('Проблемные поездки')
   let diszipline = components.getCardNav('Соблюдение дисциплины')
-  // let dismissed = components.getCardNav("Обзвон уволенных");
+  let dismissed = components.getCardNav("Обзвон уволенных");
   let badSupply = components.getCardNav('Контроль брака')
   let idTelegramm = components.getCardNav('ID телеграмм')
 
-  cardRow.append(orders, diszipline, badSupply, idTelegramm)
+  cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm)
   content.innerHTML = ''
   const titte = components.getTagH(5, 'Выберите нужную вам программу')
   titte.classList.add('text-center')

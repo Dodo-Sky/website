@@ -10,6 +10,7 @@ export {
   getTagNav,
   getTagUL_nav,
   getTagUL_dropdownMenu,
+  getTagLI_navItem,
   getTagLI_nav,
   getTagLI_dropdownToggle,
   getTagLI_dropdownItem,
@@ -116,6 +117,12 @@ function getTagLI_nav(textContent) {
   const element = document.createElement('li')
   element.className = 'nav-item nav-link'
   element.textContent = textContent
+  return element
+}
+
+function getTagLI_navItem() {
+  const element = document.createElement('li')
+  element.className = 'nav-item'
   return element
 }
 

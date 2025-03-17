@@ -66,8 +66,6 @@ export async function getServerApi(variableName) {
   } catch (error) {
     alert(`Ошибка запроса ${variableName} ` + error.message);
   }
-  // let test = [variableName, variableName, variableName]
-  // return test
 }
 
 // Загрузка данных с сервера (указываем напрямую наименование переменной выгружаемой с сервера)
