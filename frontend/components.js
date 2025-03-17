@@ -1,3 +1,5 @@
+import { clearAuthData } from './auth/login.js'
+
 export {
   getTagDiv,
   getTagSpan,
@@ -35,10 +37,8 @@ export {
   getTagTD,
   getCardNav,
   getCardRow,
-  getTagButton_logout,
+  getTagButton_logout
 }
-
-import { clearAuthData } from './auth/login.js'
 
 // Базовая разметка
 function getTagDiv(addClass) {
