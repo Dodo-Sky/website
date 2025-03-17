@@ -7,6 +7,8 @@ import { URL } from "./config.js";
 //const URL = 'http://178.46.153.198:1860/api';
 //const URL = 'http://localhost:1880';
 
+// const URL = 'http://localhost:1880';
+// const URL = 'https://dodo.aitiko.ru/api'
 // по локальной сети
 // const URL = 'http://190.186.72.106:86/api';
 

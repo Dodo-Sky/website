@@ -14,6 +14,7 @@ breadcrumb.addEventListener('click', function (e) {
   if (e.target?.textContent === 'Менеджер смены') showNavManager()
 })
 
+
 export function showNavMain() {
   breadcrumb.innerHTML = ''
   let navMainEl = components.getTagLI_breadcrumbActive('Главная')
@@ -103,7 +104,6 @@ function showNavAdmin() {
   let navMainEl = components.getTagLI_breadcrumb('Главная')
   let navManaergEl = components.getTagLI_breadcrumbActive('Администратор')
   breadcrumb.append(navMainEl, navManaergEl)
-
   authInfo.innerHTML = ''
   authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout())
 }
