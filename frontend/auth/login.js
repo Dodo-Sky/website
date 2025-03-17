@@ -53,6 +53,7 @@ export function getLoginForm(onSuccess) {
   loginInput.id = 'login';
   loginInput.required = true;
   loginInput.placeholder = 'Ваш логин';
+  loginInput.autocomplete = 'username';
   loginGroup.appendChild(loginLabel);
   loginGroup.appendChild(loginInput);
 
@@ -65,6 +66,7 @@ export function getLoginForm(onSuccess) {
   const passwordInput = document.createElement('input');
   passwordInput.type = 'password';
   passwordInput.className = 'form-control';
+  passwordInput.autocomplete = 'current-password'
   passwordInput.id = 'password';
   passwordInput.required = true;
   passwordInput.placeholder = 'Ваш пароль';
