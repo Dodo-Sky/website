@@ -32,8 +32,30 @@ export async function render_cancelContact(dataFromServer) {
   trEl.append(thEl);
   thEl = components.getTagTH('Обоснование управляющим отказа звонить');
   trEl.append(thEl);
-  thEl = components.getTagTH('Отмена решения');
+
+  thEl = components.getTagTH();
+  // thEl.classList.add('dropend');
+  let btnDropdown = components.getTagButton_dropdown('Отмена решения');
+  btnDropdown.classList.add('btn-time');
+  btnDropdown.removeAttribute ('data-bs-toggle');
+  btnDropdown.classList.remove('dropdown-toggle');
+  // количество задач в период
+  let count = dataFromServer.filter (el => el.cancelResolutionHR === true || el.cancelResolutionHR === 'false')
+  console.log(count);
+  
+   console.log(dataFromServer);
+
+  if (count.length > 0) {
+    const spanWork = components.getTagSpan();
+    spanWork.classList.add('badge');
+    spanWork.classList.add('text-bg-secondary');
+    spanWork.textContent = count.length;
+    btnDropdown.append(spanWork);
+  }
+  thEl.append(btnDropdown);
   trEl.append(thEl);
+
+
   thEl = components.getTagTH('Управление');
   trEl.append(thEl);
   
@@ -67,7 +89,7 @@ export async function render_cancelContact(dataFromServer) {
     let resolutionHR = components.getTagTD();
     let selectEL = components.getTagSelect();
     selectEL.classList.add('dismissed-cancelResolutionHR');
-    let choiseOpt = components.getTagOption('Выберете', false);
+    let choiseOpt = components.getTagOption('Выберите', false);
     let noOpt = components.getTagOption('Отменить решение управляющего', 'Отменить решение управляющего');
     let yesOpt = components.getTagOption('Согласиться с решением управляющего', 'Согласиться с решением управляющего');
     if (dataFromServer.cancelResolutionHR === true || dataFromServer.cancelResolutionHR === 'false') {

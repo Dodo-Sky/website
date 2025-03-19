@@ -55,6 +55,25 @@ export async function renderDataToPizzeria(dataFromServer, time) {
   thEl = components.getTagTH('ФИО сотрудника');
   trEl.append(thEl);
 
+  thEl = components.getTagTH();
+  thEl.classList.add('dropend');
+  btnDropdown = components.getTagButton_dropdown('Должность');
+  btnDropdown.classList.add('btn-time');
+
+  let pozitionArr = ['Все', ...new Set(dataFromServer.map((el) => el.positionName))]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+  console.log(pozitionArr);
+  ulDrop = components.getTagUL_dropdownMenu();
+
+  pozitionArr.forEach((pozition) => {
+    liDrpop = components.getTagLI_dropdownItem(pozition);
+    ulDrop.append(liDrpop);
+  });
+
+  thEl.append(btnDropdown, ulDrop);
+  trEl.append(thEl);
+
   thEl = components.getTagTH('№ звонка');
   trEl.append(thEl);
   thEl = components.getTagTH('Решение о звонке');
@@ -98,8 +117,8 @@ export async function renderDataToPizzeria(dataFromServer, time) {
   countDelays = dataFromServer.filter((el) => el.dateBack).length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
-    spanEl.classList.add ('bg-success');
-    spanEl.classList.remove ('bg-danger');
+    spanEl.classList.add('bg-success');
+    spanEl.classList.remove('bg-danger');
 
     spanEl.textContent = countDelays;
     btnDropdown.append(spanEl);
@@ -109,8 +128,8 @@ export async function renderDataToPizzeria(dataFromServer, time) {
 
   thEl = components.getTagTH('Звоним дальше?');
   trEl.append(thEl);
-  thEl = components.getTagTH('Тип сотрудника');
-  trEl.append(thEl);
+  // thEl = components.getTagTH('Тип сотрудника');
+  // trEl.append(thEl);
   thEl = components.getTagTH('Управление');
   trEl.append(thEl);
 
@@ -133,6 +152,9 @@ export async function renderDataToPizzeria(dataFromServer, time) {
       `${data.lastName} ${data.firstName} ${data.patronymicName}`,
     );
     trEl.append(fio);
+
+    let positionName = components.getTagTD(data.positionName);
+    trEl.append(positionName);
 
     // Модальное окно
     let countCall = components.getTagTD();
@@ -285,18 +307,19 @@ export async function renderDataToPizzeria(dataFromServer, time) {
     select.classList.add('dismissed-furtherCall');
     let yesOpt1 = components.getTagOption('Да', 'Да');
     let noOpt1 = components.getTagOption('Не звоним', 'Не звоним');
-    if (data.resolutionManager === 'Да') {
+    if (data.furtherCall === 'Да') {
       yesOpt1.selected = true;
     }
-    if (data.resolutionManager === 'Нет') {
+    if (data.furtherCall === 'Не звоним') {
       noOpt1.selected = true;
+      select.classList.add('bg-danger-subtle');
     }
     select.append(yesOpt1, noOpt1);
     furtherCall.append(select);
     trEl.append(furtherCall);
 
-    let positionName = components.getTagTD(data.positionName);
-    trEl.append(positionName);
+    // let positionName = components.getTagTD(data.positionName);
+    // trEl.append(positionName);
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton('Сохранить');

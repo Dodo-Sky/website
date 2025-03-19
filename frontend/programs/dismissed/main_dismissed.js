@@ -90,7 +90,7 @@ function filterData(dataFromServer, navbar) {
   let selectEl = navbar.querySelector('.form-select');
 
   dataUnit = dataFromServerToContact.filter((el) => el.unitName === 'Тюмень-1');
-  renderDataToPizzeria (dataUnit, 'все время');
+  renderDataToPizzeria(dataUnit, 'все время');
 
   selectEl.addEventListener('change', function (e) {
     dataUnit = dataFromServerToContact.filter((el) => el.unitName === e.target.value);
@@ -102,6 +102,22 @@ function filterData(dataFromServer, navbar) {
   let filterData;
 
   tableContent.addEventListener('click', function (e) {
+
+    // сортировка по должности
+    let pozitionArr = ['Все', ...new Set(dataUnit.map((el) => el.positionName))]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+
+    pozitionArr.forEach((pozition) => {
+      if (e.target.textContent === pozition) {
+        filterData = dataUnit.filter((el) => el.positionName === pozition);
+        editDataNoChange(filterData, 'за все время');
+      }
+      if (e.target.textContent === 'Все') {
+        editDataNoChange(dataUnit, 'за все время');
+      }
+    });
+
     // сортировка по дате
     if (e.target.textContent === 'За прошедшие сутки') {
       filterData = dataUnit.filter((el) => {

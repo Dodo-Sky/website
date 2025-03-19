@@ -56,13 +56,6 @@ export async function render_interviewTable(dataFromServer) {
     spanEl.textContent = countDelays;
     btnDropdown.append(spanEl);
   }
-  // let ulDrop = components.getTagUL_dropdownMenu();
-  // let liDrpop = components.getTagLI_dropdownItem('Все');
-  // ulDrop.append(liDrpop);
-  // liDrpop = components.getTagLI_dropdownItem('Только просроченные');
-  // ulDrop.append(liDrpop);
-  // liDrpop = components.getTagLI_dropdownItem('В работе');
-  // ulDrop.append(liDrpop);
   thEl.append(btnDropdown);
   trEl.append(thEl);
 
