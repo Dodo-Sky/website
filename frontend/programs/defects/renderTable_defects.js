@@ -200,7 +200,7 @@ export async function renderTable(defects, time) {
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton("Сохранить");
     btnEl.classList.add("defects-btn-save");
-    btnEl.setAttribute("data-id", `${defect.soldAtLocal}+${defect.productId}`);
+    btnEl.setAttribute("data-id", `${defect.id}`);
     btnEl.disabled = true;
     tdEl.append(btnEl);
     trEl.append(tdEl);
