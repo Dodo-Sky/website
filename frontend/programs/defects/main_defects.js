@@ -18,7 +18,7 @@ function editDataNoChange(data, time, dataFromServer) {
   }
 }
 
-export async function render(name, breadcrumbs) {
+export async function render (name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumb('Главная');

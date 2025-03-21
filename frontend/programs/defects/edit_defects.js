@@ -3,7 +3,6 @@ import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_defects.js";
 
 export async function editData(dataFromServer) {
-  //const defects = await getServerApi("defects");
   makeButtonActive("disposal", dataFromServer);
   makeButtonActive("reasonDefect", dataFromServer);
   makeButtonActive("nameViolator", dataFromServer);

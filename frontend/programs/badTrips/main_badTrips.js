@@ -3,7 +3,7 @@ import * as components from '../../components.js';
 import { renderTable } from './renderTable_badTrips.js';
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time) {
+function editDataNoChange(data, time, dataFromServer, filterToCourier) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -12,13 +12,13 @@ function editDataNoChange(data, time) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(data, time);
+    renderTable(data, time, dataFromServer, filterToCourier);
   }
 }
 
 const content = document.getElementById('content');
 
-export async function render(name, breadcrumbs) {
+export async function render (name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumb('Главная');
@@ -75,7 +75,7 @@ export async function render(name, breadcrumbs) {
   content.append(title, row, sortEl, divEl);
 
   getListUnits(couriersOrder);
-  filterData(couriersOrder);
+  startRender(couriersOrder);
 }
 
 function getListUnits(couriersOrder) {
@@ -97,132 +97,25 @@ function getListUnits(couriersOrder) {
   unitsEl.append(select);
 }
 
-function filterData(couriersOrder) {
-  let ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === 'Тюмень-1');
-  ordersFilterPizzeria.sort(
-    (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-  );
-  renderTable(ordersFilterPizzeria, 'все время');
+function startRender(couriersOrder) {
+  let fullDataUnit = couriersOrder.filter((el) => el.unitName === 'Тюмень-1');
+  renderTable(fullDataUnit, 0, fullDataUnit);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
-    ordersFilterPizzeria = couriersOrder.filter((el) => el.unitName === e.target.value);
-    ordersFilterPizzeria.sort(
-      (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-    );
-    editDataNoChange(ordersFilterPizzeria, 'все время');
+    fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
+    editDataNoChange(fullDataUnit, 0, fullDataUnit);
   });
 
-  document.getElementById('sort').addEventListener('change', function (e) {
+    document.getElementById('sort').addEventListener('change', function (e) {
     if (e.target.value === 'По курьеру') {
       console.log(e.target.value);
-      ordersFilterPizzeria.sort((a, b) => a.fio.localeCompare(b.fio));
-      editDataNoChange(ordersFilterPizzeria, 'все время');
+      console.log(fullDataUnit);
+      fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
+      editDataNoChange(fullDataUnit, 0, couriersOrder, true);
     }
     if (e.target.value === 'По дате') {
-      console.log(ordersFilterPizzeria);
-      ordersFilterPizzeria.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-      editDataNoChange(ordersFilterPizzeria, 'все время');
-    }
-  });
-
-  // обновить
-  let btnUpdate = document.getElementById('update');
-  let selectUnit = document.querySelector('.selectUnit');
-  btnUpdate.addEventListener('click', async function (e) {
-    const couriersOrder = await getServerApi('couriersOrder');
-    let data = couriersOrder.filter((el) => el.unitName === selectUnit.value);
-    filterData = data.filter((el) => {
-      let now = new Date();
-      return (
-        new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1))
-      );
-    });
-    editDataNoChange(filterData, 'за сутки');
-  });
-
-  // сортировка по времени
-  const tableContent = document.querySelector('.badTrips-table');
-  let filterData;
-
-  tableContent.addEventListener('click', function (e) {
-    // сортировка по дате
-    if (e.target.textContent === 'За прошедшие сутки') {
-      filterData = ordersFilterPizzeria.filter((el) => {
-        let now = new Date();
-        return (
-          new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 1))
-        );
-      });
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'за сутки');
-    }
-    if (e.target.textContent === 'За прошедшие 3 дня') {
-      filterData = ordersFilterPizzeria.filter((el) => {
-        let now = new Date();
-        return (
-          new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 3))
-        );
-      });
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'за 3 дня');
-    }
-    if (e.target.textContent === 'За последнюю неделю') {
-      filterData = ordersFilterPizzeria.filter((el) => {
-        let now = new Date();
-        return (
-          new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - 7))
-        );
-      });
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'за неделю');
-    }
-    if (
-      e.target.textContent === 'Показать за все время' ||
-      e.target.textContent === 'Показать все'
-    ) {
-      ordersFilterPizzeria.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      renderTable(ordersFilterPizzeria, 'все время');
-    }
-    // сортировка по менеджеру и управляющему
-    if (e.target.textContent === 'Только просроченные менеджером') {
-      filterData = ordersFilterPizzeria.filter(
-        (el) => el.graphistComment === 'Просрочка',
-      );
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'все время');
-    }
-    if (e.target.textContent === 'В работе менеджера (пустые)') {
-      filterData = ordersFilterPizzeria.filter((el) => !el.graphistComment);
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'все время');
-    }
-    if (e.target.textContent === 'Только просроченные управляющим') {
-      filterData = ordersFilterPizzeria.filter(
-        (el) => el.directorComment === 'Просрочка',
-      );
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'все время');
-    }
-    if (e.target.textContent === 'В работе управляющего (пустые)') {
-      filterData = ordersFilterPizzeria.filter((el) => !el.directorComment);
-      filterData.sort(
-        (a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt),
-      );
-      editDataNoChange(filterData, 'все время');
+      fullDataUnit.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
+      editDataNoChange(fullDataUnit, 0, couriersOrder);
     }
   });
 }

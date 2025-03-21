@@ -30,10 +30,10 @@ export async function renderTable(defects, time, fullDataUnit) {
   thEl.classList.add('time-defects');
   let btnDropdown = components.getTagButton_dropdown();
   btnDropdown.value = time;
-  if (time === 0) btnDropdown.textContent = 'Все время';
-  if (time === 1) btnDropdown.textContent = 'За сутки';
-  if (time === 3) btnDropdown.textContent = 'За 3 дня';
-  if (time === 7) btnDropdown.textContent = 'За неделю';
+  if (time == 0) btnDropdown.textContent = 'Все время';
+  if (time == 1) btnDropdown.textContent = 'За сутки';
+  if (time == 3) btnDropdown.textContent = 'За 3 дня';
+  if (time == 7) btnDropdown.textContent = 'За неделю';
 
   btnDropdown.classList.add('btn-time');
   // количество задач в период
@@ -73,7 +73,6 @@ export async function renderTable(defects, time, fullDataUnit) {
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add('manager-defects');
-
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Менеджер');
   // количество задач в работе

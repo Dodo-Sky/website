@@ -38,6 +38,7 @@ export {
   getCardNav,
   getCardRow,
   getTagButton_logout,
+  getTagColFormLabel,
 };
 
 // Базовая разметка
@@ -163,6 +164,13 @@ function getTagLI_breadcrumbActive(textContent) {
 function getTagForm(idForm) {
   const element = document.createElement('form');
   element.setAttribute('id', idForm);
+  return element;
+}
+
+function getTagColFormLabel(textContent) {
+  const element = document.createElement('label');
+  element.classList.add('col-form-label');
+  element.textContent = textContent;
   return element;
 }
 

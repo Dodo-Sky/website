@@ -1,5 +1,5 @@
 export { filterToDate, filterToDirector, filterToManager, update };
-import { renderTable } from './renderTable_defects.js';
+import { renderTable } from './renderTable_badTrips.js';
 import { getServerApi } from '../../apiServer.js';
 
 function filterToManager(value, fullDataUnit) {
@@ -10,13 +10,13 @@ function filterToManager(value, fullDataUnit) {
     editDataNoChange(defectFilterUnit, 0, fullDataUnit);
   }
   if (value === 'Только просроченные') {
-    filterData = defectFilterUnit.filter((el) => el.decisionManager === 'Просрочка');
+    filterData = defectFilterUnit.filter((el) => el.graphistComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     const manager = document.querySelector('.manager-defects');
     manager.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
-    filterData = defectFilterUnit.filter((el) => !el.decisionManager);
+    filterData = defectFilterUnit.filter((el) => !el.graphistComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     const manager = document.querySelector('.manager-defects');
     manager.dataset.condition = 'В работе';
@@ -31,13 +31,13 @@ function filterToDirector(value, fullDataUnit) {
     editDataNoChange(defectFilterUnit, 0, fullDataUnit);
   }
   if (value === 'Только просроченные') {
-    filterData = defectFilterUnit.filter((el) => el.control === 'Просрочка');
+    filterData = defectFilterUnit.filter((el) => el.directorComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
-    filterData = defectFilterUnit.filter((el) => !el.control);
+    filterData = defectFilterUnit.filter((el) => !el.directorComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'В работе';
@@ -51,7 +51,7 @@ function filterToDate(timeValue, dataFromServer) {
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
-      return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - timeValue));
+      return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
@@ -63,30 +63,30 @@ async function update() {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
-  const defectsUpdate = await getServerApi('defects');
+  const defectsUpdate = await getServerApi('couriersOrder');
   const manager = document.querySelector('.manager-defects');
   const unitDirector = document.querySelector('.unitDirector-defects');
   const fullDataUnit = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
   let filterData;
 
   if (manager.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.decisionManager === 'Просрочка');
+    filterData = fullDataUnit.filter((el) => el.graphistComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
   if (manager.dataset.condition === 'В работе') {
     console.log(manager.dataset.condition);
-    filterData = fullDataUnit.filter((el) => !el.decisionManager);
+    filterData = fullDataUnit.filter((el) => !el.graphistComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
   if (unitDirector.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.control === 'Просрочка');
+    filterData = fullDataUnit.filter((el) => el.directorComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
   if (unitDirector.dataset.condition === 'В работе') {
-    filterData = fullDataUnit.filter((el) => !el.control);
+    filterData = fullDataUnit.filter((el) => !el.directorComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
@@ -98,7 +98,7 @@ async function update() {
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
     return (
-      new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value))
+      new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - selectedBTN.value))
     );
   });
   editDataNoChange(filterData, selectedBTN.value, fullDataUnit);
@@ -106,7 +106,7 @@ async function update() {
 
 // Проверка данных на отсутствие несохраненных данных
 function editDataNoChange(renderData, time, fullDataUnit) {
-  const btns = document.querySelector('.tBody').querySelectorAll('.btn');
+  const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
     if (!element.disabled) isCnanges = true;
