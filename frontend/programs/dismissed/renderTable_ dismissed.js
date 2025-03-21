@@ -63,7 +63,6 @@ export async function renderDataToPizzeria(dataFromServer, time) {
   let pozitionArr = ['Все', ...new Set(dataFromServer.map((el) => el.positionName))]
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
-  console.log(pozitionArr);
   ulDrop = components.getTagUL_dropdownMenu();
 
   pozitionArr.forEach((pozition) => {
@@ -282,11 +281,8 @@ export async function renderDataToPizzeria(dataFromServer, time) {
     trEl.append(resolutionManager);
 
     let result = components.getTagTD();
-    let commentHRTextarea = components.getTagTextarea();
-    commentHRTextarea.textContent = data.result;
+    let commentHRTextarea = components.getTagTextarea(data.result);
     commentHRTextarea.classList.add('dismissed-result');
-    commentHRTextarea.setAttribute('cols', '300');
-    commentHRTextarea.setAttribute('rows', 3);
     result.append(commentHRTextarea);
     trEl.append(result);
 

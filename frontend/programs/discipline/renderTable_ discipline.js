@@ -57,7 +57,7 @@ export async function renderTable(arrayData, time) {
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Менеджер");
+  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
   // количество задач в работе
   count = arrayData.filter((el) => !el.managerDecision).length;
   if (count) {
@@ -87,7 +87,7 @@ export async function renderTable(arrayData, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Управляющий");
+  btnDropdown = components.getTagButton_dropdown("Решение управляющего");
   // количество задач в работе
   count = arrayData.filter((el) => !el.unitDirectorControl).length;
   if (count) {
@@ -177,19 +177,17 @@ export async function renderTable(arrayData, time) {
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
-    let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = schedule.managerDecision;
+    let graphistCommentTextarea = components.getTagTextarea(schedule.managerDecision);
     graphistCommentTextarea.classList.add("discipline-managerDecision");
     graphistCommentTextarea.setAttribute("cols", "75");
-    // if (schedule.managerDecision === "Просрочка") {
-    //   graphistCommentTextarea.classList.add("text-danger");
-    // }
+    if (schedule.managerDecision === "Просрочка") {
+      graphistCommentTextarea.classList.add("bg-danger-subtle");
+    }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
-    let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = schedule.unitDirectorControl;
+    let directorCommentTextarea = components.getTagTextarea(schedule.unitDirectorControl);
     directorCommentTextarea.classList.add("discipline-unitDirectorControl");
     directorCommentTextarea.setAttribute("cols", "75");
 
@@ -197,9 +195,9 @@ export async function renderTable(arrayData, time) {
     if (role === 'менеджер смены') {
       directorCommentTextarea.disabled = true;
     }  
-    // if (schedule.unitDirectorControl === "Просрочка") {
-    //   directorCommentTextarea.classList.add("text-danger");
-    // }
+    if (schedule.unitDirectorControl === "Просрочка") {
+      directorCommentTextarea.classList.add("bg-danger-subtle");
+    }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 

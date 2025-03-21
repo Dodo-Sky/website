@@ -57,7 +57,7 @@ export async function renderTable(arrayData, time) {
   // решение менеджера
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Менеджер");
+  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
   // количество задач в работе
   count = arrayData.filter((el) => !el.graphistComment).length;
   if (count) {
@@ -87,7 +87,7 @@ export async function renderTable(arrayData, time) {
   // решение управляющего
   thEl = components.getTagTH();
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Управляющий");
+  btnDropdown = components.getTagButton_dropdown("Решение управляющего");
   // количество задач в работе
   count = arrayData.filter((el) => !el.directorComment).length;
   if (count) {
@@ -210,19 +210,17 @@ export async function renderTable(arrayData, time) {
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
-    let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = order.graphistComment;
+    let graphistCommentTextarea = components.getTagTextarea(order.graphistComment);
     graphistCommentTextarea.classList.add("badTrips-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
     if (order.graphistComment === "Просрочка") {
-      graphistCommentTextarea.classList.add("text-danger");
+      graphistCommentTextarea.classList.add("bg-danger-subtle");
     }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
-    let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = order.directorComment;
+    let directorCommentTextarea = components.getTagTextarea(order.directorComment);
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
     let role = localStorage.getItem ('role')
@@ -230,7 +228,7 @@ export async function renderTable(arrayData, time) {
       directorCommentTextarea.disabled = true;
     }  
     if (order.directorComment === "Просрочка") {
-      directorCommentTextarea.classList.add("text-danger");
+      directorCommentTextarea.classList.add("bg-danger-subtle");
     }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);

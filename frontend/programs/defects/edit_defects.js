@@ -2,13 +2,13 @@
 import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_defects.js";
 
-export async function editData() {
-  const defects = await getServerApi("defects");
-  makeButtonActive("disposal", defects);
-  makeButtonActive("reasonDefect", defects);
-  makeButtonActive("nameViolator", defects);
-  makeButtonActive("decisionManager", defects);
-  makeButtonActive("control", defects);
+export async function editData(dataFromServer) {
+  //const defects = await getServerApi("defects");
+  makeButtonActive("disposal", dataFromServer);
+  makeButtonActive("reasonDefect", dataFromServer);
+  makeButtonActive("nameViolator", dataFromServer);
+  makeButtonActive("decisionManager", dataFromServer);
+  makeButtonActive("control", dataFromServer);
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {

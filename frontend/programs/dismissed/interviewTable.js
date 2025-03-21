@@ -105,11 +105,8 @@ export async function render_interviewTable(dataFromServer) {
     trEl.append(resolutionHR);
 
     let commentHR = components.getTagTD();
-    let commentHRTextarea = components.getTagTextarea();
-    commentHRTextarea.textContent = dataFromServer.commentHR;
+    let commentHRTextarea = components.getTagTextarea(dataFromServer.commentHR);
     commentHRTextarea.classList.add('dismissed-commentHR');
-    commentHRTextarea.setAttribute('cols', '300');
-    commentHRTextarea.setAttribute('rows', 5);
     commentHR.append(commentHRTextarea);
     trEl.append(commentHR);
 
