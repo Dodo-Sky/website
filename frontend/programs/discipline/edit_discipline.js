@@ -1,10 +1,9 @@
 import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_ discipline.js";
 
-export async function editData() {
-  const dataFromServer = await getServerApi("discipline");
-  makeButtonActive("managerDecision", dataFromServer);
-  makeButtonActive("unitDirectorControl", dataFromServer);
+export async function editData(fullDataUnit) {
+  makeButtonActive("managerDecision", fullDataUnit);
+  makeButtonActive("unitDirectorControl", fullDataUnit);
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
