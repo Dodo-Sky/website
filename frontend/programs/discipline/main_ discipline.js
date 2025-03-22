@@ -2,17 +2,17 @@ import { getServerApi } from "../../apiServer.js";
 import * as components from "../../components.js";
 import { renderTable } from "./renderTable_ discipline.js";
 
-//Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time) {
-  const btns = document.querySelector(".tBody").querySelectorAll(".arrayData-btn-save");
+// Проверка данных на отсутствие несохраненных данных
+function editDataNoChange(renderData, time, fullDataUnit) {
+  const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
     if (!element.disabled) isCnanges = true;
   });
   if (isCnanges) {
-    alert("Сохраните данные");
+    alert('Сохраните данные');
   } else {
-    renderTable(data, time);
+    renderTable(renderData, time, fullDataUnit);
   }
 }
 
@@ -53,7 +53,7 @@ export async function render(name, breadcrumbs) {
   content.append(title, row, divEl);
 
   getListUnits(discipline);
-  filterData(discipline);
+  startRender(discipline);
 }
 
 function getListUnits(discipline) {
@@ -75,74 +75,12 @@ function getListUnits(discipline) {
   unitsEl.append(select);
 }
 
-function filterData(discipline) {
-  let dataUnit = discipline.filter((el) => el.unitName === "Тюмень-1");
-  renderTable(dataUnit, "все время");
+function startRender(discipline) {
+  let fullDataUnit = discipline.filter((el) => el.unitName === 'Тюмень-1');
+  renderTable(fullDataUnit, 0, fullDataUnit);
 
-  document.querySelector(".selectUnit").addEventListener("change", function (e) {
-    dataUnit = discipline.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(dataUnit, "все время");
-  });
-
-  // обновить
-  let btnUpdate = document.getElementById("update");
-  let selectUnit = document.querySelector(".selectUnit");
-  btnUpdate.addEventListener("click", async function (e) {
-    const discipline = await getServerApi("discipline");
-    let data = discipline.filter((el) => el.unitName === selectUnit.value);
-    filterData = data.filter((el) => {
-      let now = new Date();
-      return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 1));
-    });
-    editDataNoChange(filterData, "за сутки");
-  });
-
-  // сортировка по времени
-  const tableContent = document.querySelector(".discipline-table");
-  let filterData;
-
-  tableContent.addEventListener("click", function (e) {
-    // сортировка по дате
-    if (e.target.textContent === "За прошедшие сутки") {
-      filterData = dataUnit.filter((el) => {
-        let now = new Date();
-        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 1));
-      });
-      editDataNoChange(filterData, "за сутки");
-    }
-    if (e.target.textContent === "За прошедшие 3 дня") {
-      filterData = dataUnit.filter((el) => {
-        let now = new Date();
-        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 3));
-      });
-      editDataNoChange(filterData, "за 3 дня");
-    }
-    if (e.target.textContent === "За последнюю неделю") {
-      filterData = dataUnit.filter((el) => {
-        let now = new Date();
-        return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - 7));
-      });
-      editDataNoChange(filterData, "за неделю");
-    }
-    if (e.target.textContent === "Показать за все время" || e.target.textContent === "Показать все") {
-      renderTable(dataUnit, "все время");
-    }
-    // сортировка по менеджеру и управляющему
-    if (e.target.textContent === "Только просроченные менеджером") {
-      filterData = dataUnit.filter((el) => el.managerDecision === "Просрочка");
-      editDataNoChange(filterData, "все время");
-    }
-    if (e.target.textContent === "В работе менеджера (пустые)") {
-      filterData = dataUnit.filter((el) => !el.managerDecision);
-      editDataNoChange(filterData, "все время");
-    }
-    if (e.target.textContent === "Только просроченные управляющим") {
-      filterData = dataUnit.filter((el) => el.unitDirectorControl === "Просрочка");
-      editDataNoChange(filterData, "все время");
-    }
-    if (e.target.textContent === "В работе управляющего (пустые)") {
-      filterData = dataUnit.filter((el) => !el.unitDirectorControl);
-      editDataNoChange(filterData, "все время");
-    }
+  document.querySelector('.selectUnit').addEventListener('change', function (e) {
+    fullDataUnit = discipline.filter((el) => el.unitName === e.target.value);
+    editDataNoChange(fullDataUnit, 0, fullDataUnit);
   });
 }

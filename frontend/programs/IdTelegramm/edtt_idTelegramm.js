@@ -10,9 +10,7 @@ export async function editData() {
     const btns = document.querySelector(".tBody").querySelectorAll(".btn");
     btns.forEach((btn) => {
       if (!btn.disabled) {
-        // Recommended https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
         event.preventDefault();
-        // Included for legacy support, e.g. Chrome/Edge < 119
         event.returnValue = true;
       }
     });

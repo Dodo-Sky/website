@@ -1,8 +1,6 @@
-import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_badTrips.js";
 
-export async function editData() {
-  const dataFromServer = await getServerApi("couriersOrder");
+export async function editData(dataFromServer) {
   makeButtonActive("graphistComment", dataFromServer);
   makeButtonActive("directorComment", dataFromServer);
 

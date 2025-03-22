@@ -1,12 +1,15 @@
 import * as components from "../../components.js";
 import { editData } from "./edit_badTrips.js";
+import * as filter from './filter_badTrips.js';
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
-export async function renderTable(arrayData, time) {
-  // arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-
+export async function renderTable(arrayData, time, fullDataUnit, filterToCourier) {
+  if (!filterToCourier) {
+    arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
+  }
+  
   const tableContent = document.querySelector(".badTrips-table");
   tableContent.innerHTML = "";
 
@@ -20,11 +23,17 @@ export async function renderTable(arrayData, time) {
   theadEl.classList.add("sticky-top");
   let trEl = components.getTagTR();
 
-  // Время
   let thEl = components.getTagTH();
-  thEl.classList.add("dropend");
-  let btnDropdown = components.getTagButton_dropdown(time);
-  btnDropdown.classList.add ('btn-time');
+  thEl.classList.add('dropend');
+  thEl.classList.add('time-defects');
+  let btnDropdown = components.getTagButton_dropdown();
+  btnDropdown.value = time;
+  if (time == 0) btnDropdown.textContent = 'Все время';
+  if (time == 1) btnDropdown.textContent = 'За сутки';
+  if (time == 3) btnDropdown.textContent = 'За 3 дня';
+  if (time == 7) btnDropdown.textContent = 'За неделю';
+  btnDropdown.classList.add('btn-time');
+
   // количество задач в период
   let count = arrayData.length;
   if (count) {
@@ -35,14 +44,18 @@ export async function renderTable(arrayData, time) {
     btnDropdown.append(spanWork);
   }
   let ulDrop = components.getTagUL_dropdownMenu();
-  let liDrpop = components.getTagLI_dropdownItem("За прошедшие сутки");
+  let liDrpop = components.getTagLI_dropdownItem('За прошедшие сутки');
+  liDrpop.value = 1;
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("За прошедшие 3 дня");
+  liDrpop = components.getTagLI_dropdownItem('За прошедшие 3 дня');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("За последнюю неделю");
+  liDrpop.value = 3;
+  liDrpop = components.getTagLI_dropdownItem('За последнюю неделю');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("Показать за все время");
+  liDrpop.value = 7;
+  liDrpop = components.getTagLI_dropdownItem('Показать за все время');
   ulDrop.append(liDrpop);
+  liDrpop.value = 0;
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
@@ -56,8 +69,9 @@ export async function renderTable(arrayData, time) {
 
   // решение менеджера
   thEl = components.getTagTH();
+  thEl.classList.add('manager-defects');
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Менеджер");
+  btnDropdown = components.getTagButton_dropdown("Решение менеджера");
   // количество задач в работе
   count = arrayData.filter((el) => !el.graphistComment).length;
   if (count) {
@@ -75,19 +89,20 @@ export async function renderTable(arrayData, time) {
     btnDropdown.append(spanEl);
   }
   ulDrop = components.getTagUL_dropdownMenu();
-  liDrpop = components.getTagLI_dropdownItem("Показать все");
+  liDrpop = components.getTagLI_dropdownItem('Показать все');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("Только просроченные менеджером");
+  liDrpop = components.getTagLI_dropdownItem('Только просроченные');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("В работе менеджера (пустые)");
+  liDrpop = components.getTagLI_dropdownItem('В работе');
   ulDrop.append(liDrpop);
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
   // решение управляющего
   thEl = components.getTagTH();
+  thEl.classList.add('unitDirector-defects');
   thEl.classList.add("dropend");
-  btnDropdown = components.getTagButton_dropdown("Управляющий");
+  btnDropdown = components.getTagButton_dropdown("Решение управляющего");
   // количество задач в работе
   count = arrayData.filter((el) => !el.directorComment).length;
   if (count) {
@@ -105,11 +120,11 @@ export async function renderTable(arrayData, time) {
     btnDropdown.append(spanEl);
   }
   ulDrop = components.getTagUL_dropdownMenu();
-  liDrpop = components.getTagLI_dropdownItem("Показать все");
+  liDrpop = components.getTagLI_dropdownItem('Показать все');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("Только просроченные управляющим");
+  liDrpop = components.getTagLI_dropdownItem('Только просроченные');
   ulDrop.append(liDrpop);
-  liDrpop = components.getTagLI_dropdownItem("В работе управляющего (пустые)");
+  liDrpop = components.getTagLI_dropdownItem('В работе');
   ulDrop.append(liDrpop);
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
@@ -210,19 +225,17 @@ export async function renderTable(arrayData, time) {
     trEl.append(courierComment);
 
     let graphistComment = components.getTagTD();
-    let graphistCommentTextarea = components.getTagTextarea();
-    graphistCommentTextarea.textContent = order.graphistComment;
+    let graphistCommentTextarea = components.getTagTextarea(order.graphistComment);
     graphistCommentTextarea.classList.add("badTrips-graphistComment");
     graphistCommentTextarea.setAttribute("cols", "75");
     if (order.graphistComment === "Просрочка") {
-      graphistCommentTextarea.classList.add("text-danger");
+      graphistCommentTextarea.classList.add("bg-danger-subtle");
     }
     graphistComment.append(graphistCommentTextarea);
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
-    let directorCommentTextarea = components.getTagTextarea();
-    directorCommentTextarea.textContent = order.directorComment;
+    let directorCommentTextarea = components.getTagTextarea(order.directorComment);
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
     let role = localStorage.getItem ('role')
@@ -230,7 +243,7 @@ export async function renderTable(arrayData, time) {
       directorCommentTextarea.disabled = true;
     }  
     if (order.directorComment === "Просрочка") {
-      directorCommentTextarea.classList.add("text-danger");
+      directorCommentTextarea.classList.add("bg-danger-subtle");
     }
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
@@ -244,5 +257,31 @@ export async function renderTable(arrayData, time) {
     trEl.append(tdEl);
   });
   tableEl.append(captionEl, theadEl, tBody);
-  editData();
+
+  editData(fullDataUnit);
+
+  // Обработчик фильтрации по дате
+  const time_defects = document.querySelector('.time-defects');
+  const liTimes = time_defects.querySelectorAll('li');
+  liTimes.forEach((el) => {
+    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit));
+  });
+
+  // Обработчик обновить
+  let btnUpdate = document.getElementById('update');
+  btnUpdate.addEventListener('click', filter.update);
+
+  // обработчик решений менеджера смены
+  const manager = document.querySelector('.manager-defects');
+  const liManagers = manager.querySelectorAll('li');
+  liManagers.forEach((el) => {
+    el.addEventListener('click', () => filter.filterToManager(el.textContent, fullDataUnit));
+  });
+
+  // обработчик решений управляющего
+  const unitDirector = document.querySelector('.unitDirector-defects');
+  const liDirectors = unitDirector.querySelectorAll('li');
+  liDirectors.forEach((el) => {
+    el.addEventListener('click', () => filter.filterToDirector(el.textContent, fullDataUnit));
+  });
 }

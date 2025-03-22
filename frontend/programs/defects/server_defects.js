@@ -13,18 +13,17 @@ export function postServer() {
       const control = trEl.querySelector(".defects-control").value;
 
       let changeServer = {
-        soldAtLocal: e.target.dataset.id.split("+")[0],
-        productId: e.target.dataset.id.split("+")[1],
         disposal,
         reasonDefect,
         nameViolator,
         decisionManager,
         control,
+        id: e.target.dataset.id,
       };
 
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(programName, changeServer);
-      if (responce.soldAtLocal === e.target.dataset.id.split("+")[0] && responce.productId === e.target.dataset.id.split("+")[1]) {
+      if (responce.id === e.target.dataset.id) {
         btn.disabled = true;
       }
     });
