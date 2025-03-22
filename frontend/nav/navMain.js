@@ -115,9 +115,7 @@ content.addEventListener('click', async function (e) {
 });
 
 // навигация администратор
-function showNavAdmin() {
-  console.log('Элдос этот раздел надо делать отдельно думать над логикой');
-
+async function showNavAdmin() {
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumb('Главная');
   let navManaergEl = components.getTagLI_breadcrumbActive('Администратор');
@@ -127,6 +125,11 @@ function showNavAdmin() {
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
+
+  const content = document.getElementById('content')
+  content.innerHTML = ''
+  const module = await import('../programs/admin/main_admin.js');
+  module.render();
 }
 
 // навигация менеджера офиса
