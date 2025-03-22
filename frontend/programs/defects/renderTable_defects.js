@@ -2,6 +2,8 @@ import * as components from '../../components.js';
 import { editData } from './edit_defects.js';
 import * as filter from './filter_defects.js';
 
+let role = localStorage.getItem('role');
+
 export async function renderTable(defects, time, fullDataUnit) {
   time = +time;
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
@@ -168,6 +170,9 @@ export async function renderTable(defects, time, fullDataUnit) {
     if (!defect.disposal) {
       choiseOpt.selected = true;
     }
+    if (role === 'Гость') {
+      selectEL.disabled = true;
+    }
     selectEL.append(choiseOpt, yesOpt, noOpt);
     disposalTD.append(selectEL);
     trEl.append(disposalTD);
@@ -208,7 +213,6 @@ export async function renderTable(defects, time, fullDataUnit) {
     let controlTextarea = components.getTagTextarea(defect.control);
     controlTextarea.classList.add('defects-control');
     controlTextarea.setAttribute('cols', '45');
-    let role = localStorage.getItem('role');
     if (role === 'менеджер смены') {
       controlTextarea.disabled = true;
     }

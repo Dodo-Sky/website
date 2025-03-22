@@ -41,9 +41,6 @@ export async function render_cancelContact(dataFromServer) {
   btnDropdown.classList.remove('dropdown-toggle');
   // количество задач в период
   let count = dataFromServer.filter (el => el.cancelResolutionHR === true || el.cancelResolutionHR === 'false')
-  console.log(count);
-  
-   console.log(dataFromServer);
 
   if (count.length > 0) {
     const spanWork = components.getTagSpan();

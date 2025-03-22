@@ -187,6 +187,10 @@ function getTagLabel_checkbox(idInput, textContent) {
   element.classList.add('form-check-label');
   element.setAttribute('for', idInput);
   element.textContent = textContent;
+  let role = localStorage.getItem('role');
+  if (role === 'Гость') {
+    element.disabled = true;
+  }
   return element;
 }
 
@@ -195,6 +199,10 @@ function getTagInput(type = 'text', value = '') {
   element.classList.add('form-control');
   element.setAttribute('type', type);
   element.setAttribute('value', value);
+  let role = localStorage.getItem('role');
+  if (role === 'Гость') {
+    element.disabled = true;
+  }
   return element;
 }
 
@@ -203,6 +211,10 @@ function getTagInput_checkbox(idInput) {
   element.classList.add('form-check-input');
   element.setAttribute('id', idInput);
   element.setAttribute('type', 'checkbox');
+  let role = localStorage.getItem('role');
+  if (role === 'Гость') {
+    element.disabled = true;
+  }
   return element;
 }
 
@@ -222,6 +234,10 @@ function getTagTextarea(textContent) {
   if (element.textContent.length > 60) {
     element.setAttribute('rows', 4);
   };
+  let role = localStorage.getItem('role');
+  if (role === 'Гость') {
+    element.disabled = true;
+  }
   return element;
 }
 

@@ -1,5 +1,6 @@
 import * as components from '../../components.js';
 import { editData } from './edit_dismissed.js';
+let role = localStorage.getItem('role');
 
 export async function renderDataToPizzeria(dataFromServer, time) {
   dataFromServer.sort((a, b) => new Date(a.dateOfCall) - new Date(b.dateOfCall));
@@ -127,8 +128,6 @@ export async function renderDataToPizzeria(dataFromServer, time) {
 
   thEl = components.getTagTH('Звоним дальше?');
   trEl.append(thEl);
-  // thEl = components.getTagTH('Тип сотрудника');
-  // trEl.append(thEl);
   thEl = components.getTagTH('Управление');
   trEl.append(thEl);
 
@@ -275,6 +274,9 @@ export async function renderDataToPizzeria(dataFromServer, time) {
     if (!data.resolutionManager) {
       yesOpt.selected = true;
     }
+    if (role === 'Гость') {
+      selectEL.disabled = true;
+    }
 
     selectEL.append(yesOpt, noOpt);
     resolutionManager.append(selectEL);
@@ -283,6 +285,9 @@ export async function renderDataToPizzeria(dataFromServer, time) {
     let result = components.getTagTD();
     let commentHRTextarea = components.getTagTextarea(data.result);
     commentHRTextarea.classList.add('dismissed-result');
+    if (data.cancelResolutionHR === 'Отменить решение управляющего') {
+      commentHRTextarea.classList.add('bg-warning-subtle');
+    }
     result.append(commentHRTextarea);
     trEl.append(result);
 
@@ -310,12 +315,12 @@ export async function renderDataToPizzeria(dataFromServer, time) {
       noOpt1.selected = true;
       select.classList.add('bg-danger-subtle');
     }
+    if (role === 'Гость') {
+      select.disabled = true;
+    }
     select.append(yesOpt1, noOpt1);
     furtherCall.append(select);
     trEl.append(furtherCall);
-
-    // let positionName = components.getTagTD(data.positionName);
-    // trEl.append(positionName);
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton('Сохранить');
