@@ -10,7 +10,7 @@ export function clearAuthData() {
 }
 
 export function getUserFioAndUnitName() {
-  return `${localStorage.getItem('fio')} | ${localStorage.getItem('unitName')}`
+  return `${localStorage.getItem('fio')} | ${localStorage.getItem('unitName')}`;
 }
 
 export function getUserRole() {
@@ -46,7 +46,7 @@ export function getLoginForm(onSuccess) {
   loginGroup.className = 'mb-3';
   const loginLabel = document.createElement('label');
   loginLabel.className = 'form-label';
-  loginLabel.setAttribute('for', 'логин');
+  loginLabel.setAttribute('for', 'login');
   loginLabel.textContent = 'Логин';
   const loginInput = document.createElement('input');
   loginInput.className = 'form-control';
@@ -66,7 +66,7 @@ export function getLoginForm(onSuccess) {
   const passwordInput = document.createElement('input');
   passwordInput.type = 'password';
   passwordInput.className = 'form-control';
-  passwordInput.autocomplete = 'current-password'
+  passwordInput.autocomplete = 'current-password';
   passwordInput.id = 'password';
   passwordInput.required = true;
   passwordInput.placeholder = 'Ваш пароль';
