@@ -1,4 +1,12 @@
 import { loginServerApi } from '../apiServer.js';
+import {
+  getTagButton,
+  getTagDiv,
+  getTagForm,
+  getTagH,
+  getTagInput,
+  getTagLabel,
+} from '../components.js';
 
 export function isLoggedIn() {
   return localStorage.getItem('token') !== null;
@@ -10,7 +18,7 @@ export function clearAuthData() {
 }
 
 export function getUserFioAndUnitName() {
-  return `${localStorage.getItem('fio')} | ${localStorage.getItem('unitName')}`
+  return `${localStorage.getItem('fio')} | ${localStorage.getItem('unitName')}`;
 }
 
 export function getUserRole() {
@@ -18,91 +26,75 @@ export function getUserRole() {
 }
 
 export function getLoginForm(onSuccess) {
-  const container = document.createElement('div');
-  container.className = 'container mt-5';
+  const content = document.querySelector('#content');
 
-  const row = document.createElement('div');
-  row.className = 'row justify-content-center';
+  const row = getTagDiv('row');
+  row.classList.add('justify-content-center');
 
-  const col = document.createElement('div');
-  col.className = 'col-md-6';
+  const col = getTagDiv('col-md-6');
+  const card = getTagDiv('card');
 
-  const card = document.createElement('div');
-  card.className = 'card';
+  const cardHeader = getTagDiv('card-header');
+  cardHeader.classList.add('text-center');
 
-  const cardHeader = document.createElement('div');
-  cardHeader.className = 'card-header text-center';
-  const headerText = document.createElement('h4');
-  headerText.textContent = 'Авторизация';
-  cardHeader.appendChild(headerText);
+  const headerText = getTagH(4, 'Авторизация');
+  cardHeader.append(headerText);
 
-  const cardBody = document.createElement('div');
-  cardBody.className = 'card-body';
+  const cardBody = getTagDiv('card-body');
+  const form = getTagForm('loginForm');
+  const loginGroup = getTagDiv('mb-3');
+  const loginLabel = getTagLabel('login', 'Логин');
 
-  const form = document.createElement('form');
-  form.id = 'loginForm';
-
-  const loginGroup = document.createElement('div');
-  loginGroup.className = 'mb-3';
-  const loginLabel = document.createElement('label');
-  loginLabel.className = 'form-label';
-  loginLabel.setAttribute('for', 'логин');
-  loginLabel.textContent = 'Логин';
-  const loginInput = document.createElement('input');
+  const loginInput = getTagInput();
   loginInput.className = 'form-control';
   loginInput.id = 'login';
   loginInput.required = true;
   loginInput.placeholder = 'Ваш логин';
   loginInput.autocomplete = 'username';
-  loginGroup.appendChild(loginLabel);
-  loginGroup.appendChild(loginInput);
+  loginGroup.append(loginLabel, loginInput);
 
-  const passwordGroup = document.createElement('div');
-  passwordGroup.className = 'mb-3';
-  const passwordLabel = document.createElement('label');
-  passwordLabel.className = 'form-label';
-  passwordLabel.setAttribute('for', 'password');
-  passwordLabel.textContent = 'Пароль';
-  const passwordInput = document.createElement('input');
+  const passwordGroup = getTagDiv('mb-3');
+  const passwordLabel = getTagLabel('password', 'Пароль');
+
+  const passwordInput = getTagInput();
   passwordInput.type = 'password';
   passwordInput.className = 'form-control';
-  passwordInput.autocomplete = 'current-password'
+  passwordInput.autocomplete = 'current-password';
   passwordInput.id = 'password';
   passwordInput.required = true;
   passwordInput.placeholder = 'Ваш пароль';
-  passwordGroup.appendChild(passwordLabel);
-  passwordGroup.appendChild(passwordInput);
+  passwordGroup.append(passwordLabel, passwordInput);
 
-  const loginButton = document.createElement('button');
+  const loginButton = getTagButton('Войти', 'submit');
   loginButton.id = 'login-submit-button';
-  loginButton.className = 'btn btn-primary w-100';
-  loginButton.textContent = 'Войти';
+  loginButton.classList.add('w-100');
 
-  form.appendChild(loginGroup);
-  form.appendChild(passwordGroup);
-  form.appendChild(loginButton);
+  form.append(loginGroup, passwordGroup, loginButton);
   cardBody.appendChild(form);
-  card.appendChild(cardHeader);
-  card.appendChild(cardBody);
+  card.append(cardHeader, cardBody);
   col.appendChild(card);
   row.appendChild(col);
-  container.appendChild(row);
+  content.appendChild(row);
 
-  document.body.appendChild(container);
-
-  loginButton.addEventListener('click', async function (e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
     const login = loginInput.value;
     const password = passwordInput.value;
-    if (!login) {
-      alert('Введите логин');
-      return;
-    }
-    if (!password) {
-      alert('Введите пароль');
-      return;
-    }
     loginServerApi(login, password, onSuccess);
   });
-  return container;
+
+  // loginButton.addEventListener('click', async function (e) {
+  //   e.preventDefault();
+  //   const login = loginInput.value;
+  //   const password = passwordInput.value;
+  //   if (!login) {
+  //     alert('Введите логин');
+  //     return;
+  //   }
+  //   if (!password) {
+  //     alert('Введите пароль');
+  //     return;
+  //   }
+  //   loginServerApi (login, password, onSuccess);
+  // });
 }

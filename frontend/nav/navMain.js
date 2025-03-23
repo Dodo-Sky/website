@@ -6,8 +6,7 @@ import {
   getUserFioAndUnitName,
 } from '../auth/login.js';
 import * as components from '../components.js';
-const content = document.getElementById('content');
-
+const content = document.querySelector('#content');
 const authInfo = document.querySelector('.auth-info');
 
 // Навигация сверху (хлебные крошки)
@@ -25,7 +24,10 @@ export function showNavMain() {
   let navMainEl = components.getTagLI_breadcrumbActive('Главная');
   breadcrumb.append(navMainEl);
   if (!isLoggedIn()) {
-    content.innerHTML = getLoginForm(() => window.location.reload());
+    content.innerHTML = '';
+    getLoginForm(() => window.location.reload())
+    
+    //content.innerHTML = getLoginForm(() => window.location.reload());
     return;
   }
 

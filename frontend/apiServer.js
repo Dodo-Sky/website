@@ -1,20 +1,8 @@
-import { URL } from './config.js'
-
-// адрес сервера
-// с внешней ссылки
-
-//const URL = 'https://dodo.aitiko.ru/api';
-//const URL = 'http://178.46.153.198:1860/api';
-//const URL = 'http://localhost:1880';
-
-// const URL = 'http://localhost:1880';
-// const URL = 'https://dodo.aitiko.ru/api'
-// по локальной сети
-// const URL = 'http://190.186.72.106:86/api';
+import { URL } from './config.js';
 
 export function getAuthHeaders() {
-  const token = localStorage.getItem('token')
-  return { Authorization: `Bearer ${token}` }
+  const token = localStorage.getItem('token');
+  return { Authorization: `Bearer ${token}` };
 }
 
 export async function loginServerApi(login, password, onSuccess) {
@@ -24,31 +12,32 @@ export async function loginServerApi(login, password, onSuccess) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ login, password }),
-  })
-  const data = await response.json()
-  console.log(data)
+  });
+  const data = await response.json();
+  console.log(data);
   if (data.error === 'invalid credentials') {
-    alert('Ошибка. Неправильные логин или пароль')
+    alert('Ошибка. Неправильные логин или пароль');
   }
   if (data.token) {
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('role', data.role)
-    localStorage.setItem('fio', data.fio)
-    localStorage.setItem('unitName', data.unitName)
-    onSuccess?.()
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('fio', data.fio);
+    localStorage.setItem('unitName', data.unitName);
+    localStorage.setItem('nameFunction', data.nameFunction);
+    onSuccess?.();
   }
 }
 
 export function handleUnauthorizedResponse(responseDataJSON) {
   try {
-    const responseData = JSON.parse(responseDataJSON)
+    const responseData = JSON.parse(responseDataJSON);
     if (responseData?.error === 'unauthorized') {
-      localStorage.removeItem('token')
-      window.location.reload()
+      localStorage.removeItem('token');
+      window.location.reload();
     }
   } catch (error) {
-    console.error('Invalid JSON')
-    return
+    console.error('Invalid JSON');
+    return;
   }
 }
 
@@ -57,16 +46,16 @@ export async function getServerApi(variableName) {
   try {
     const response = await fetch(`${URL}/globalGet?payload=${variableName}`, {
       headers: getAuthHeaders(),
-    })
+    });
     if (!response.ok) {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     } else {
-      return await response.json()
+      return await response.json();
     }
   } catch (error) {
-    alert(`Ошибка запроса ${variableName} ` + error.message)
+    alert(`Ошибка запроса ${variableName} ` + error.message);
   }
 }
 
@@ -75,22 +64,22 @@ export async function getDataServer(variableName) {
   try {
     const response = await fetch(`${URL}/${variableName}`, {
       headers: getAuthHeaders(),
-    })
+    });
     if (!response.ok) {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     } else {
-      return await response.json()
+      return await response.json();
     }
   } catch (error) {
-    alert(`Ошибка запроса ${variableName} ` + error.message)
+    alert(`Ошибка запроса ${variableName} ` + error.message);
   }
 }
 
 export async function postDataServer(variableName, payload) {
   try {
-    const url = `${URL}/${variableName}`
+    const url = `${URL}/${variableName}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -99,24 +88,24 @@ export async function postDataServer(variableName, payload) {
       },
       body: JSON.stringify(payload),
       // body: payload,
-    })
-    let data = await response.json()
+    });
+    let data = await response.json();
     if (response.ok) {
-      return data
+      return data;
     } else {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
-    alert('Ошибка ' + error.message)
+    alert('Ошибка ' + error.message);
   }
 }
 
 // Изменение элемента в массиве объектов переменной на сервере (указываем id элемента а также новую информаицию для этого элемента)
 export async function putServerApi(elementId, payload) {
   try {
-    const url = `${URL}/config/${elementId}`
+    const url = `${URL}/config/${elementId}`;
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -124,23 +113,23 @@ export async function putServerApi(elementId, payload) {
         ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
-    })
+    });
     if (response.ok) {
-      alert('Запись обновлена данные сохранены на сервер')
+      alert('Запись обновлена данные сохранены на сервер');
     } else {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
-    alert('Ошибка ' + error.message)
+    alert('Ошибка ' + error.message);
   }
 }
 
 // Добавление нового объекта в массив объектов на сервере (отправляем {объект})
 export async function createServerApi(payload) {
   try {
-    const url = `${URL}/config`
+    const url = `${URL}/config`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -148,39 +137,39 @@ export async function createServerApi(payload) {
         ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
-    })
+    });
     if (response.ok) {
-      alert('Запись обновлена данные сохранены на сервер')
+      alert('Запись обновлена данные сохранены на сервер');
     } else {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
-    alert('Ошибка ' + error.message)
+    alert('Ошибка ' + error.message);
   }
 }
 
 // Удаление элемента из массива (указываем в параметре функции id элемента)
 export async function deleteServerApi(id) {
   try {
-    const url = `${URL}/config/${id}`
+    const url = `${URL}/config/${id}`;
     const response = await fetch(url, {
       method: 'DELETE',
       ...getAuthHeaders(),
-    })
+    });
     if (!response.ok) {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
-    alert('Ошибка ' + error.message)
+    alert('Ошибка ' + error.message);
   }
 }
 
 export async function updateUnitSettings({ unitId, settings }) {
-  const url = `${URL}/unitsSettings/${unitId}`
+  const url = `${URL}/unitsSettings/${unitId}`;
   try {
     const response = await fetch(url, {
       method: 'PUT',
@@ -189,30 +178,30 @@ export async function updateUnitSettings({ unitId, settings }) {
         ...getAuthHeaders(),
       },
       body: JSON.stringify(settings),
-    })
+    });
     if (response.ok) {
-      alert('Данные сохранены')
+      alert('Данные сохранены');
     } else {
-      const responseData = await response.text()
-      handleUnauthorizedResponse(responseData)
-      alert('Ошибка обратитесь к администратору ' + responseData)
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
     }
   } catch (error) {
-    alert('Ошибка ' + error.message)
+    alert('Ошибка ' + error.message);
   }
 }
 
 export async function getUsers() {
   try {
-    return await getServerApi('authTokens')
+    return await getServerApi('authTokens');
   } catch (error) {
-    console.error('Ошибка загрузки пользователей', error)
-    alert('Ошибка загрузки пользователей' + error.message)
+    console.error('Ошибка загрузки пользователей', error);
+    alert('Ошибка загрузки пользователей' + error.message);
   }
 }
 
-export async function createUser({ login, password, fio, unitName, role }) {
-  const url = `${URL}/users`
+export async function createUser({ login, password, fio, unitName, role, nameFunction }) {
+  const url = `${URL}/users`;
   try {
     await fetch(url, {
       method: 'POST',
@@ -220,16 +209,16 @@ export async function createUser({ login, password, fio, unitName, role }) {
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
       },
-      body: JSON.stringify({ login, password, fio, unitName, role }),
-    })
+      body: JSON.stringify({ login, password, fio, unitName, role, nameFunction }),
+    });
   } catch (error) {
-    console.error('Ошибка создания пользователя', error)
-    alert('Ошибка создания пользователя' + error.message)
+    console.error('Ошибка создания пользователя', error);
+    alert('Ошибка создания пользователя' + error.message);
   }
 }
 
-export async function updateUser({ login, password, fio, unitName, role }) {
-  const url = `${URL}/users/${login}`
+export async function updateUser({ login, password, fio, unitName, role, nameFunction }) {
+  const url = `${URL}/users/${login}`;
   try {
     await fetch(url, {
       method: 'PUT',
@@ -237,25 +226,25 @@ export async function updateUser({ login, password, fio, unitName, role }) {
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
       },
-      body: JSON.stringify({ password, fio, unitName, role }),
-    })
+      body: JSON.stringify({ password, fio, unitName, role, nameFunction }),
+    });
   } catch (error) {
-    console.error('Ошибка обновления пользователя', error)
-    alert('Ошибка обновления пользователя' + error.message)
+    console.error('Ошибка обновления пользователя', error);
+    alert('Ошибка обновления пользователя' + error.message);
   }
 }
 
 export async function deleteUserByLogin(login) {
-  const url = `${URL}/users/${login}`
+  const url = `${URL}/users/${login}`;
   try {
     await fetch(url, {
       method: 'DELETE',
       headers: {
         ...getAuthHeaders(),
       },
-    })
+    });
   } catch (error) {
-    console.error('Ошибка удаления пользователя', error)
-    alert('Ошибка удаления пользователя' + error.message)
+    console.error('Ошибка удаления пользователя', error);
+    alert('Ошибка удаления пользователя' + error.message);
   }
 }
