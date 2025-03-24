@@ -26,8 +26,6 @@ export function showNavMain() {
   if (!isLoggedIn()) {
     content.innerHTML = '';
     getLoginForm(() => window.location.reload())
-    
-    //content.innerHTML = getLoginForm(() => window.location.reload());
     return;
   }
 
@@ -208,6 +206,6 @@ function showNavManager() {
   );
 }
 
-function showLogin() {
-  content.innerHTML = 'страница логина';
-}
+// function showLogin() {
+//   content.innerHTML = 'страница логина';
+// }

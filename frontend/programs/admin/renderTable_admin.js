@@ -1,20 +1,17 @@
 import { createUser, updateUser, deleteUserByLogin, getUsers } from '../../apiServer.js';
 import * as components from '../../components.js';
 
-export async function renderUsersTable (usersData) {
-  const tableContent = document.querySelector('#content');
-  tableContent.innerHTML = '';
+export function renderUsersTable (usersData) {
+  usersData.sort ((a,b) => a.unitName.localeCompare (b.unitName))
+  const units = [...new Set(usersData.map((el) => el.unitName))].sort();
+  const roles = [...new Set(usersData.map((el) => el.role))].sort();
 
-  // Кнопка "Добавить пользователя"
-  const addUserBtn = components.getTagButton('Добавить пользователя');
-  addUserBtn.classList.add('btn-primary', 'mt-3');
-  addUserBtn.setAttribute('data-bs-toggle', 'modal');
-  addUserBtn.setAttribute('data-bs-target', '#addUserModal');
-  tableContent.append(addUserBtn);
-
+  const table_admin = document.querySelector('.table-admin');
+  table_admin.innerHTML = '';
+  
   const tableEl = components.getTagTable();
   tableEl.classList.add('table-sm');
-  tableContent.append(tableEl);
+  table_admin.append(tableEl);
   const captionEl = components.getTagCaption('Список пользователей');
 
   // Заголовок таблицы THead
@@ -26,6 +23,9 @@ export async function renderUsersTable (usersData) {
   trEl.append(thEl);
 
   thEl = components.getTagTH('ФИО');
+  trEl.append(thEl);
+
+  thEl = components.getTagTH('Должность');
   trEl.append(thEl);
 
   thEl = components.getTagTH('Пароль');
@@ -46,25 +46,7 @@ export async function renderUsersTable (usersData) {
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
 
-  // Списки для выпадающих меню
-  const roles = [
-    'управляющий',
-    'менеджер смены',
-    'менеджер офиса',
-    'администратор',
-    'Гость',
-  ];
-  const units = [
-    'Тюмень-1',
-    'Тюмень-2',
-    'Тюмень-3',
-    'Тюмень-4',
-    'Тюмень-5',
-    'Тюмень-6',
-    'Тюмень-7',
-    'Тюмень-8',
-    'Офис',
-  ];
+  const nameFunctions = [...new Set(usersData.map((el) => el.nameFunction))].sort();
 
   usersData.forEach((user) => {
     trEl = components.getTagTR();
@@ -76,20 +58,29 @@ export async function renderUsersTable (usersData) {
 
     // ФИО (редактируемое поле)
     let fio = components.getTagTD();
-    let fioInput = components.getTagInput('text', user.fio);
+    let fioInput = components.getTagTextarea(user.fio);
+    fioInput.classList.add ('fioInput');
     fio.append(fioInput);
     trEl.append(fio);
+
+    let nameFunctionEl = components.getTagTD();
+    let nameFunctionInput = components.getTagTextarea(user.nameFunction);
+    nameFunctionInput.classList.add ('nameFunctionEl');
+    nameFunctionEl.append(nameFunctionInput);
+    trEl.append(nameFunctionEl);
 
     // Пароль (редактируемое поле)
     let password = components.getTagTD();
     let passwordInput = components.getTagInput('text', user.password || ''); // Пароль может быть пустым
     passwordInput.id = `password-${user.login}`;
+    passwordInput.classList.add ('password');
     password.append(passwordInput);
     trEl.append(password);
 
     // Роль (выпадающий список)
     let role = components.getTagTD();
     let roleSelect = components.getTagSelect();
+    roleSelect.classList.add ('roleSelect');
     roles.forEach((roleItem) => {
       let option = components.getTagOption(roleItem, roleItem);
       if (roleItem === user.role) option.selected = true;
@@ -101,6 +92,7 @@ export async function renderUsersTable (usersData) {
     // Подразделение (выпадающий список)
     let unitName = components.getTagTD();
     let unitSelect = components.getTagSelect();
+    unitSelect.classList.add ('unitSelect');
     units.forEach((unitItem) => {
       let option = components.getTagOption(unitItem, unitItem);
       if (unitItem === user.unitName) option.selected = true;
@@ -112,11 +104,11 @@ export async function renderUsersTable (usersData) {
     // Кнопки "Сохранить" и "Удалить"
     let tdEl = components.getTagTD();
     let saveBtn = components.getTagButton('Сохранить');
-    saveBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-2');
+    saveBtn.className = 'btn btn-outline-success btn-sm me-2';
     saveBtn.setAttribute('data-id', user.login);
 
     let deleteBtn = components.getTagButton('Удалить');
-    deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+    deleteBtn.className = 'btn btn-outline-danger btn-sm';
     deleteBtn.setAttribute('data-id', user.login);
 
     tdEl.append(saveBtn, deleteBtn);
@@ -140,10 +132,17 @@ export async function renderUsersTable (usersData) {
                 <label for="login" class="form-label">Логин</label>
                 <input type="text" class="form-control" id="login" required>
               </div>
+              
               <div class="mb-3">
                 <label for="fio" class="form-label">ФИО</label>
                 <input type="text" class="form-control" id="fio" required>
               </div>
+              
+              <div class="mb-3">
+                <label for="nameFunction" class="form-label">Должность</label>
+                <input type="text" class="form-control" id="nameFunction" required>
+              </div>
+              
               <div class="mb-3">
                 <label for="password" class="form-label">Пароль</label>
                 <input type="text" class="form-control" id="password" required>
@@ -174,18 +173,19 @@ export async function renderUsersTable (usersData) {
       </div>
     </div>
   `;
-  tableContent.insertAdjacentHTML('beforeend', modalHTML);
+  table_admin.insertAdjacentHTML('beforeend', modalHTML);
 
   // Обработчик для кнопки "Сохранить" в таблице
-  const saveButtons = document.querySelectorAll('.btn-success');
+  const saveButtons = document.querySelectorAll('.btn-outline-success');
   saveButtons.forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const userId = btn.getAttribute('data-id');
+      const userId = btn.dataset.id
       const row = btn.closest('tr');
-      const fioInput = row.querySelector('input[type="text"]');
-      const passwordInput = row.querySelector(`#password-${userId}`);
-      const roleSelect = row.querySelector('select');
-      const unitSelect = row.querySelectorAll('select')[1];
+      const fioInput = row.querySelector('.fioInput');
+      const passwordInput = row.querySelector('.password');
+      const roleSelect = row.querySelector('.roleSelect');
+      const unitSelect = row.querySelector('.unitSelect');
+      const nameFunction = row.querySelector('.nameFunctionEl')?.value ?? ''
 
       const updatedUser = {
         login: userId,
@@ -193,10 +193,11 @@ export async function renderUsersTable (usersData) {
         password: passwordInput.value,
         role: roleSelect.value,
         unitName: unitSelect.value,
+        nameFunction: nameFunction,
       };
 
       try {
-        await updateUser(updatedUser);
+        await updateUser (updatedUser);
         alert('Пользователь успешно обновлен!');
         reloadUsers();
       } catch (error) {
@@ -206,7 +207,7 @@ export async function renderUsersTable (usersData) {
   });
 
   // Обработчик для кнопки "Удалить"
-  const deleteButtons = document.querySelectorAll('.btn-danger');
+  const deleteButtons = document.querySelectorAll('.btn-outline-danger');
   deleteButtons.forEach((btn) => {
     btn.addEventListener('click', async () => {
       const userId = btn.getAttribute('data-id');
@@ -228,9 +229,10 @@ export async function renderUsersTable (usersData) {
     const password = document.getElementById('password').value;
     const role = document.getElementById('role').value;
     const unitName = document.getElementById('unitName').value;
+    const nameFunction = document.getElementById('nameFunction').value;
 
     try {
-      await createUser({ login, password, fio, unitName, role });
+      await createUser({ login, password, fio, unitName, role, nameFunction });
       alert('Пользователь успешно создан!');
       reloadUsers(); // Перезагрузка данных
       bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide(); // Закрыть модальное окно

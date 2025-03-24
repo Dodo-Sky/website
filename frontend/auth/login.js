@@ -82,19 +82,4 @@ export function getLoginForm(onSuccess) {
     const password = passwordInput.value;
     loginServerApi(login, password, onSuccess);
   });
-
-  // loginButton.addEventListener('click', async function (e) {
-  //   e.preventDefault();
-  //   const login = loginInput.value;
-  //   const password = passwordInput.value;
-  //   if (!login) {
-  //     alert('Введите логин');
-  //     return;
-  //   }
-  //   if (!password) {
-  //     alert('Введите пароль');
-  //     return;
-  //   }
-  //   loginServerApi (login, password, onSuccess);
-  // });
 }

@@ -226,7 +226,7 @@ export async function updateUser({ login, password, fio, unitName, role, nameFun
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
       },
-      body: JSON.stringify({ password, fio, unitName, role, nameFunction }),
+      body: JSON.stringify({login, password, fio, unitName, role, nameFunction }),
     });
   } catch (error) {
     console.error('Ошибка обновления пользователя', error);
