@@ -1,0 +1,4 @@
+.prettierrc
+.idea
+**/config.js
+**/test.js
