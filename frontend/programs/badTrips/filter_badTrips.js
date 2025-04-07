@@ -31,13 +31,13 @@ function filterToDirector(value, fullDataUnit) {
     editDataNoChange(defectFilterUnit, 0, fullDataUnit);
   }
   if (value === 'Только просроченные') {
-    filterData = defectFilterUnit.filter((el) => el.directorComment === 'Просрочка');
+    filterData = defectFilterUnit.filter((el) => el.directorComment.content === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
-    filterData = defectFilterUnit.filter((el) => !el.directorComment);
+    filterData = defectFilterUnit.filter((el) => !el.directorComment.content);
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'В работе';
@@ -81,12 +81,12 @@ async function update() {
     return;
   }
   if (unitDirector.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.directorComment === 'Просрочка');
+    filterData = fullDataUnit.filter((el) => el.directorComment.content === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
   if (unitDirector.dataset.condition === 'В работе') {
-    filterData = fullDataUnit.filter((el) => !el.directorComment);
+    filterData = fullDataUnit.filter((el) => !el.directorComment.content);
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
