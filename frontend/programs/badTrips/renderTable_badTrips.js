@@ -104,7 +104,7 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
   thEl.classList.add("dropend");
   btnDropdown = components.getTagButton_dropdown("Решение управляющего");
   // количество задач в работе
-  count = arrayData.filter((el) => !el.directorComment).length;
+  count = arrayData.filter((el) => !el.directorComment.content).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add("badge");
@@ -113,7 +113,7 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
     btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
-  countDelays = arrayData.filter((el) => el.directorComment === "Просрочка").length;
+  countDelays = arrayData.filter((el) => el.directorComment.content === "Просрочка").length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -235,14 +235,14 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
-    let directorCommentTextarea = components.getTagTextarea(order.directorComment);
+    let directorCommentTextarea = components.getTagTextarea(order.directorComment.content);
     directorCommentTextarea.classList.add("badTrips-directorComment");
     directorCommentTextarea.setAttribute("cols", "75");
     let role = localStorage.getItem ('role')
     if (role === 'менеджер смены') {
       directorCommentTextarea.disabled = true;
     }  
-    if (order.directorComment === "Просрочка") {
+    if (order.directorComment.content === "Просрочка") {
       directorCommentTextarea.classList.add("bg-danger-subtle");
     }
     directorComment.append(directorCommentTextarea);
