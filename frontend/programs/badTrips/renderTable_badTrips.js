@@ -164,6 +164,7 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
     titleH1.classList.add("fs-5");
     let closeBtn = components.getTagButton_close();
     let modalBody = components.getTagDiv("modal-body");
+    let dateResponceCourier = order.dateResponceCourier ? order.dateResponceCourier : 'Нет ответа от курьера';
     modalBody.innerHTML = `
     <b>Общие данные</b><br>
     ФИО курьера: ${order.fio}<br>
@@ -181,7 +182,8 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
     Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
-    Просрочка: <b>${order.expiration} минут</b><br><br>
+    Просрочка: <b>${order.expiration} минут</b><br>
+    Время ответа курьером: ${dateResponceCourier} <br><br>
 
     <b>Параметры поездки</b><br>
     Сектор доставки: ${order.sectorName}<br>
