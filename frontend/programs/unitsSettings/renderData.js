@@ -1,10 +1,10 @@
-import { getServerApi } from "../../apiServer.js";
-import { getForm } from "./workingForm.js";
-import * as components from "../../components.js";
+import { getServerApi } from '../../apiServer.js';
+import { getForm } from './workingForm.js';
+import * as components from '../../components.js';
 
 export async function renderData() {
-  const content = document.querySelector(".contentSetting");
-  content.innerHTML = "";
+  const content = document.querySelector('.contentSetting');
+  content.innerHTML = '';
 
   // спинер
   content.innerHTML = `
@@ -12,47 +12,50 @@ export async function renderData() {
   <span class="visually-hidden">Загрузка...</span>
   </div>`;
 
-  let unitsSettings = await getServerApi("unitsSettings");
+  let unitsSettings = await getServerApi('unitsSettings');
+  const departmentName = localStorage.getItem('departmentName');
+  unitsSettings = unitsSettings.filter((el) => el.departmentName === departmentName);
   unitsSettings.sort((a, b) => a.unitName.localeCompare(b.unitName));
+  console.log(unitsSettings);
 
-  const unitSettings_nav = components.getTagDiv("unitSettings_nav");
+  const unitSettings_nav = components.getTagDiv('unitSettings_nav');
   content.append(unitSettings_nav);
-  const $content = components.getTagDiv("unitSettings_content");
+  const $content = components.getTagDiv('unitSettings_content');
   content.append($content);
 
   // выключаем спинер
-  let spiner = document.querySelector(".spinner-border");
-  spiner.style.display = "none";
+  let spiner = document.querySelector('.spinner-border');
+  spiner.style.display = 'none';
 
   // отрисовка верхней навигации
   const navEl = components.getTagNav();
   const ulEL_nav = components.getTagUL_nav();
-  ulEL_nav.classList.add("nav-tabs");
+  ulEL_nav.classList.add('nav-tabs');
 
-  const liEl_dropdown_toggle = components.getTagLI_dropdownToggle("Пиццерии");
+  const liEl_dropdown_toggle = components.getTagLI_dropdownToggle('Пиццерии');
   const ulEl_dropdown_menu = components.getTagUL_dropdownMenu();
   liEl_dropdown_toggle.append(ulEl_dropdown_menu);
 
   for (const unit of unitsSettings) {
-    if (unit.type !== "Пиццерия") continue;
+    if (unit.type !== 'Пиццерия') continue;
     const liEl_dropdown_item = components.getTagLI_dropdownItem(unit.unitName);
     ulEl_dropdown_menu.append(liEl_dropdown_item);
   }
-  const liEl_prz = components.getTagLI_nav("Тюмень-ПРЦ-3");
-  const liEl_ofis = components.getTagLI_nav("Офис");
+  const liEl_prz = components.getTagLI_nav('ПРЦ');
+  const liEl_ofis = components.getTagLI_nav('Офис');
   ulEL_nav.append(liEl_dropdown_toggle, liEl_prz, liEl_ofis);
   navEl.append(ulEL_nav);
   unitSettings_nav.append(navEl);
-  render("Тюмень-1", unitsSettings, $content);
+  render(unitsSettings.filter((el) => el.type === 'Пиццерия')[0].unitName, unitsSettings, $content);
 
   // активация кнопок
-  unitSettings_nav.addEventListener("click", function (e) {
-    let liEl = unitSettings_nav.querySelectorAll(".nav-item");
+  unitSettings_nav.addEventListener('click', function (e) {
+    let liEl = unitSettings_nav.querySelectorAll('.nav-item');
     liEl.forEach((el) => {
-      el.classList.remove("active");
+      el.classList.remove('active');
     });
-    if (e.target.className.includes("nav-item nav-link")) {
-      e.target.classList.add("active");
+    if (e.target.className.includes('nav-item nav-link')) {
+      e.target.classList.add('active');
     }
 
     // отрисовка пиццерий
@@ -65,39 +68,39 @@ export async function renderData() {
 function render(unitName, unitsSettings, $content) {
   for (const unit of unitsSettings) {
     if (unit.unitName !== unitName) continue;
-    $content.innerHTML = "";
+    $content.innerHTML = '';
 
     const title = components.getTagH(5, `Информация по подразделению ${unit.unitName}`);
     const unitNameEl = components.getTagP(`Название - ${unit.unitName}`);
     $content.append(title, unitNameEl);
 
-    if (unit.type === "Пиццерия") {
+    if (unit.type === 'Пиццерия') {
       const deliveryWork = components.getTagP(
-        `Время работы доставки: с ${unit.timeWork.delivery.workingTimeStart} до ${unit.timeWork.delivery.workingTimeStop}`
+        `Время работы доставки: с ${unit.timeWork.delivery.workingTimeStart} до ${unit.timeWork.delivery.workingTimeStop}`,
       );
-      deliveryWork.classList.add("mb-0");
+      deliveryWork.classList.add('mb-0');
       const restoranWork = components.getTagP(
-        `Время работы ресторана: с ${unit.timeWork.restoran.workingTimeStart} до ${unit.timeWork.restoran.workingTimeStop}`
+        `Время работы ресторана: с ${unit.timeWork.restoran.workingTimeStart} до ${unit.timeWork.restoran.workingTimeStop}`,
       );
 
       // таблица по программам
       const table = components.getTagTable();
-      const captionEl1 = components.getTagCaption("Список программ");
+      const captionEl1 = components.getTagCaption('Список программ');
       const tHead = components.getTagTHead();
       const tBody = components.getTagTBody();
       const trEl = components.getTagTR();
-      const thName = components.getTagTH("Наименование программы");
-      const thStatus = components.getTagTH("Состояние");
+      const thName = components.getTagTH('Наименование программы');
+      const thStatus = components.getTagTH('Состояние');
       trEl.append(thName, thStatus);
       tHead.append(trEl);
       for (const program of unit.programs) {
         const trEl = components.getTagTR();
         let tdElname = components.getTagTD(program.name);
 
-        let isActive = program.isActive ? "Включена" : "Отключена";
+        let isActive = program.isActive ? 'Включена' : 'Отключена';
         let tdElactive = components.getTagTD(isActive);
-        if (isActive === "Включена") tdElactive.classList.add("table-success");
-        if (isActive === "Отключена") tdElactive.classList.add("table-danger");
+        if (isActive === 'Включена') tdElactive.classList.add('table-success');
+        if (isActive === 'Отключена') tdElactive.classList.add('table-danger');
         trEl.append(tdElname, tdElactive);
         tBody.append(trEl);
       }
@@ -105,20 +108,22 @@ function render(unitName, unitsSettings, $content) {
       $content.append(deliveryWork, restoranWork, table);
     }
 
-    if (unit.type === "Тюмень-ПРЦ-3") {
-      const deliveryWork = components.getTagP(`Время работы ПРЦ: с ${unit.timeWork.workingTimeStart} до ${unit.timeWork.workingTimeStop}`);
+    if (unit.type === 'ПРЦ') {
+      const deliveryWork = components.getTagP(
+        `Время работы ПРЦ: с ${unit.timeWork.workingTimeStart} до ${unit.timeWork.workingTimeStop}`,
+      );
       $content.append(deliveryWork);
     }
 
     // таблица по ID телеграмм
     const tableId = components.getTagTable();
-    const captionEl = components.getTagCaption("Список ID телеграмм");
+    const captionEl = components.getTagCaption('Список ID телеграмм');
     const tHeadId = components.getTagTHead();
     const tBodyId = components.getTagTBody();
     const trElId = components.getTagTR();
-    const thId = components.getTagTH("Id телеграмм");
-    const thNameFunction = components.getTagTH("Функция");
-    const thfio = components.getTagTH("ФИО");
+    const thId = components.getTagTH('Id телеграмм');
+    const thNameFunction = components.getTagTH('Функция');
+    const thfio = components.getTagTH('ФИО');
     trElId.append(thId, thNameFunction, thfio);
     tHeadId.append(trElId);
 
@@ -133,8 +138,8 @@ function render(unitName, unitsSettings, $content) {
     tableId.append(captionEl, tHeadId, tBodyId);
     $content.append(tableId);
 
-    let btnEdit = components.getTagButton("Редактировать подразделение", "submit");
-    btnEdit.setAttribute("data-id", unit.unitId);
+    let btnEdit = components.getTagButton('Редактировать подразделение', 'submit');
+    btnEdit.setAttribute('data-id', unit.unitId);
     $content.append(btnEdit);
   }
 }

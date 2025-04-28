@@ -10,7 +10,8 @@ export async function render() {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const authTokens = await getServerApi('authTokens');
+  let authTokens = await getServerApi('authTokens');
+  authTokens = authTokens.filter (el => el.departmentName === localStorage.getItem ('departmentName'));
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -23,6 +24,7 @@ export async function render() {
   content.append(row);
   let col_auto = components.getTagDiv('col-auto');
   row.append(col_auto);
+
   // Кнопка "Добавить пользователя"
   const addUserBtn = components.getTagButton('Добавить пользователя');
   addUserBtn.classList.add('btn-primary');

@@ -1,8 +1,11 @@
 import { getServerApi } from "../../apiServer.js";
 import { postServer } from "./server_idTeleramm.js";
 
-export async function editData() {
-  const dataFromServer = await getServerApi("notDismissedStaff");
+export async function editData(dataFromServer) {
+  // const departmentName = localStorage.getItem('departmentName');
+  // let dataFromServer = await getServerApi(`${departmentName}/staffData`);
+
+  //const dataFromServer = await getServerApi("notDismissedStaff");
   makeButtonActive("idTelegramm", dataFromServer);
 
   // проверка сохранения данных юзером

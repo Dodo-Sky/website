@@ -1,10 +1,4 @@
-import {
-  clearAuthData,
-  getLoginForm,
-  getUserRole,
-  isLoggedIn,
-  getUserFioAndUnitName,
-} from '../auth/login.js';
+import { clearAuthData, getLoginForm, getUserRole, isLoggedIn, getUserFioAndUnitName } from '../auth/login.js';
 import * as components from '../components.js';
 const content = document.querySelector('#content');
 const authInfo = document.querySelector('.auth-info');
@@ -17,6 +11,7 @@ breadcrumb.addEventListener('click', function (e) {
   if (e.target?.textContent === 'Менеджер офиса') showNavOfis();
   if (e.target?.textContent === 'Управляющий') showNavUnitDirector();
   if (e.target?.textContent === 'Менеджер смены') showNavManager();
+  if (e.target?.textContent === 'Администратор всей сети') showChiefNavAdmin();
 });
 
 export function showNavMain() {
@@ -25,22 +20,26 @@ export function showNavMain() {
   breadcrumb.append(navMainEl);
   if (!isLoggedIn()) {
     content.innerHTML = '';
-    getLoginForm(() => window.location.reload())
+    getLoginForm(() => window.location.reload());
     return;
   }
 
   const role = getUserRole();
 
   // первый уровень после авторизации
-  let cardRow = components.getCardRow();
-  let adminUser = components.getCardNav('Администратор', 'Настройка прав доступа');
-  let ofisUser = components.getCardNav('Менеджер офиса', 'Параметры с настройками');
-  let unitDirector = components.getCardNav('Управляющий', 'Тут находятся программы');
-  let managerUser = components.getCardNav('Менеджер смены', 'Тут находятся программы');
+  const cardRow = components.getCardRow();
+  const chiefAdminUser = components.getCardNav('Администратор всей сети', 'Настройка прав доступа');
+  const adminUser = components.getCardNav('Администратор', 'Настройка прав доступа');
+  const ofisUser = components.getCardNav('Менеджер офиса', 'Параметры с настройками');
+  const unitDirector = components.getCardNav('Управляющий', 'Тут находятся программы');
+  const managerUser = components.getCardNav('Менеджер смены', 'Тут находятся программы');
 
   switch (role) {
     case 'администратор':
       cardRow.append(adminUser, ofisUser, unitDirector, managerUser);
+      break;
+    case 'Администратор всей сети':
+      cardRow.append(chiefAdminUser, adminUser, ofisUser, unitDirector, managerUser);
       break;
     case 'менеджер офиса':
       cardRow.append(ofisUser, unitDirector, managerUser);
@@ -63,10 +62,7 @@ export function showNavMain() {
   content.append(cardRow);
 
   authInfo.innerHTML = '';
-  authInfo.append(
-    components.getTagP(getUserFioAndUnitName()),
-    components.getTagButton_logout(),
-  );
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 }
 
 // старт программ
@@ -76,6 +72,7 @@ content.addEventListener('click', async function (e) {
   if (e.target?.dataset?.id === 'Администратор') showNavAdmin();
   if (e.target?.dataset?.id === 'Менеджер офиса') showNavOfis();
   if (e.target?.dataset?.id === 'Менеджер смены') showNavManager();
+  if (e.target?.dataset?.id === 'Администратор всей сети') showChiefNavAdmin();
 
   // Запуск программ
   if (e.target?.dataset?.id === 'Контроль брака') {
@@ -121,14 +118,26 @@ async function showNavAdmin() {
   let navManaergEl = components.getTagLI_breadcrumbActive('Администратор');
   breadcrumb.append(navMainEl, navManaergEl);
   authInfo.innerHTML = '';
-  authInfo.append(
-    components.getTagP(getUserFioAndUnitName()),
-    components.getTagButton_logout(),
-  );
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 
-  const content = document.getElementById('content')
-  content.innerHTML = ''
+  const content = document.getElementById('content');
+  content.innerHTML = '';
   const module = await import('../programs/admin/main_admin.js');
+  module.render();
+}
+
+// навигация Администраторй всей сети
+async function showChiefNavAdmin() {
+  breadcrumb.innerHTML = '';
+  let navMainEl = components.getTagLI_breadcrumb('Главная');
+  let navManaergEl = components.getTagLI_breadcrumbActive('Администратор всей сети');
+  breadcrumb.append(navMainEl, navManaergEl);
+  authInfo.innerHTML = '';
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const module = await import('../programs/chiefAdmin/main_shiefAdmin.js');
   module.render();
 }
 
@@ -149,10 +158,7 @@ async function showNavOfis() {
   breadcrumb.append(navMainEl, navManaergEl);
 
   authInfo.innerHTML = '';
-  authInfo.append(
-    components.getTagP(getUserFioAndUnitName()),
-    components.getTagButton_logout(),
-  );
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 }
 
 // навигация управляющего
@@ -176,10 +182,7 @@ function showNavUnitDirector() {
   breadcrumb.append(navMainEl, navManaergEl);
 
   authInfo.innerHTML = '';
-  authInfo.append(
-    components.getTagP(getUserFioAndUnitName()),
-    components.getTagButton_logout(),
-  );
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 }
 
 // навигация менеджера смены
@@ -200,10 +203,7 @@ function showNavManager() {
   breadcrumb.append(navMainEl, navManaergEl);
 
   authInfo.innerHTML = '';
-  authInfo.append(
-    components.getTagP(getUserFioAndUnitName()),
-    components.getTagButton_logout(),
-  );
+  authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 }
 
 // function showLogin() {

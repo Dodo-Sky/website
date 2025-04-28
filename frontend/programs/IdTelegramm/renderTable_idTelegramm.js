@@ -1,8 +1,9 @@
 import * as components from "../../components.js";
 import { editData } from "./edtt_idTelegramm.js";
 
-export async function renderTable(arrayData) {
-  arrayData.sort((a, b) => a.fio.localeCompare(b.fio));
+export async function renderTable(arrayData, staffData) {
+  console.log(arrayData);
+  await arrayData.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
   const tableContent = document.querySelector(".table");
   tableContent.innerHTML = "";
@@ -79,7 +80,7 @@ export async function renderTable(arrayData) {
   arrayData.forEach((staff) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let fio = components.getTagTD(staff.fio);
+    let fio = components.getTagTD(`${staff.lastName} ${staff.firstName} ${staff.patronymicName}`);
     trEl.append(fio);
     let phoneNumber = components.getTagTD(staff.phoneNumber);
     trEl.append(phoneNumber);
@@ -101,5 +102,5 @@ export async function renderTable(arrayData) {
     trEl.append(tdEl);
   });
   tableEl.append(theadEl, tBody);
-  editData();
+  editData(staffData);
 }

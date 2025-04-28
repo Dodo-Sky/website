@@ -4,7 +4,7 @@ import * as components from '../../components.js';
 export function renderUsersTable (usersData) {
   usersData.sort ((a,b) => a.unitName.localeCompare (b.unitName))
   const units = [...new Set(usersData.map((el) => el.unitName))].sort();
-  const roles = [...new Set(usersData.map((el) => el.role))].sort();
+  const roles = ['администратор', 'менеджер офиса', 'управляющий', 'Гость', 'менеджер смены'];
 
   const table_admin = document.querySelector('.table-admin');
   table_admin.innerHTML = '';
@@ -185,7 +185,8 @@ export function renderUsersTable (usersData) {
       const passwordInput = row.querySelector('.password');
       const roleSelect = row.querySelector('.roleSelect');
       const unitSelect = row.querySelector('.unitSelect');
-      const nameFunction = row.querySelector('.nameFunctionEl')?.value ?? ''
+      const nameFunction = row.querySelector('.nameFunctionEl')?.value ?? '';
+      const departmentName = localStorage.getItem ('departmentName');
 
       const updatedUser = {
         login: userId,
@@ -194,6 +195,7 @@ export function renderUsersTable (usersData) {
         role: roleSelect.value,
         unitName: unitSelect.value,
         nameFunction: nameFunction,
+        departmentName: departmentName,
       };
 
       try {
@@ -230,10 +232,10 @@ export function renderUsersTable (usersData) {
     const role = document.getElementById('role').value;
     const unitName = document.getElementById('unitName').value;
     const nameFunction = document.getElementById('nameFunction').value;
+    const departmentName = localStorage.getItem ('departmentName');
 
     try {
-      await createUser({ login, password, fio, unitName, role, nameFunction });
-      alert('Пользователь успешно создан!');
+      await createUser({ login, password, fio, unitName, role, nameFunction, departmentName });
       reloadUsers(); // Перезагрузка данных
       bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide(); // Закрыть модальное окно
     } catch (error) {

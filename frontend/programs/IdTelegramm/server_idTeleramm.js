@@ -1,5 +1,5 @@
 import { postDataServer } from "../../apiServer.js";
-const programName = "notDismissedStaff";
+const programName = "editStaffData";
 
 export function postServer() {
   const bnts = document.querySelectorAll(".arrayData-btn-save");
@@ -11,6 +11,7 @@ export function postServer() {
       let changeServer = {
         id: btn.dataset.id,
         idTelegramm,
+        departmentName: localStorage.getItem ('departmentName'),
       };
 
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной

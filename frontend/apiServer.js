@@ -24,6 +24,7 @@ export async function loginServerApi(login, password, onSuccess) {
     localStorage.setItem('fio', data.fio);
     localStorage.setItem('unitName', data.unitName);
     localStorage.setItem('nameFunction', data.nameFunction);
+    localStorage.setItem('departmentName', data.departmentName);
     onSuccess?.();
   }
 }
@@ -193,31 +194,42 @@ export async function updateUnitSettings({ unitId, settings }) {
 
 export async function getUsers() {
   try {
-    return await getServerApi('authTokens');
+    let res = await getServerApi('authTokens');
+    return res.filter((el) => el.departmentName === localStorage.getItem('departmentName'));
   } catch (error) {
     console.error('Ошибка загрузки пользователей', error);
     alert('Ошибка загрузки пользователей' + error.message);
   }
 }
 
-export async function createUser({ login, password, fio, unitName, role, nameFunction }) {
+export async function createUser({ login, password, fio, unitName, role, nameFunction, departmentName }) {
   const url = `${URL}/users`;
   try {
-    await fetch(url, {
+    let request = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
       },
-      body: JSON.stringify({ login, password, fio, unitName, role, nameFunction }),
+      body: JSON.stringify({ login, password, fio, unitName, role, nameFunction, departmentName }),
     });
+    if (request.status === 409) {
+      throw new Error('Пользователь с таким логином уже существует');
+    }
+    alert('Пользователь успешно создан!');
   } catch (error) {
-    console.error('Ошибка создания пользователя', error);
-    alert('Ошибка создания пользователя' + error.message);
+    if (error.message === 'Пользователь с таким логином уже существует') {
+      console.error('Ошибка создания пользователя', error);
+      alert('Ошибка создания пользователя ' + error.message);
+    } else {
+      console.error('Ошибка создания пользователя', error);
+      alert('Ошибка создания пользователя ' + error.message);
+      throw error;
+    }
   }
 }
 
-export async function updateUser({ login, password, fio, unitName, role, nameFunction }) {
+export async function updateUser({ login, password, fio, unitName, role, nameFunction, departmentName }) {
   const url = `${URL}/users/${login}`;
   try {
     await fetch(url, {
@@ -226,7 +238,7 @@ export async function updateUser({ login, password, fio, unitName, role, nameFun
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
       },
-      body: JSON.stringify({login, password, fio, unitName, role, nameFunction }),
+      body: JSON.stringify({ login, password, fio, unitName, role, nameFunction, departmentName }),
     });
   } catch (error) {
     console.error('Ошибка обновления пользователя', error);

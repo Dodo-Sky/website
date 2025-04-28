@@ -17,8 +17,7 @@ function editDataNoChange(data, time, dataFromServer, filterToCourier) {
 }
 
 const content = document.getElementById('content');
-
-export async function render (name, breadcrumbs) {
+export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumb('Главная');
@@ -30,7 +29,8 @@ export async function render (name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const couriersOrder = await getServerApi('couriersOrder');
+  const departmentName = localStorage.getItem('departmentName');
+  const couriersOrder = await getServerApi(`${departmentName}/couriersOrder`);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -75,7 +75,6 @@ export async function render (name, breadcrumbs) {
   content.append(title, row, sortEl, divEl);
 
   getListUnits(couriersOrder);
-  startRender(couriersOrder);
 }
 
 function getListUnits(couriersOrder) {
@@ -95,10 +94,11 @@ function getListUnits(couriersOrder) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
+  startRender(couriersOrder, unitsName);
 }
 
-function startRender(couriersOrder) {
-  let fullDataUnit = couriersOrder.filter((el) => el.unitName === 'Тюмень-1');
+function startRender(couriersOrder, unitsName) {
+  let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
   renderTable(fullDataUnit, 0, fullDataUnit);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
@@ -106,10 +106,8 @@ function startRender(couriersOrder) {
     editDataNoChange(fullDataUnit, 0, fullDataUnit);
   });
 
-    document.getElementById('sort').addEventListener('change', function (e) {
+  document.getElementById('sort').addEventListener('change', function (e) {
     if (e.target.value === 'По курьеру') {
-      console.log(e.target.value);
-      console.log(fullDataUnit);
       fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
       editDataNoChange(fullDataUnit, 0, couriersOrder, true);
     }
