@@ -1,6 +1,5 @@
 import { postDataServer } from '../../apiServer.js';
-const departmentName = localStorage.getItem('departmentName');
-const variableName = `${departmentName}/couriersOrder`;
+const variableName = `couriersOrder`;
 
 export function postServer() {
   const bnts = document.querySelectorAll('.arrayData-btn-save');
@@ -16,6 +15,8 @@ export function postServer() {
         graphistComment,
         departmentName: localStorage.getItem('departmentName'),
       };
+
+      console.log([variableName, changeServer]);
 
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(variableName, changeServer);
