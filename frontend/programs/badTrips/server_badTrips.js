@@ -1,5 +1,6 @@
 import { postDataServer } from '../../apiServer.js';
-const variableName = 'couriersOrder';
+const departmentName = localStorage.getItem('departmentName');
+const variableName = `${departmentName}/couriersOrder`;
 
 export function postServer() {
   const bnts = document.querySelectorAll('.arrayData-btn-save');

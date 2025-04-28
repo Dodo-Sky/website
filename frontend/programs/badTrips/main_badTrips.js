@@ -17,6 +17,7 @@ function editDataNoChange(data, time, dataFromServer, filterToCourier) {
 }
 
 const content = document.getElementById('content');
+
 export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
@@ -99,11 +100,11 @@ function getListUnits(couriersOrder) {
 
 function startRender(couriersOrder, unitsName) {
   let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
-  renderTable(fullDataUnit, 0, fullDataUnit);
+  renderTable(fullDataUnit, 0, couriersOrder);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(fullDataUnit, 0, fullDataUnit);
+    editDataNoChange(fullDataUnit, 0, couriersOrder);
   });
 
   document.getElementById('sort').addEventListener('change', function (e) {
