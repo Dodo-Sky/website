@@ -51,6 +51,16 @@ export async function render(name, breadcrumbs) {
   update.append(btnUpdate);
   row.append(update);
 
+  const referenceDiv = components.getTagDiv('col-auto');
+  const reference = components.getTagButton('Справка по программе Проблемные поездки');
+  reference.classList = 'btn btn-outline-secondary reference'
+  referenceDiv.append(reference);
+  row.append(referenceDiv);
+
+  reference.addEventListener('click', function (e) {
+    window.open('https://docs.google.com/document/d/e/2PACX-1vR1bUKgXVrML8APGkHoQpOviegHCjqxMCLYrHWNhm1b-Jme8aH--silL8aM6vKbeFv9XPeNpo6qKMJC/pub');
+  });
+
   const sortEl = components.getTagDiv('row');
   sortEl.classList.add('start-50');
   let sortLabelDiv = components.getTagDiv('col-auto');

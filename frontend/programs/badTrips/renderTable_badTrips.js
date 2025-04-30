@@ -203,6 +203,7 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
 Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная</a> доставка: ${isFalseDelivery}
     `;
 
+    // добавляем фото
     if (order.urlPhoto) {
       const modalElement = document.createElement('div');
       modalElement.className = 'modal fade';
@@ -220,23 +221,20 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
     </div>
   </div>
 `;
-
       document.body.appendChild(modalElement);
-
       // Инициализируем Bootstrap-модалку
       const bootstrapModal = new bootstrap.Modal(modalElement);
-
       const photo = document.createElement('img');
       photo.src = order.urlPhoto;
       photo.width = 300;
       modalBody.appendChild(photo);
-
       photo.onclick = () => {
         const modalImage = modalElement.querySelector('#modalImage');
         modalImage.src = order.urlPhoto;
         bootstrapModal.show();
       };
     }
+
     fade.append(divDialog);
     divDialog.append(divContent);
     divHeader.append(titleH1, closeBtn);
