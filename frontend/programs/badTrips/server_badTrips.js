@@ -16,8 +16,6 @@ export function postServer() {
         departmentName: localStorage.getItem('departmentName'),
       };
 
-      console.log([variableName, changeServer]);
-
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(variableName, changeServer);
       if (responce.orderId === e.target.dataset.id) {

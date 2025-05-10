@@ -63,7 +63,8 @@ async function update() {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
-  const defectsUpdate = await getServerApi('couriersOrder');
+  const departmentName = localStorage.getItem('departmentName');
+  const defectsUpdate = await getServerApi(`${departmentName}/couriersOrder`);
   const manager = document.querySelector('.manager-defects');
   const unitDirector = document.querySelector('.unitDirector-defects');
   const fullDataUnit = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
