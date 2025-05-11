@@ -44,27 +44,37 @@ function filterToDirector(value, fullDataUnit) {
   }
 }
 
-function filterToDate(timeValue, dataFromServer) {
+async function filterToDate (timeValue, dataFromServer, timeZoneShift) {
   let selectUnit = document.querySelector('.selectUnit');
   let defectFilterUnit = dataFromServer.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
+      now.setHours(now.getHours() + timeZoneShift);
       return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, dataFromServer);
+  editDataNoChange(filterData, timeValue, dataFromServer, timeZoneShift);
 }
 
-async function update() {
-  let time_defects = document.querySelector('.time-defects');
-  let selectedBTN = time_defects.querySelector('button');
-  let selectUnit = document.querySelector('.selectUnit');
+async function update(timeZoneShift) {
+  const time_defects = document.querySelector('.time-defects');
+  const selectedBTN = time_defects.querySelector('button');
+  const selectUnit = document.querySelector('.selectUnit');
+  const tBody = document.querySelector('.tBody');
   const departmentName = localStorage.getItem('departmentName');
-  const defectsUpdate = await getServerApi(`${departmentName}/couriersOrder`);
+
+  tBody.innerHTML = `
+    <div class="spinner-border" role="status">
+    <span class="visually-hidden">Загрузка...</span>
+    </div>`;
+    const defectsUpdate = await getServerApi(`${departmentName}/couriersOrder`);
+  let spiner = document.querySelector('.spinner-border');
+  spiner.style.display = 'none';
+  
   const manager = document.querySelector('.manager-defects');
   const unitDirector = document.querySelector('.unitDirector-defects');
   const fullDataUnit = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
@@ -76,7 +86,6 @@ async function update() {
     return;
   }
   if (manager.dataset.condition === 'В работе') {
-    console.log(manager.dataset.condition);
     filterData = fullDataUnit.filter((el) => !el.graphistComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
@@ -93,20 +102,19 @@ async function update() {
   }
 
   if (selectedBTN.value === '0') {
-    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit);
+    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit, timeZoneShift);
     return;
   }
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
-    return (
-      new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - selectedBTN.value))
-    );
+    now.setHours(now.getHours() + timeZoneShift);
+    return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
-  editDataNoChange(filterData, selectedBTN.value, fullDataUnit);
+  editDataNoChange(filterData, selectedBTN.value, fullDataUnit, timeZoneShift);
 }
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit) {
+function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -115,6 +123,6 @@ function editDataNoChange(renderData, time, fullDataUnit) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit);
+    renderTable(renderData, time, fullDataUnit, timeZoneShift);
   }
 }

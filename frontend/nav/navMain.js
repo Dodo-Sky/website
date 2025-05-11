@@ -14,7 +14,7 @@ breadcrumb.addEventListener('click', function (e) {
   if (e.target?.textContent === 'Администратор всей сети') showChiefNavAdmin();
 });
 
-export function showNavMain() {
+export function showNavMain () {
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumbActive('Главная');
   breadcrumb.append(navMainEl);
@@ -24,7 +24,7 @@ export function showNavMain() {
     return;
   }
 
-  const role = getUserRole();
+  const role = getUserRole ();
 
   // первый уровень после авторизации
   const cardRow = components.getCardRow();
@@ -205,7 +205,3 @@ function showNavManager() {
   authInfo.innerHTML = '';
   authInfo.append(components.getTagP(getUserFioAndUnitName()), components.getTagButton_logout());
 }
-
-// function showLogin() {
-//   content.innerHTML = 'страница логина';
-// }

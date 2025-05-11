@@ -1,11 +1,12 @@
 import { getServerApi, getDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_defects.js';
+import * as filter from './filter_defects.js';
 
 const content = document.getElementById('content');
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time, dataFromServer) {
+function editDataNoChange(data, time, dataFromServer, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.btn');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -14,11 +15,11 @@ function editDataNoChange(data, time, dataFromServer) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(data, time, dataFromServer);
+    renderTable(data, time, dataFromServer, timeZoneShift);
   }
 }
 
-export async function render (name, breadcrumbs) {
+export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumb('Главная');
@@ -32,8 +33,10 @@ export async function render (name, breadcrumbs) {
     </div>`;
   const defects = await getServerApi('defects');
   let staffData = await getDataServer('defecstStaff');
+  const unitsSettings = await getServerApi(`unitsSettings`);
+  const departmentName = localStorage.getItem('departmentName');
+  const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
   localStorage.setItem('staffData', JSON.stringify(staffData));
-
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -54,8 +57,11 @@ export async function render (name, breadcrumbs) {
 
   content.append(title, row, divEl);
 
+  // Обработчик обновить
+  btnUpdate.addEventListener('click', () => filter.update(timeZoneShift));
+
   getListUnits(defects);
-  startRender(defects);
+  startRender(defects, timeZoneShift);
 }
 
 function getListUnits(defects) {
@@ -77,12 +83,12 @@ function getListUnits(defects) {
   unitsEl.append(select);
 }
 
-function startRender(defects) {
+function startRender(defects, timeZoneShift) {
   let fullDataUnit = defects.filter((el) => el.unitName === 'Тюмень-1');
-  renderTable(fullDataUnit, 0, fullDataUnit);
+  renderTable(defects, 0, fullDataUnit, timeZoneShift);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = defects.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(fullDataUnit, 0, fullDataUnit);
+    editDataNoChange(defects, 0, fullDataUnit, timeZoneShift);
   });
 }

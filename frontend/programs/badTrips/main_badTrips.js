@@ -1,9 +1,10 @@
 import { getServerApi } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_badTrips.js';
+import * as filter from './filter_badTrips.js';
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time, dataFromServer, filterToCourier) {
+function editDataNoChange(data, time, dataFromServer, filterToCourier, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -12,7 +13,7 @@ function editDataNoChange(data, time, dataFromServer, filterToCourier) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(data, time, dataFromServer, filterToCourier);
+    renderTable(data, time, dataFromServer, filterToCourier, timeZoneShift);
   }
 }
 
@@ -32,6 +33,8 @@ export async function render(name, breadcrumbs) {
     </div>`;
   const departmentName = localStorage.getItem('departmentName');
   const couriersOrder = await getServerApi(`${departmentName}/couriersOrder`);
+  const unitsSettings = await getServerApi(`unitsSettings`);
+  const timeZoneShift = unitsSettings.find((el) => couriersOrder[0].unitId === el.unitId)?.timeZoneShift;
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -45,20 +48,22 @@ export async function render(name, breadcrumbs) {
   units.setAttribute('id', 'units');
   unitsCol.append(units);
 
-  const update = components.getTagDiv('col-auto');
+  const updateEl = components.getTagDiv('col-auto');
   const btnUpdate = components.getTagButton('Обновить');
   btnUpdate.setAttribute('id', 'update');
-  update.append(btnUpdate);
-  row.append(update);
+  updateEl.append(btnUpdate);
+  row.append(updateEl);
 
   const referenceDiv = components.getTagDiv('col-auto');
   const reference = components.getTagButton('Справка по программе Проблемные поездки');
-  reference.classList = 'btn btn-outline-secondary reference'
+  reference.classList = 'btn btn-outline-secondary reference';
   referenceDiv.append(reference);
   row.append(referenceDiv);
 
   reference.addEventListener('click', function (e) {
-    window.open('https://docs.google.com/document/d/e/2PACX-1vR1bUKgXVrML8APGkHoQpOviegHCjqxMCLYrHWNhm1b-Jme8aH--silL8aM6vKbeFv9XPeNpo6qKMJC/pub');
+    window.open(
+      'https://docs.google.com/document/d/e/2PACX-1vR1bUKgXVrML8APGkHoQpOviegHCjqxMCLYrHWNhm1b-Jme8aH--silL8aM6vKbeFv9XPeNpo6qKMJC/pub',
+    );
   });
 
   const sortEl = components.getTagDiv('row');
@@ -85,10 +90,15 @@ export async function render(name, breadcrumbs) {
 
   content.append(title, row, sortEl, divEl);
 
-  getListUnits(couriersOrder);
+  getListUnits(couriersOrder, timeZoneShift);
+  
+  // Обработчик обновить
+  btnUpdate.addEventListener('click', () => {
+    filter.update(timeZoneShift);
+  });
 }
 
-function getListUnits(couriersOrder) {
+function getListUnits(couriersOrder, timeZoneShift) {
   let unitsName = [];
   couriersOrder.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
@@ -105,26 +115,26 @@ function getListUnits(couriersOrder) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
-  startRender(couriersOrder, unitsName);
+  startRender(couriersOrder, unitsName, timeZoneShift);
 }
 
-function startRender(couriersOrder, unitsName) {
+async function startRender(couriersOrder, unitsName, timeZoneShift) {
   let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
-  renderTable(fullDataUnit, 0, couriersOrder);
+  renderTable(fullDataUnit, 0, couriersOrder, timeZoneShift);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(fullDataUnit, 0, couriersOrder);
+    editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
   });
 
   document.getElementById('sort').addEventListener('change', function (e) {
     if (e.target.value === 'По курьеру') {
       fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
-      editDataNoChange(fullDataUnit, 0, couriersOrder, true);
+      editDataNoChange(fullDataUnit, 0, couriersOrder, true, timeZoneShift);
     }
     if (e.target.value === 'По дате') {
       fullDataUnit.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-      editDataNoChange(fullDataUnit, 0, couriersOrder);
+      editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
     }
   });
 }

@@ -4,7 +4,7 @@ import * as filter from './filter_defects.js';
 
 let role = localStorage.getItem('role');
 
-export async function renderTable(defects, time, fullDataUnit) {
+export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   time = +time;
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
 
@@ -16,9 +16,7 @@ export async function renderTable(defects, time, fullDataUnit) {
   tableEl.classList.add('table-sm');
   tableContent.append(tableEl);
 
-  const captionEl = components.getTagCaption(
-    'Программа контроля списания забракованных продуктов',
-  );
+  const captionEl = components.getTagCaption('Программа контроля списания забракованных продуктов');
 
   // Заголовок таблицы THead
   const theadEl = components.getTagTHead();
@@ -39,7 +37,7 @@ export async function renderTable(defects, time, fullDataUnit) {
 
   btnDropdown.classList.add('btn-time');
   // количество задач в период
-  let count1 = defects.length;
+  let count1 = fullDataUnit.length;
   if (count1) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -78,7 +76,7 @@ export async function renderTable(defects, time, fullDataUnit) {
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Менеджер');
   // количество задач в работе
-  let count = defects.filter((el) => !el.decisionManager).length;
+  let count = fullDataUnit.filter((el) => !el.decisionManager).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -87,7 +85,7 @@ export async function renderTable(defects, time, fullDataUnit) {
     btnDropdown.append(spanWork);
   }
   //  Количество просроченных менеджером задач
-  let countDelays = defects.filter((el) => el.decisionManager === 'Просрочка').length;
+  let countDelays = fullDataUnit.filter((el) => el.decisionManager === 'Просрочка').length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -109,7 +107,7 @@ export async function renderTable(defects, time, fullDataUnit) {
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Управляющий');
   // количество задач в работе
-  count = defects.filter((el) => !el.control).length;
+  count = fullDataUnit.filter((el) => !el.control).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -118,7 +116,7 @@ export async function renderTable(defects, time, fullDataUnit) {
     btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
-  countDelays = defects.filter((el) => el.control === 'Просрочка').length;
+  countDelays = fullDataUnit.filter((el) => el.control === 'Просрочка').length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -142,12 +140,10 @@ export async function renderTable(defects, time, fullDataUnit) {
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
 
-  defects.forEach((defect) => {
+  fullDataUnit.forEach((defect) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let soldAtLocal = components.getTagTD(
-      new Date(defect.soldAtLocal).toLocaleString().slice(0, 17),
-    );
+    let soldAtLocal = components.getTagTD(new Date(defect.soldAtLocal).toLocaleString().slice(0, 17));
     trEl.append(soldAtLocal);
     let productName = components.getTagTD(defect.productName);
     trEl.append(productName);
@@ -239,24 +235,24 @@ export async function renderTable(defects, time, fullDataUnit) {
   const time_defects = document.querySelector('.time-defects');
   const liTimes = time_defects.querySelectorAll('li');
   liTimes.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit));
+    el.addEventListener('click', () => {
+      filter.filterToDate(el.value, defects, timeZoneShift);
+    });
   });
-
-  // Обработчик обновить
-  let btnUpdate = document.getElementById('update');
-  btnUpdate.addEventListener('click', filter.update);
 
   // обработчик решений менеджера смены
   const manager = document.querySelector('.manager-defects');
   const liManagers = manager.querySelectorAll('li');
   liManagers.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToManager(el.textContent, fullDataUnit));
+    el.addEventListener('click', () => {
+      filter.filterToManager(el.textContent, defects);
+    });
   });
 
   // обработчик решений управляющего
   const unitDirector = document.querySelector('.unitDirector-defects');
   const liDirectors = unitDirector.querySelectorAll('li');
   liDirectors.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToDirector(el.textContent, fullDataUnit));
+    el.addEventListener('click', () => filter.filterToDirector(el.textContent, defects));
   });
 }

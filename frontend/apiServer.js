@@ -43,7 +43,7 @@ export function handleUnauthorizedResponse(responseDataJSON) {
 }
 
 // Загрузка данных с сервера (указываем имя переменной сохраненной на сервере)
-export async function getServerApi(variableName) {
+export async function getServerApi (variableName) {
   try {
     const response = await fetch(`${URL}/globalGet?payload=${variableName}`, {
       headers: getAuthHeaders(),
@@ -260,3 +260,4 @@ export async function deleteUserByLogin(login) {
     alert('Ошибка удаления пользователя' + error.message);
   }
 }
+

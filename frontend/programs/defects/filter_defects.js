@@ -2,110 +2,122 @@ export { filterToDate, filterToDirector, filterToManager, update };
 import { renderTable } from './renderTable_defects.js';
 import { getServerApi } from '../../apiServer.js';
 
-function filterToManager(value, fullDataUnit) {
+function filterToManager(value, defects) {
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = fullDataUnit.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = defects.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (value === 'Показать все') {
-    editDataNoChange(defectFilterUnit, 0, fullDataUnit);
+    editDataNoChange(defects, 0, defectFilterUnit);
   }
   if (value === 'Только просроченные') {
     filterData = defectFilterUnit.filter((el) => el.decisionManager === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(defects, 0, filterData);
     const manager = document.querySelector('.manager-defects');
     manager.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
     filterData = defectFilterUnit.filter((el) => !el.decisionManager);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(defects, 0, filterData);
     const manager = document.querySelector('.manager-defects');
     manager.dataset.condition = 'В работе';
   }
 }
 
-function filterToDirector(value, fullDataUnit) {
+function filterToDirector(value, defects) {
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = fullDataUnit.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = defects.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (value === 'Показать все') {
-    editDataNoChange(defectFilterUnit, 0, fullDataUnit);
+    editDataNoChange(defects, 0, defectFilterUnit);
   }
   if (value === 'Только просроченные') {
     filterData = defectFilterUnit.filter((el) => el.control === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(defects, 0, filterData);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
     filterData = defectFilterUnit.filter((el) => !el.control);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(defects, 0, filterData);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'В работе';
   }
 }
 
-function filterToDate(timeValue, dataFromServer) {
+async function filterToDate(timeValue, defects, timeZoneShift) {
+
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = dataFromServer.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = defects.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
+      now.setHours(now.getHours() + timeZoneShift);
       return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, dataFromServer);
+  editDataNoChange(defects, timeValue, filterData, timeZoneShift);
 }
 
-async function update() {
+async function update(timeZoneShift) {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
+
+  const tBody = document.querySelector('.tBody');
+  tBody.innerHTML = `
+    <div class="spinner-border" role="status">
+    <span class="visually-hidden">Загрузка...</span>
+    </div>`;
   const defectsUpdate = await getServerApi('defects');
+  let spiner = document.querySelector('.spinner-border');
+  spiner.style.display = 'none';
+
   const manager = document.querySelector('.manager-defects');
   const unitDirector = document.querySelector('.unitDirector-defects');
-  const fullDataUnit = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
+  const defects = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
   let filterData;
 
   if (manager.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.decisionManager === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    filterData = defects.filter((el) => el.decisionManager === 'Просрочка');
+    editDataNoChange(filterData, 0, defects);
     return;
   }
   if (manager.dataset.condition === 'В работе') {
     console.log(manager.dataset.condition);
-    filterData = fullDataUnit.filter((el) => !el.decisionManager);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    filterData = defects.filter((el) => !el.decisionManager);
+    editDataNoChange(filterData, 0, defects);
     return;
   }
   if (unitDirector.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.control === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    filterData = defects.filter((el) => el.control === 'Просрочка');
+    editDataNoChange(filterData, 0, defects);
     return;
   }
   if (unitDirector.dataset.condition === 'В работе') {
-    filterData = fullDataUnit.filter((el) => !el.control);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    filterData = defects.filter((el) => !el.control);
+    editDataNoChange(filterData, 0, defects);
     return;
   }
+  console.log(selectedBTN.value);
 
-  if (selectedBTN.value === '0') {
-    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit);
+  if (selectedBTN.value === "0") {
+    editDataNoChange(defectsUpdate, selectedBTN.value, defects, timeZoneShift);
     return;
   }
-  filterData = fullDataUnit.filter((el) => {
+  filterData = defects.filter((el) => {
     let now = new Date();
-    return (
-      new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value))
-    );
+    now.setHours(now.getHours() + timeZoneShift);
+    return new Date(el.soldAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
-  editDataNoChange(filterData, selectedBTN.value, fullDataUnit);
+
+  editDataNoChange(defectsUpdate, selectedBTN.value, filterData, timeZoneShift);
 }
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit) {
+function editDataNoChange(defects, time, renderData, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.btn');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -114,6 +126,6 @@ function editDataNoChange(renderData, time, fullDataUnit) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit);
+    renderTable(defects, time, renderData, timeZoneShift);
   }
 }

@@ -7,7 +7,7 @@ const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
 );
 
-export async function renderTable(arrayData, time, fullDataUnit) {
+export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift) {
   arrayData.sort(
     (a, b) =>
       new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal),
@@ -257,18 +257,14 @@ export async function renderTable(arrayData, time, fullDataUnit) {
   });
   tableEl.append(captionEl, theadEl, tBody);
 
-  editData(fullDataUnit);
+  editData(arrayData);
 
   // Обработчик фильтрации по дате
   const time_defects = document.querySelector('.time-defects');
   const liTimes = time_defects.querySelectorAll('li');
   liTimes.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit));
+    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit, timeZoneShift));
   });
-
-  // Обработчик обновить
-  let btnUpdate = document.getElementById('update');
-  btnUpdate.addEventListener('click', filter.update);
 
   // обработчик решений менеджера смены
   const manager = document.querySelector('.manager-defects');

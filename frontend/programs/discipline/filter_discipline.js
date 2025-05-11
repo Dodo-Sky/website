@@ -44,68 +44,77 @@ function filterToDirector(value, fullDataUnit) {
   }
 }
 
-function filterToDate(timeValue, dataFromServer) {
+function filterToDate(timeValue, dataFromServer, timeZoneShift) {
   let selectUnit = document.querySelector('.selectUnit');
   let defectFilterUnit = dataFromServer.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
+      now.setHours(now.getHours() + timeZoneShift);
       return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, dataFromServer);
+  editDataNoChange(filterData, timeValue, dataFromServer, timeZoneShift);
 }
 
-async function update() {
+async function update (timeZoneShift) {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
-  const defectsUpdate = await getServerApi('discipline');
+
+  const tBody = document.querySelector('.tBody');
+  tBody.innerHTML = `
+    <div class="spinner-border" role="status">
+    <span class="visually-hidden">Загрузка...</span>
+    </div>`;
+  const discipline = await getServerApi('discipline');
+  let spiner = document.querySelector('.spinner-border');
+  spiner.style.display = 'none';
+
   const manager = document.querySelector('.manager-defects');
   const unitDirector = document.querySelector('.unitDirector-defects');
-  const fullDataUnit = defectsUpdate.filter((el) => el.unitName === selectUnit.value);
+  const fullDataUnit = discipline.filter((el) => el.unitName === selectUnit.value);
   let filterData;
 
   if (manager.dataset.condition === 'Только просроченные') {
     filterData = fullDataUnit.filter((el) => el.managerDecision === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(filterData, 0, discipline);
     return;
   }
   if (manager.dataset.condition === 'В работе') {
     console.log(manager.dataset.condition);
     filterData = fullDataUnit.filter((el) => !el.managerDecision);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(filterData, 0, discipline);
     return;
   }
   if (unitDirector.dataset.condition === 'Только просроченные') {
     filterData = fullDataUnit.filter((el) => el.unitDirectorControl === 'Просрочка');
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(filterData, 0, discipline);
     return;
   }
   if (unitDirector.dataset.condition === 'В работе') {
     filterData = fullDataUnit.filter((el) => !el.unitDirectorControl);
-    editDataNoChange(filterData, 0, fullDataUnit);
+    editDataNoChange(filterData, 0, discipline);
     return;
   }
 
   if (selectedBTN.value === '0') {
-    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit);
+    editDataNoChange(fullDataUnit, selectedBTN.value, discipline, timeZoneShift);
     return;
   }
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
-    return (
-      new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value))
-    );
+    now.setHours(now.getHours() + timeZoneShift);
+    return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
-  editDataNoChange(filterData, selectedBTN.value, fullDataUnit);
+  editDataNoChange(filterData, selectedBTN.value, discipline, timeZoneShift);
 }
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit) {
+function editDataNoChange(renderData, time, discipline, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -114,6 +123,6 @@ function editDataNoChange(renderData, time, fullDataUnit) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit);
+    renderTable(renderData, time, discipline, timeZoneShift);
   }
 }
