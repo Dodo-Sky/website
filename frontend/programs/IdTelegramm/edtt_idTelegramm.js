@@ -26,6 +26,7 @@ function makeButtonActive(objectProperty, dataFromServer) {
   property.forEach((el) => {
     el.addEventListener("input", async function (e) {
       let element = await dataFromServer.find((el) => e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === el.id);
+      console.log(element);
       let btn = e.target.parentNode.parentNode.lastChild.firstChild;
       if (e.target.value !== element[objectProperty]) {
         btn.disabled = false;

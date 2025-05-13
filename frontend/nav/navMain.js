@@ -14,7 +14,7 @@ breadcrumb.addEventListener('click', function (e) {
   if (e.target?.textContent === 'Администратор всей сети') showChiefNavAdmin();
 });
 
-export function showNavMain () {
+export function showNavMain() {
   breadcrumb.innerHTML = '';
   let navMainEl = components.getTagLI_breadcrumbActive('Главная');
   breadcrumb.append(navMainEl);
@@ -24,7 +24,7 @@ export function showNavMain () {
     return;
   }
 
-  const role = getUserRole ();
+  const role = getUserRole();
 
   // первый уровень после авторизации
   const cardRow = components.getCardRow();
@@ -75,11 +75,27 @@ content.addEventListener('click', async function (e) {
   if (e.target?.dataset?.id === 'Администратор всей сети') showChiefNavAdmin();
 
   // Запуск программ
-  if (e.target?.dataset?.id === 'Контроль брака') {
-    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
-    let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/defects/main_defects.js');
-    module.render(nameProgramm, breadcrumbs);
+  const departmentName = localStorage.getItem('departmentName');
+  if (departmentName === 'Тюмень') {
+    if (e.target?.dataset?.id === 'Контроль брака') {
+      const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+      let breadcrumbs = breadcrumb.lastChild.textContent;
+      const module = await import('../programs/defects/main_defects.js');
+      module.render(nameProgramm, breadcrumbs);
+    }
+    if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
+      const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+      let breadcrumbs = breadcrumb.lastChild.textContent;
+      const module = await import('../programs/discipline/main_ discipline.js');
+      module.render(nameProgramm, breadcrumbs);
+    }
+
+    if (e.target?.dataset?.id === 'Обзвон уволенных') {
+      const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+      let breadcrumbs = breadcrumb.lastChild.textContent;
+      const module = await import('../programs/dismissed/main_dismissed.js');
+      module.render(nameProgramm, breadcrumbs);
+    }
   }
 
   if (e.target?.dataset?.id === 'Проблемные поездки') {
@@ -93,20 +109,6 @@ content.addEventListener('click', async function (e) {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
     const module = await import('../programs/IdTelegramm/main_idTelegramm.js');
-    module.render(nameProgramm, breadcrumbs);
-  }
-
-  if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
-    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
-    let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/discipline/main_ discipline.js');
-    module.render(nameProgramm, breadcrumbs);
-  }
-
-  if (e.target?.dataset?.id === 'Обзвон уволенных') {
-    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
-    let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/dismissed/main_dismissed.js');
     module.render(nameProgramm, breadcrumbs);
   }
 });

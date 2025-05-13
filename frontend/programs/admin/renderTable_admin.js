@@ -1,14 +1,19 @@
-import { createUser, updateUser, deleteUserByLogin, getUsers } from '../../apiServer.js';
+import { createUser, updateUser, deleteUserByLogin, getUsers, getServerApi } from '../../apiServer.js';
 import * as components from '../../components.js';
 
-export function renderUsersTable (usersData) {
-  usersData.sort ((a,b) => a.unitName.localeCompare (b.unitName))
-  const units = [...new Set(usersData.map((el) => el.unitName))].sort();
+export async function renderUsersTable(usersData) {
+  usersData.sort((a, b) => a.unitName.localeCompare(b.unitName));
+  const departmentName = localStorage.getItem('departmentName');
+  const unitsSettings = await getServerApi('unitsSettings');
+  const units = [
+    ...new Set(unitsSettings.filter((el) => el.departmentName === departmentName).map((el) => el.unitName)),
+  ].sort();
+  console.log(units);
   const roles = ['администратор', 'менеджер офиса', 'управляющий', 'Гость', 'менеджер смены'];
 
   const table_admin = document.querySelector('.table-admin');
   table_admin.innerHTML = '';
-  
+
   const tableEl = components.getTagTable();
   tableEl.classList.add('table-sm');
   table_admin.append(tableEl);
@@ -59,13 +64,13 @@ export function renderUsersTable (usersData) {
     // ФИО (редактируемое поле)
     let fio = components.getTagTD();
     let fioInput = components.getTagTextarea(user.fio);
-    fioInput.classList.add ('fioInput');
+    fioInput.classList.add('fioInput');
     fio.append(fioInput);
     trEl.append(fio);
 
     let nameFunctionEl = components.getTagTD();
     let nameFunctionInput = components.getTagTextarea(user.nameFunction);
-    nameFunctionInput.classList.add ('nameFunctionEl');
+    nameFunctionInput.classList.add('nameFunctionEl');
     nameFunctionEl.append(nameFunctionInput);
     trEl.append(nameFunctionEl);
 
@@ -73,14 +78,14 @@ export function renderUsersTable (usersData) {
     let password = components.getTagTD();
     let passwordInput = components.getTagInput('text', user.password || ''); // Пароль может быть пустым
     passwordInput.id = `password-${user.login}`;
-    passwordInput.classList.add ('password');
+    passwordInput.classList.add('password');
     password.append(passwordInput);
     trEl.append(password);
 
     // Роль (выпадающий список)
     let role = components.getTagTD();
     let roleSelect = components.getTagSelect();
-    roleSelect.classList.add ('roleSelect');
+    roleSelect.classList.add('roleSelect');
     roles.forEach((roleItem) => {
       let option = components.getTagOption(roleItem, roleItem);
       if (roleItem === user.role) option.selected = true;
@@ -92,7 +97,7 @@ export function renderUsersTable (usersData) {
     // Подразделение (выпадающий список)
     let unitName = components.getTagTD();
     let unitSelect = components.getTagSelect();
-    unitSelect.classList.add ('unitSelect');
+    unitSelect.classList.add('unitSelect');
     units.forEach((unitItem) => {
       let option = components.getTagOption(unitItem, unitItem);
       if (unitItem === user.unitName) option.selected = true;
@@ -150,17 +155,13 @@ export function renderUsersTable (usersData) {
               <div class="mb-3">
                 <label for="role" class="form-label">Роль</label>
                 <select class="form-select" id="role" required>
-                  ${roles
-                    .map((role) => `<option value="${role}">${role}</option>`)
-                    .join('')}
+                  ${roles.map((role) => `<option value="${role}">${role}</option>`).join('')}
                 </select>
               </div>
               <div class="mb-3">
                 <label for="unitName" class="form-label">Подразделение</label>
                 <select class="form-select" id="unitName" required>
-                  ${units
-                    .map((unit) => `<option value="${unit}">${unit}</option>`)
-                    .join('')}
+                  ${units.map((unit) => `<option value="${unit}">${unit}</option>`).join('')}
                 </select>
               </div>
             </form>
@@ -179,14 +180,14 @@ export function renderUsersTable (usersData) {
   const saveButtons = document.querySelectorAll('.btn-outline-success');
   saveButtons.forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const userId = btn.dataset.id
+      const userId = btn.dataset.id;
       const row = btn.closest('tr');
       const fioInput = row.querySelector('.fioInput');
       const passwordInput = row.querySelector('.password');
       const roleSelect = row.querySelector('.roleSelect');
       const unitSelect = row.querySelector('.unitSelect');
       const nameFunction = row.querySelector('.nameFunctionEl')?.value ?? '';
-      const departmentName = localStorage.getItem ('departmentName');
+      const departmentName = localStorage.getItem('departmentName');
 
       const updatedUser = {
         login: userId,
@@ -199,7 +200,7 @@ export function renderUsersTable (usersData) {
       };
 
       try {
-        await updateUser (updatedUser);
+        await updateUser(updatedUser);
         alert('Пользователь успешно обновлен!');
         reloadUsers();
       } catch (error) {
@@ -232,7 +233,7 @@ export function renderUsersTable (usersData) {
     const role = document.getElementById('role').value;
     const unitName = document.getElementById('unitName').value;
     const nameFunction = document.getElementById('nameFunction').value;
-    const departmentName = localStorage.getItem ('departmentName');
+    const departmentName = localStorage.getItem('departmentName');
 
     try {
       await createUser({ login, password, fio, unitName, role, nameFunction, departmentName });

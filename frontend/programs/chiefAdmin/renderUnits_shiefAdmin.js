@@ -69,6 +69,7 @@ function render(departmentName, departments, tableEl, unitsSettings) {
   tBody.classList.add('tBody');
   let { units } = departments.find((el) => el.departmentName === departmentName);
   units = units.sort();
+  console.log(units);
   units.forEach((unitName) => {
     const unit = unitsSettings.find((el) => el.unitName === unitName);
 
