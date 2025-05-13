@@ -69,9 +69,9 @@ export async function renderTable(arrayData, staffData) {
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
-  thEl = components.getTagTH('Управление');
-  trEl.append(thEl);
   thEl = components.getTagTH('Проверка связи');
+  trEl.append(thEl);
+  thEl = components.getTagTH('Управление');
   trEl.append(thEl);
   theadEl.append(trEl);
 
