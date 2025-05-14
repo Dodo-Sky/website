@@ -100,10 +100,12 @@ export async function renderTable(arrayData, staffData) {
     const btnHR = components.getTagButton('HR_bot');
     btnHR.classList = 'btn btn-outline-primary btnHR me-2';
     btnHR.setAttribute('data-id', `${staff.idTelegramm}`);
+    if (!staff.idTelegramm) btnHR.disabled = true;
 
     const btnDel = components.getTagButton('Delivery_bot');
     btnDel.classList = 'btn btn-outline-primary btnDelivery me-2';
     btnDel.setAttribute('data-id', `${staff.idTelegramm}`);
+    if (!staff.idTelegramm) btnDel.disabled = true;
 
     if (staff.staffType === 'Courier') {
       btnTest.append(btnDel);

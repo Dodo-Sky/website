@@ -61,18 +61,21 @@ export async function edit(selectedUnit) {
     btnHR.classList = 'btn btn-outline-primary btnHR me-2';
     btnHR.setAttribute('data-id', `${el.id}`);
     if (el.nameFunction === 'Управляющий' || el.nameFunction === 'Графист по кухне') btnEl.append(btnHR);
+    if (!el.id) btnHR.disabled = true;
 
     const btnDelivery = components.getTagButton('Delivery_bot');
     trEl.append(btnEl);
     btnDelivery.classList = 'btn btn-outline-primary btnDelivery me-2';
     btnDelivery.setAttribute('data-id', `${el.id}`);
     if (el.nameFunction === 'Управляющий' || el.nameFunction === 'Графист по курьерам') btnEl.append(btnDelivery);
+    if (!el.id) btnDelivery.disabled = true;
 
     const btnSupply = components.getTagButton('Supply_bot');
     trEl.append(btnEl);
     btnSupply.classList = 'btn btn-outline-primary btnSupply me-2';
     btnSupply.setAttribute('data-id', `${el.id}`);
     if (el.nameFunction === 'Групповой чат по сырью') btnEl.append(btnSupply);
+    if (!el.id) btnSupply.disabled = true;
   });
   tableEl.append(theadEl, tBody);
 
