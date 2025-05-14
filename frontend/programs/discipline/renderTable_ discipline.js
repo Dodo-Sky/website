@@ -7,7 +7,7 @@ const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
 );
 
-export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift) {
+export async function renderTable(arrayData, time, discipline, timeZoneShift) {
   arrayData.sort(
     (a, b) =>
       new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal),
@@ -263,7 +263,9 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift) 
   const time_defects = document.querySelector('.time-defects');
   const liTimes = time_defects.querySelectorAll('li');
   liTimes.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit, timeZoneShift));
+    el.addEventListener('click', () => {
+      filter.filterToDate(el.value, discipline, timeZoneShift)
+    });
   });
 
   // обработчик решений менеджера смены
@@ -271,7 +273,7 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift) 
   const liManagers = manager.querySelectorAll('li');
   liManagers.forEach((el) => {
     el.addEventListener('click', () =>
-      filter.filterToManager(el.textContent, fullDataUnit),
+      filter.filterToManager(el.textContent, discipline),
     );
   });
 
@@ -280,7 +282,7 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift) 
   const liDirectors = unitDirector.querySelectorAll('li');
   liDirectors.forEach((el) => {
     el.addEventListener('click', () =>
-      filter.filterToDirector(el.textContent, fullDataUnit),
+      filter.filterToDirector(el.textContent, discipline),
     );
   });
 }

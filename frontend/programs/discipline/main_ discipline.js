@@ -4,7 +4,7 @@ import { renderTable } from './renderTable_ discipline.js';
 import * as filter from './filter_discipline.js';
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit) {
+function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -13,7 +13,7 @@ function editDataNoChange(renderData, time, fullDataUnit) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit);
+    renderTable(renderData, time, fullDataUnit, timeZoneShift);
   }
 }
 
@@ -88,6 +88,6 @@ function startRender(discipline, timeZoneShift) {
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = discipline.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(fullDataUnit, 0, fullDataUnit, timeZoneShift);
+    editDataNoChange(fullDataUnit, 0, discipline, timeZoneShift);
   });
 }

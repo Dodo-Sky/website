@@ -44,9 +44,9 @@ function filterToDirector(value, fullDataUnit) {
   }
 }
 
-function filterToDate(timeValue, dataFromServer, timeZoneShift) {
+function filterToDate(timeValue, discipline, timeZoneShift) {
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = dataFromServer.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = discipline.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
@@ -57,7 +57,7 @@ function filterToDate(timeValue, dataFromServer, timeZoneShift) {
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, dataFromServer, timeZoneShift);
+  editDataNoChange(filterData, timeValue, discipline, timeZoneShift);
 }
 
 async function update (timeZoneShift) {
