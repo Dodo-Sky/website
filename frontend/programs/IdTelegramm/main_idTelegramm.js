@@ -1,4 +1,4 @@
-import { getServerApi } from '../../apiServer.js';
+import { getServerApi, postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_idTelegramm.js';
 
@@ -43,6 +43,17 @@ export async function render(name, breadcrumbs) {
   const units = components.getTagDiv('col-auto');
   units.setAttribute('id', 'units');
   row1.append(units);
+
+  let btnEl = components.getTagButton('Загрузить новых сотрудников');
+  btnEl.classList.add('col-auto');
+  row1.append(btnEl);
+
+  btnEl.addEventListener('click', async function (e) {
+    let responce = await postDataServer('pushHired', { departmentName: departmentName });
+    if (responce) {
+      alert('Данные по принятым сотрудникам с Dodo IS обновлены');
+    }
+  });
 
   const ulEl = components.getTagUL_nav();
   ulEl.classList.add('nav-tabs');
