@@ -1,4 +1,5 @@
 import { postDataServer } from "../../apiServer.js";
+const departmentName = localStorage.getItem('departmentName');
 const variableName = "discipline";
 
 export function postServer() {
@@ -13,6 +14,7 @@ export function postServer() {
         scheduleId : btn.dataset.id,
         unitDirectorControl,
         managerDecision,
+        departmentName,
       };
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(variableName, changeServer);

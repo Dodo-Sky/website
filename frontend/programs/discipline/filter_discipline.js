@@ -60,7 +60,7 @@ function filterToDate(timeValue, discipline, timeZoneShift) {
   editDataNoChange(filterData, timeValue, discipline, timeZoneShift);
 }
 
-async function update (timeZoneShift) {
+async function update(timeZoneShift) {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
@@ -70,7 +70,8 @@ async function update (timeZoneShift) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const discipline = await getServerApi('discipline');
+  const departmentName = localStorage.getItem('departmentName');
+  const discipline = await getServerApi(`${departmentName}/discipline`);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 

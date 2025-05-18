@@ -31,9 +31,11 @@ export async function render(name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const discipline = await getServerApi('discipline');
+
   const unitsSettings = await getServerApi(`unitsSettings`);
   const departmentName = localStorage.getItem('departmentName');
+  const discipline = await getServerApi(`${departmentName}/discipline`);
+  console.log(discipline);
   const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
   const spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
