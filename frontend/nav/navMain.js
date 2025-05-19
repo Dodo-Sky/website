@@ -83,12 +83,6 @@ content.addEventListener('click', async function (e) {
       const module = await import('../programs/defects/main_defects.js');
       module.render(nameProgramm, breadcrumbs);
     }
-    if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
-      const nameProgramm = e.target.previousSibling.previousSibling.textContent;
-      let breadcrumbs = breadcrumb.lastChild.textContent;
-      const module = await import('../programs/discipline/main_ discipline.js');
-      module.render(nameProgramm, breadcrumbs);
-    }
 
     if (e.target?.dataset?.id === 'Обзвон уволенных') {
       const nameProgramm = e.target.previousSibling.previousSibling.textContent;
@@ -102,6 +96,13 @@ content.addEventListener('click', async function (e) {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
     const module = await import('../programs/badTrips/main_badTrips.js');
+    module.render(nameProgramm, breadcrumbs);
+  }
+  
+  if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import('../programs/discipline/main_ discipline.js');
     module.render(nameProgramm, breadcrumbs);
   }
 
