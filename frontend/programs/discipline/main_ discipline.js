@@ -35,7 +35,6 @@ export async function render(name, breadcrumbs) {
   const unitsSettings = await getServerApi(`unitsSettings`);
   const departmentName = localStorage.getItem('departmentName');
   const discipline = await getServerApi(`${departmentName}/discipline`);
-  console.log(discipline);
   const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
   const spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
@@ -57,15 +56,13 @@ export async function render(name, breadcrumbs) {
   title.classList.add('sticky-top');
 
   content.append(title, row, divEl);
-
-  getListUnits(discipline);
-  startRender(discipline, timeZoneShift);
+  getListUnits(discipline, timeZoneShift)
 
   // Обработчик обновить
   btnUpdate.addEventListener('click', () => filter.update(timeZoneShift));
 }
 
-function getListUnits(discipline) {
+function getListUnits(discipline, timeZoneShift) {
   let unitsName = [];
   discipline.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
@@ -82,10 +79,11 @@ function getListUnits(discipline) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
+  startRender(discipline, timeZoneShift, unitsName);
 }
 
-function startRender(discipline, timeZoneShift) {
-  let fullDataUnit = discipline.filter((el) => el.unitName === 'Тюмень-1');
+function startRender(discipline, timeZoneShift, unitsName) {
+  let fullDataUnit = discipline.filter((el) => el.unitName === unitsName[0]);
   renderTable(fullDataUnit, 0, fullDataUnit, timeZoneShift);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
