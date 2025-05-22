@@ -203,6 +203,35 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
 Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным. Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом. есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная</a> доставка: ${isFalseDelivery}
     `;
 
+    if (order.typeOfOffense === 'Долгая сборка заказа') {
+      modalBody.innerHTML = `
+    <b>Общие данные</b><br>
+    ФИО курьера: ${order.fio}<br>
+    Номер заказа: ${order.orderNumber}<br>
+    Тип проблемы: ${order.typeOfOffense}<br>
+    Количество курьеров в очереди в момент отправки заказа: ${order.numberOfCouriersInQueue}<br> 
+    Количество заказов за поездку: ${order.tripOrdersCount}<br><br>
+
+    <b>Временные данные</b><br>
+    Время ожидания заказа на тепловой полке (секунды): ${order.heatedShelfTime}<br>
+    Время <a href="#" data-bs-toggle="tooltip" title="В секундах с округлением. Возможны два случая:
+Курьер встал в очередь, и заказ появился после этого. Тогда для расчета метрики берется время которое заказ пролежал на полке. Так как курьер все это время мог собирать заказ.
+Курьер встал в очередь после того, как появился заказ. Тогда для расчета метрики берется время с момента постановки в курьера в очередь, до момента, когда заказ отправлен в поездку.">сборки</a>: заказа: ${order.orderAssemblyAvgTime}<br><br>
+
+    Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
+Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date(
+      order.handedOverToDeliveryAt,
+    )
+      .toLocaleString()
+      .slice(0, 17)}<br>
+    Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
+    Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
+    extraTime: ${order.extraTime}  минут <br>
+    Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
+
+    Время ответа курьером: ${dateResponceCourier} <br><br>`;
+    }
+
     // добавляем фото
     if (order.urlPhoto) {
       const modalElement = document.createElement('div');
