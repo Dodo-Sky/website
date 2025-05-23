@@ -220,16 +220,26 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
 
     Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
 Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date(
-      order.handedOverToDeliveryAt,
-    )
-      .toLocaleString()
-      .slice(0, 17)}<br>
+        order.handedOverToDeliveryAt,
+      )
+        .toLocaleString()
+        .slice(0, 17)}<br>
     Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
 
     Время ответа курьером: ${dateResponceCourier} <br><br>`;
+    }
+
+    if (order.typeOfOffense === 'Три и более заказа за одну поездку') {
+      modalBody.innerHTML = `
+    ФИО курьера: ${order.fio}<br>
+    Номера заказов: ${order.orderNumber}<br>
+    Тип проблемы: ${order.typeOfOffense}<br>
+    Рекомендации: ${order.decisionManager}<br>
+    Количество курьеров в очереди в момент отправки заказа: ${order.numberOfCouriersInQueue}<br> 
+    Количество заказов за поездку: ${order.tripOrdersCount}<br><br>`;
     }
 
     // добавляем фото
