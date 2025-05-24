@@ -1,6 +1,7 @@
 import { getServerApi } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_badTrips.js';
+import { renderRaiting } from './raiting.js';
 import * as filter from './filter_badTrips.js';
 
 // Проверка данных на отсутствие несохраненных данных
@@ -66,32 +67,63 @@ export async function render(name, breadcrumbs) {
     );
   });
 
-  const sortEl = components.getTagDiv('row');
-  sortEl.classList.add('start-50');
-  let sortLabelDiv = components.getTagDiv('col-auto');
-  const sortLabel = components.getTagLabel('sort', 'Сортировка');
-  sortLabel.className = 'col-form-label';
-  sortEl.append(sortLabelDiv);
-  sortLabelDiv.append(sortLabel);
+  // навигация по программе и рейтингу
+  const ulEl = components.getTagUL_nav();
+  ulEl.classList.add('nav-tabs');
+  const programEl = components.getTagLI_nav('Программа');
+  programEl.classList.add('programNav');
+  programEl.classList.add('active');
+  const raitingEl = components.getTagLI_nav('Рейтинг курьеров');
+  raitingEl.classList.add('raitingNav');
+  ulEl.append(programEl, raitingEl);
 
-  sortLabelDiv = components.getTagDiv('col-auto');
-  sortEl.append(sortLabelDiv);
-  const sortSelect = components.getTagSelect();
-  sortSelect.setAttribute('id', 'sort');
-  sortLabelDiv.append(sortSelect);
-  const dateOption = components.getTagOption('По дате', 'По дате');
-  const courierOption = components.getTagOption('По курьеру', 'По курьеру');
-  sortSelect.append(dateOption, courierOption);
+  programEl.addEventListener('click', () => {
+    programEl.classList.add('active');
+    raitingEl.classList.remove('active');
+    const selectUnit = document.querySelector('.selectUnit');
 
-  const divEl = components.getTagDiv('badTrips-table');
+    const fullDataUnit = couriersOrder.filter((el) => el.unitName === selectUnit.value);
+    editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
+  });
+  raitingEl.addEventListener('click', () => {
+    raitingEl.classList.add('active');
+    programEl.classList.remove('active');
+    renderRaiting(timeZoneShift);
+  });
+
+  const badTrips_table = components.getTagDiv('badTrips-table');
   const title = components.getTagH(3, name);
   title.classList.add('text-center');
   title.classList.add('sticky-top');
 
-  content.append(title, row, sortEl, divEl);
+  content.append(row, ulEl, badTrips_table);
+
+  // const sortEl = components.getTagDiv('row');
+  // sortEl.classList.add('start-50');
+  // let sortLabelDiv = components.getTagDiv('col-auto');
+  // const sortLabel = components.getTagLabel('sort', 'Сортировка');
+  // sortLabel.className = 'col-form-label';
+  // sortEl.append(sortLabelDiv);
+  // sortLabelDiv.append(sortLabel);
+
+  // sortLabelDiv = components.getTagDiv('col-auto');
+  // sortEl.append(sortLabelDiv);
+  // const sortSelect = components.getTagSelect();
+  // sortSelect.setAttribute('id', 'sort');
+  // sortLabelDiv.append(sortSelect);
+  // const dateOption = components.getTagOption('По дате', 'По дате');
+  // const courierOption = components.getTagOption('По курьеру', 'По курьеру');
+  // sortSelect.append(dateOption, courierOption);
+
+  // const badTrips_table = components.getTagDiv('badTrips-table');
+  // const title = components.getTagH(3, name);
+  // title.classList.add('text-center');
+  // title.classList.add('sticky-top');
+
+  // content.append(title, row, sortEl, badTrips_table);
 
   getListUnits(couriersOrder, timeZoneShift);
-  
+
   // Обработчик обновить
   btnUpdate.addEventListener('click', () => {
     filter.update(timeZoneShift);
@@ -124,17 +156,21 @@ async function startRender(couriersOrder, unitsName, timeZoneShift) {
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
+    const programNav = document.querySelector('.programNav');
+    programNav.classList.add('active');
+    const raitingNav = document.querySelector('.raitingNav');
+    raitingNav.classList.remove('active');
     editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
   });
 
-  document.getElementById('sort').addEventListener('change', function (e) {
-    if (e.target.value === 'По курьеру') {
-      fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
-      editDataNoChange(fullDataUnit, 0, couriersOrder, true, timeZoneShift);
-    }
-    if (e.target.value === 'По дате') {
-      fullDataUnit.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-      editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
-    }
-  });
+  // document.getElementById('sort').addEventListener('change', function (e) {
+  //   if (e.target.value === 'По курьеру') {
+  //     fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
+  //     editDataNoChange(fullDataUnit, 0, couriersOrder, true, timeZoneShift);
+  //   }
+  //   if (e.target.value === 'По дате') {
+  //     fullDataUnit.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
+  //     editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
+  //   }
+  // });
 }

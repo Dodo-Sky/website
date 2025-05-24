@@ -295,11 +295,20 @@ function getTagTR() {
   return element;
 }
 
-function getTagTH(textContent) {
+function getTagTH(textContent, tooltipText) {
   const element = document.createElement('th');
   element.setAttribute('scope', 'col');
   element.classList.add('fs-6');
   element.textContent = textContent;
+  if (tooltipText) {
+    const i = document.createElement('i')
+    i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
+    element.append(i)
+    element.setAttribute('data-bs-toggle', 'tooltip');
+    element.setAttribute('data-bs-placement', 'top');
+    element.setAttribute('title', tooltipText);
+    new bootstrap.Tooltip(element)
+  }
   return element;
 }
 
