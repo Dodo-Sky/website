@@ -78,8 +78,8 @@ export function getLoginForm(onSuccess) {
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const login = loginInput.value;
-    const password = passwordInput.value;
+    const login = loginInput.value.trim ();
+    const password = passwordInput.value.trim ();
     loginServerApi(login, password, onSuccess);
   });
 }

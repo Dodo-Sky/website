@@ -4,6 +4,11 @@ import { postDataServer } from '../../apiServer.js';
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
+function YYYYMMDDtoDDMMYYYY(date) {
+  const [year, monts, day] = date.split('-');
+  return `${day}.${monts}.${year}`;
+}
+
 export async function renderRaiting(timeZoneShift) {
   const departmentName = localStorage.getItem('departmentName');
   const selectUnit = document.querySelector('.selectUnit');
@@ -63,35 +68,36 @@ export async function renderRaiting(timeZoneShift) {
   tableEl.classList.add('table-sm');
   content.append(tableEl);
 
-  btnEl.addEventListener('click', async () => {
-    const dataToServer = {
-      departmentName,
-      unitName: selectUnit.value,
-      dateFrom: inputFrom.value,
-      dateTo: inputTo.value,
-    };
-    let renderData = await postDataServer('couriersRaiting', dataToServer);
-    renderData = renderData.sort((a, b) => a.averageRaiting - b.averageRaiting);
-    renderTable(renderData);
-  });
-
-  const dataToServer = {
+  const requestStart = {
     departmentName,
     unitName: selectUnit.value,
     dateFrom: inputFrom.value,
     dateTo: inputTo.value,
   };
-  let renderData = await postDataServer('couriersRaiting', dataToServer);
-  renderData = renderData.sort((a, b) => a.averageRaiting - b.averageRaiting);
-  renderTable(renderData);
+  let renderDataStart = await postDataServer('couriersRaiting', requestStart);
+  renderDataStart = renderDataStart.sort((a, b) => a.averageRaiting - b.averageRaiting);
+  renderTable(renderDataStart);
+
+  btnEl.addEventListener('click', async () => {
+    
+    if (renderDataStart[0].minDate > inputFrom.value) {
+      alert(`Минимальная дата не ранее ${YYYYMMDDtoDDMMYYYY(renderDataStart[0].minDate)}`);
+      return;
+    }
+
+    const request = {
+      departmentName,
+      unitName: selectUnit.value,
+      dateFrom: inputFrom.value,
+      dateTo: inputTo.value,
+    };
+    let renderData = await postDataServer('couriersRaiting', request);
+    renderData = renderData.sort((a, b) => a.averageRaiting - b.averageRaiting);
+    renderTable(renderData);
+  });
 }
 
 function renderTable(renderData) {
-  function YYYYMMDDtoDDMMYYYY(date) {
-    const [year, monts, day] = date.split('-');
-    return `${day}.${monts}.${year}`;
-  }
-
   const rowEl = document.querySelector('.rowEl');
   const colEl = document.querySelector('.colEl');
   if (!colEl) {
