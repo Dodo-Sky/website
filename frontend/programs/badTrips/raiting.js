@@ -9,7 +9,7 @@ function YYYYMMDDtoDDMMYYYY(date) {
   return `${day}.${monts}.${year}`;
 }
 
-export async function renderRaiting(timeZoneShift) {
+export async function renderRaiting (timeZoneShift) {
   const departmentName = localStorage.getItem('departmentName');
   const selectUnit = document.querySelector('.selectUnit');
   const content = document.querySelector('.badTrips-table');
@@ -74,14 +74,14 @@ export async function renderRaiting(timeZoneShift) {
     dateFrom: inputFrom.value,
     dateTo: inputTo.value,
   };
-  let renderDataStart = await postDataServer('couriersRaiting', requestStart);
-  renderDataStart = renderDataStart.sort((a, b) => a.averageRaiting - b.averageRaiting);
-  renderTable(renderDataStart);
+
+  const renderDataStart = await postDataServer ('couriersRaiting', requestStart);
+  const {minDate, maxDate} = (await postDataServer('minMaxDate', {unitName : selectUnit.value}))[0];
+  renderTable(renderDataStart, minDate, maxDate);
 
   btnEl.addEventListener('click', async () => {
-    
-    if (renderDataStart[0].minDate > inputFrom.value) {
-      alert(`Минимальная дата не ранее ${YYYYMMDDtoDDMMYYYY(renderDataStart[0].minDate)}`);
+    if (minDate > inputFrom.value) {
+      alert(`Минимальная дата не ранее ${YYYYMMDDtoDDMMYYYY(minDate)}`);
       return;
     }
 
@@ -92,19 +92,19 @@ export async function renderRaiting(timeZoneShift) {
       dateTo: inputTo.value,
     };
     let renderData = await postDataServer('couriersRaiting', request);
-    renderData = renderData.sort((a, b) => a.averageRaiting - b.averageRaiting);
-    renderTable(renderData);
+    renderTable (renderData, minDate, maxDate);
   });
 }
 
-function renderTable(renderData) {
+function renderTable(renderData, minDate, maxDate) {
   const rowEl = document.querySelector('.rowEl');
   const colEl = document.querySelector('.colEl');
+
   if (!colEl) {
     const colEl = components.getTagDiv('col-auto');
     colEl.classList.add('colEl');
     let maxMin = components.getTagSpan();
-    maxMin.textContent = `Внимание. Не ранее ${YYYYMMDDtoDDMMYYYY(renderData[0].minDate)}. Не позднее ${YYYYMMDDtoDDMMYYYY(renderData[0].maxDate)}`;
+    maxMin.textContent = `Внимание. Не ранее ${YYYYMMDDtoDDMMYYYY(minDate)}. Не позднее ${YYYYMMDDtoDDMMYYYY(maxDate)}`;
     colEl.append(maxMin);
     rowEl.append(colEl);
   }
@@ -156,12 +156,12 @@ function renderTable(renderData) {
     let fio = components.getTagTD(courier.fio);
     trEl.append(fio);
 
-    let raiting = components.getTagTD(courier.averageRaiting);
-    if (courier.averageRaiting < 60 && courier.allTrip >= 10) raiting.classList.add('bg-success-subtle');
-    if (courier.averageRaiting > 90 && courier.averageRaiting < 100 && courier.allTrip >= 10) {
+    let raiting = components.getTagTD (courier.averageRaiting);
+    if (+courier.averageRaiting > 160  && +courier.allTrip >= 10) raiting.classList.add('bg-success-subtle');
+    if (+courier.averageRaiting > 100 && +courier.averageRaiting < 110 && courier.allTrip >= 10) {
       raiting.classList.add('bg-warning-subtle');
     }
-    if (courier.averageRaiting > 100 && courier.allTrip >= 10) raiting.classList.add('bg-danger-subtle');
+    if (+courier.averageRaiting < 100 && +courier.allTrip >= 10) raiting.classList.add('bg-danger-subtle');
     trEl.append(raiting);
 
     let allTrip = components.getTagTD(courier.allTrip);

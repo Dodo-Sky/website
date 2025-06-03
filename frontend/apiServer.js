@@ -91,6 +91,7 @@ export async function postDataServer(variableName, payload) {
       // body: payload,
     });
     let data = await response.json();
+
     if (response.ok) {
       return data;
     } else {
