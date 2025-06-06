@@ -5,7 +5,7 @@ import { renderRaiting } from './raiting.js';
 import * as filter from './filter_badTrips.js';
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(data, time, dataFromServer, filterToCourier, timeZoneShift) {
+function editDataNoChange(data, time, dataFromServer, filterToCourier) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -14,7 +14,7 @@ function editDataNoChange(data, time, dataFromServer, filterToCourier, timeZoneS
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(data, time, dataFromServer, filterToCourier, timeZoneShift);
+    renderTable(data, time, dataFromServer, filterToCourier);
   }
 }
 
@@ -35,7 +35,6 @@ export async function render(name, breadcrumbs) {
   const departmentName = localStorage.getItem('departmentName');
   const couriersOrder = await postDataServer ('query_couriersOrder', {departmentName: departmentName});
   const unitsSettings = await getServerApi(`unitsSettings`);
-  const timeZoneShift = unitsSettings.find((el) => couriersOrder[0].unitId === el.unitId)?.timeZoneShift;
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -83,12 +82,12 @@ export async function render(name, breadcrumbs) {
     const selectUnit = document.querySelector('.selectUnit');
 
     const fullDataUnit = couriersOrder.filter((el) => el.unitName === selectUnit.value);
-    editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
+    editDataNoChange(fullDataUnit, 0, couriersOrder);
   });
   raitingEl.addEventListener('click', () => {
     raitingEl.classList.add('active');
     programEl.classList.remove('active');
-    renderRaiting(timeZoneShift);
+    renderRaiting();
   });
 
   const badTrips_table = components.getTagDiv('badTrips-table');
@@ -122,15 +121,15 @@ export async function render(name, breadcrumbs) {
 
   // content.append(title, row, sortEl, badTrips_table);
 
-  getListUnits(couriersOrder, timeZoneShift);
+  getListUnits(couriersOrder);
 
   // Обработчик обновить
   btnUpdate.addEventListener('click', () => {
-    filter.update(timeZoneShift);
+    filter.update();
   });
 }
 
-function getListUnits(couriersOrder, timeZoneShift) {
+function getListUnits(couriersOrder) {
   let unitsName = [];
   couriersOrder.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
@@ -147,12 +146,12 @@ function getListUnits(couriersOrder, timeZoneShift) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
-  startRender(couriersOrder, unitsName, timeZoneShift);
+  startRender(couriersOrder, unitsName);
 }
 
-async function startRender (couriersOrder, unitsName, timeZoneShift) {
+async function startRender (couriersOrder, unitsName) {
   let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
-  renderTable(fullDataUnit, 0, couriersOrder, timeZoneShift);
+  renderTable(fullDataUnit, 0, couriersOrder);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
@@ -160,17 +159,17 @@ async function startRender (couriersOrder, unitsName, timeZoneShift) {
     programNav.classList.add('active');
     const raitingNav = document.querySelector('.raitingNav');
     raitingNav.classList.remove('active');
-    editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
+    editDataNoChange(fullDataUnit, 0, couriersOrder);
   });
 
   // document.getElementById('sort').addEventListener('change', function (e) {
   //   if (e.target.value === 'По курьеру') {
   //     fullDataUnit.sort((a, b) => a.fio.localeCompare(b.fio));
-  //     editDataNoChange(fullDataUnit, 0, couriersOrder, true, timeZoneShift);
+  //     editDataNoChange(fullDataUnit, 0, couriersOrder, true);
   //   }
   //   if (e.target.value === 'По дате') {
   //     fullDataUnit.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-  //     editDataNoChange(fullDataUnit, 0, couriersOrder, timeZoneShift);
+  //     editDataNoChange(fullDataUnit, 0, couriersOrder);
   //   }
   // });
 }

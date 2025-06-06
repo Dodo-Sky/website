@@ -9,7 +9,7 @@ function YYYYMMDDtoDDMMYYYY(date) {
   return `${day}.${monts}.${year}`;
 }
 
-export async function renderRaiting (timeZoneShift) {
+export async function renderRaiting () {
   const departmentName = localStorage.getItem('departmentName');
   const selectUnit = document.querySelector('.selectUnit');
   const content = document.querySelector('.badTrips-table');
@@ -17,12 +17,10 @@ export async function renderRaiting (timeZoneShift) {
 
   // даты
   let now = new Date();
-  // now.setHours(now.getHours() + timeZoneShift);
   now.setHours(now.getHours());
   const dateTo = now.toISOString().slice(0, 10);
 
   let fromEl = new Date();
-  // fromEl.setHours(fromEl.getHours() + timeZoneShift);
   fromEl.setHours(fromEl.getHours());
   fromEl.setDate(fromEl.getDate() - 30);
   const dateFrom = fromEl.toISOString().slice(0, 10);

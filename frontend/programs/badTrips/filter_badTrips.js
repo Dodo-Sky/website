@@ -44,24 +44,23 @@ function filterToDirector(value, fullDataUnit) {
   }
 }
 
-async function filterToDate (timeValue, dataFromServer, timeZoneShift) {
+async function filterToDate (timeValue, dataFromServer) {
   let selectUnit = document.querySelector('.selectUnit');
   let defectFilterUnit = dataFromServer.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
-      // now.setHours(now.getHours() + timeZoneShift);
       now.setHours(now.getHours());
       return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, dataFromServer, timeZoneShift);
+  editDataNoChange(filterData, timeValue, dataFromServer);
 }
 
-async function update(timeZoneShift) {
+async function update() {
   const time_defects = document.querySelector('.time-defects');
   const selectedBTN = time_defects.querySelector('button');
   const selectUnit = document.querySelector('.selectUnit');
@@ -103,20 +102,19 @@ async function update(timeZoneShift) {
   }
 
   if (selectedBTN.value === '0') {
-    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit, timeZoneShift);
+    editDataNoChange(fullDataUnit, selectedBTN.value, fullDataUnit);
     return;
   }
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
-    // now.setHours(now.getHours() + timeZoneShift);
     now.setHours(now.getHours());
     return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
-  editDataNoChange(filterData, selectedBTN.value, fullDataUnit, timeZoneShift);
+  editDataNoChange(filterData, selectedBTN.value, fullDataUnit);
 }
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
+function editDataNoChange(renderData, time, fullDataUnit) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -125,6 +123,6 @@ function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit, timeZoneShift);
+    renderTable(renderData, time, fullDataUnit);
   }
 }

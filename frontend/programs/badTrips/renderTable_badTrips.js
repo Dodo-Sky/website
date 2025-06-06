@@ -5,7 +5,7 @@ import * as filter from './filter_badTrips.js';
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
-export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, filterToCourier) {
+export async function renderTable(arrayData, time, fullDataUnit, filterToCourier) {
   if (!filterToCourier) {
     arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
   }
@@ -343,7 +343,7 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
   const time_defects = document.querySelector('.time-defects');
   const liTimes = time_defects.querySelectorAll('li');
   liTimes.forEach((el) => {
-    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit, timeZoneShift));
+    el.addEventListener('click', () => filter.filterToDate(el.value, fullDataUnit));
   });
 
   // обработчик решений менеджера смены
@@ -360,5 +360,5 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
     el.addEventListener('click', () => filter.filterToDirector(el.textContent, fullDataUnit));
   });
 
-  editData(fullDataUnit, timeZoneShift);
+  editData(fullDataUnit);
 }
