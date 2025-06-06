@@ -140,7 +140,8 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
   arrayData.forEach((order) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let time = components.getTagTD(new Date(order.handedOverToDeliveryAt).toLocaleString().slice(0, 17));
+    // let time = components.getTagTD(new Date(order.handedOverToDeliveryAt).toString().slice(0, 17));
+    let time = components.getTagTD(order.handedOverToDeliveryAtLocal);
     trEl.append(time);
     let fio = components.getTagTD(order.fio);
     trEl.append(fio);
@@ -179,12 +180,9 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
 
     Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
 
-Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date(
-      order.handedOverToDeliveryAt,
-    )
-      .toLocaleString()
-      .slice(0, 17)}<br>
-    Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
+Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${order.handedOverToDeliveryAtLocal}
+<br>
+    Время окончания поездки: ${order.orderFulfilmentFlagAtLocal}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTime}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTime} минут <br>
@@ -219,12 +217,8 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
 Курьер встал в очередь после того, как появился заказ. Тогда для расчета метрики берется время с момента постановки в курьера в очередь, до момента, когда заказ отправлен в поездку.">сборки</a>: заказа: ${order.orderAssemblyAvgTime}<br><br>
 
     Время <a href="#" data-bs-toggle="tooltip" title="Время начала поездки = время нажатия курьером кнопки Поехали. 
-Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${new Date(
-        order.handedOverToDeliveryAt,
-      )
-        .toLocaleString()
-        .slice(0, 17)}<br>
-    Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
+Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>: поездки ${order.handedOverToDeliveryAtLocal}<br>
+    Время окончания поездки: ${order.orderFulfilmentFlagAtLocal}<br>
     Прогнозное время поездки: ${order.predictedDeliveryTime}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
     Фактическое время поездки: ${order.deliveryTime} минут <br>

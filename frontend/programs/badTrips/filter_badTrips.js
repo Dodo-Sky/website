@@ -51,7 +51,8 @@ async function filterToDate (timeValue, dataFromServer, timeZoneShift) {
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
-      now.setHours(now.getHours() + timeZoneShift);
+      // now.setHours(now.getHours() + timeZoneShift);
+      now.setHours(now.getHours());
       return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
@@ -107,7 +108,8 @@ async function update(timeZoneShift) {
   }
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
-    now.setHours(now.getHours() + timeZoneShift);
+    // now.setHours(now.getHours() + timeZoneShift);
+    now.setHours(now.getHours());
     return new Date(el.handedOverToDeliveryAt) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
   editDataNoChange(filterData, selectedBTN.value, fullDataUnit, timeZoneShift);

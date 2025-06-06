@@ -36,7 +36,6 @@ export async function render(name, breadcrumbs) {
   const couriersOrder = await postDataServer ('query_couriersOrder', {departmentName: departmentName});
   const unitsSettings = await getServerApi(`unitsSettings`);
   const timeZoneShift = unitsSettings.find((el) => couriersOrder[0].unitId === el.unitId)?.timeZoneShift;
-  console.log(timeZoneShift);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
