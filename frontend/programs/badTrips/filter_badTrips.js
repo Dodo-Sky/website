@@ -1,6 +1,6 @@
 export { filterToDate, filterToDirector, filterToManager, update };
 import { renderTable } from './renderTable_badTrips.js';
-import { getServerApi } from '../../apiServer.js';
+import { postDataServer } from '../../apiServer.js';
 
 function filterToManager(value, fullDataUnit) {
   let selectUnit = document.querySelector('.selectUnit');
@@ -31,13 +31,13 @@ function filterToDirector(value, fullDataUnit) {
     editDataNoChange(defectFilterUnit, 0, fullDataUnit);
   }
   if (value === 'Только просроченные') {
-    filterData = defectFilterUnit.filter((el) => el.directorComment.content === 'Просрочка');
+    filterData = defectFilterUnit.filter((el) => el.directorComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'Только просроченные';
   }
   if (value === 'В работе') {
-    filterData = defectFilterUnit.filter((el) => !el.directorComment.content);
+    filterData = defectFilterUnit.filter((el) => !el.directorComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     const unitDirector = document.querySelector('.unitDirector-defects');
     unitDirector.dataset.condition = 'В работе';
@@ -71,7 +71,7 @@ async function update(timeZoneShift) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-    const defectsUpdate = await getServerApi(`${departmentName}/couriersOrder`);
+  const defectsUpdate = await postDataServer ('query_couriersOrder', {departmentName: departmentName});
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
   
@@ -91,12 +91,12 @@ async function update(timeZoneShift) {
     return;
   }
   if (unitDirector.dataset.condition === 'Только просроченные') {
-    filterData = fullDataUnit.filter((el) => el.directorComment.content === 'Просрочка');
+    filterData = fullDataUnit.filter((el) => el.directorComment === 'Просрочка');
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }
   if (unitDirector.dataset.condition === 'В работе') {
-    filterData = fullDataUnit.filter((el) => !el.directorComment.content);
+    filterData = fullDataUnit.filter((el) => !el.directorComment);
     editDataNoChange(filterData, 0, fullDataUnit);
     return;
   }

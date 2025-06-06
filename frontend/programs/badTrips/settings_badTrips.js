@@ -1,6 +1,5 @@
 import * as components from '../../components.js';
-import { getServerApi } from '../../apiServer.js';
-import { postDataServer } from '../../apiServer.js';
+import { getServerApi, postDataServer } from '../../apiServer.js';
 // import tippy from 'tippy.js';
 
 

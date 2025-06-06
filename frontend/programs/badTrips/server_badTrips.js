@@ -1,5 +1,5 @@
 import { postDataServer } from '../../apiServer.js';
-const variableName = `couriersOrder`;
+const variableName = `couriersOrderSQL`;
 
 export function postServer() {
   const bnts = document.querySelectorAll('.arrayData-btn-save');
@@ -24,4 +24,3 @@ export function postServer() {
     });
   });
 }
-

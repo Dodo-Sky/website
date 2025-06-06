@@ -1,4 +1,4 @@
-import { getServerApi } from '../../apiServer.js';
+import { getServerApi, postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_badTrips.js';
 import { renderRaiting } from './raiting.js';
@@ -33,9 +33,10 @@ export async function render(name, breadcrumbs) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   const departmentName = localStorage.getItem('departmentName');
-  const couriersOrder = await getServerApi(`${departmentName}/couriersOrder`);
+  const couriersOrder = await postDataServer ('query_couriersOrder', {departmentName: departmentName});
   const unitsSettings = await getServerApi(`unitsSettings`);
   const timeZoneShift = unitsSettings.find((el) => couriersOrder[0].unitId === el.unitId)?.timeZoneShift;
+  console.log(timeZoneShift);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -63,7 +64,7 @@ export async function render(name, breadcrumbs) {
 
   reference.addEventListener('click', function (e) {
     window.open(
-      'https://docs.google.com/document/d/e/2PACX-1vR1bUKgXVrML8APGkHoQpOviegHCjqxMCLYrHWNhm1b-Jme8aH--silL8aM6vKbeFv9XPeNpo6qKMJC/pub',
+      'https://docs.google.com/document/d/1fgS1kdMy6bWIAm0Vr0_WQzOISTmEJRnkcOpGarn0DEE/edit?usp=sharing',
     );
   });
 
@@ -150,7 +151,7 @@ function getListUnits(couriersOrder, timeZoneShift) {
   startRender(couriersOrder, unitsName, timeZoneShift);
 }
 
-async function startRender(couriersOrder, unitsName, timeZoneShift) {
+async function startRender (couriersOrder, unitsName, timeZoneShift) {
   let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
   renderTable(fullDataUnit, 0, couriersOrder, timeZoneShift);
 

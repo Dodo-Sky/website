@@ -104,7 +104,7 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Решение управляющего');
   // количество задач в работе
-  count = arrayData.filter((el) => !el.directorComment.content).length;
+  count = arrayData.filter((el) => !el.directorComment).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -113,7 +113,7 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
     btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
-  countDelays = arrayData.filter((el) => el.directorComment.content === 'Просрочка').length;
+  countDelays = arrayData.filter((el) => el.directorComment === 'Просрочка').length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -185,9 +185,9 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
       .toLocaleString()
       .slice(0, 17)}<br>
     Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
-    Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
+    Прогнозное время поездки: ${order.predictedDeliveryTime}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
-    Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
+    Фактическое время поездки: ${order.deliveryTime} минут <br>
     Просрочка: <b>${order.expiration} минут</b><br>
     Время ответа курьером: ${dateResponceCourier} <br><br>
 
@@ -225,9 +225,9 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
         .toLocaleString()
         .slice(0, 17)}<br>
     Время окончания поездки: ${new Date(order.orderFulfilmentFlagAt).toLocaleString().slice(0, 17)}<br>
-    Прогнозное время поездки: ${order.predictedDeliveryTimeMin}  минут <br>
+    Прогнозное время поездки: ${order.predictedDeliveryTime}  минут <br>
     extraTime: ${order.extraTime}  минут <br>
-    Фактическое время поездки: ${order.deliveryTimeMin} минут <br>
+    Фактическое время поездки: ${order.deliveryTime} минут <br>
 
     Время ответа курьером: ${dateResponceCourier} <br><br>`;
     }
@@ -322,14 +322,14 @@ export async function renderTable(arrayData, time, fullDataUnit, timeZoneShift, 
     trEl.append(graphistComment);
 
     let directorComment = components.getTagTD();
-    let directorCommentTextarea = components.getTagTextarea(order.directorComment.content);
+    let directorCommentTextarea = components.getTagTextarea(order.directorComment);
     directorCommentTextarea.classList.add('badTrips-directorComment');
     directorCommentTextarea.setAttribute('cols', '75');
     let role = localStorage.getItem('role');
     if (role === 'менеджер смены') {
       directorCommentTextarea.disabled = true;
     }
-    if (order.directorComment.content === 'Просрочка') {
+    if (order.directorComment === 'Просрочка') {
       directorCommentTextarea.classList.add('bg-danger-subtle');
     }
     directorComment.append(directorCommentTextarea);
