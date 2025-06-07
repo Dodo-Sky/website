@@ -38,8 +38,6 @@ export async function settings_badTrips(title) {
   trEl.append(thEl);
   thEl = components.getTagTH('Лимит заказов за поездку');
   trEl.append(thEl);
-  // thEl = components.getTagTH('Учитывать 2 заказа да поездку?');
-  // trEl.append(thEl);
 
   // Тело таблицы tBody
   const tBody = components.getTagTBody();
@@ -71,14 +69,6 @@ export async function settings_badTrips(title) {
     inputMaxTripOrdersCount.setAttribute('id', el.unitId);
     maxTripOrdersCount.append(inputMaxTripOrdersCount);
     trEl.append(maxTripOrdersCount);
-
-    // const twoTripOrdersIsActive = components.getTagTD();
-    // const inputCheckBox = components.getTagInput_checkbox('inputCheckBox');
-    // inputCheckBox.classList.add('inputCheckBox');
-    // if (badTrips.twoTripOrdersIsActive) inputCheckBox.checked = true;
-    // inputCheckBox.setAttribute('id', el.unitId);
-    // twoTripOrdersIsActive.append(inputCheckBox);
-    // trEl.append(twoTripOrdersIsActive);
   }
   tableEl.append(theadEl, tBody);
 
@@ -113,18 +103,6 @@ function postServer(form, units, btn) {
     });
   });
 
-  // const inputCheckBox = document.querySelectorAll('.inputCheckBox');
-  // inputCheckBox.forEach((input) => {
-  //   input.addEventListener('input', function (e) {
-  //     let unit = units.find((el) => el.unitId === e.target.id);
-  //     let twoTripOrdersIsActive = unit.programs?.find(
-  //       (program) => program.name === 'Проблемные поездки',
-  //     ).twoTripOrdersIsActive;
-  //     if (e.target.checked !== twoTripOrdersIsActive) btn.disabled = false;
-  //     if (e.target.checked == twoTripOrdersIsActive) btn.disabled = true;
-  //   });
-  // });
-
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const trEls = document.querySelectorAll('.trEl');
@@ -136,18 +114,15 @@ function postServer(form, units, btn) {
 
       const extraTimeEl = el.querySelector('.inputExtraTime');
       const maxTripOrdersCountEl = el.querySelector('.inputMaxTripOrdersCount');
-      // const twoTripOrdersIsActiveEl = el.querySelector('.inputCheckBox');
       if (
         +extraTimeEl.value !== badTrip.extraTime ||
         +maxTripOrdersCountEl.value !== badTrip.maxTripOrdersCount
-        //  || twoTripOrdersIsActiveEl.checked !== badTrip.twoTripOrdersIsActive
       ) {
         changeServer.push({
           unitId: unit.unitId,
           unitName: unit.unitName,
           extraTime: +extraTimeEl.value,
           maxTripOrdersCount: +maxTripOrdersCountEl.value,
-          // twoTripOrdersIsActive: twoTripOrdersIsActiveEl.checked,
         });
       }
     }
