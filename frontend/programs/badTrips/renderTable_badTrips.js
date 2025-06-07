@@ -284,13 +284,6 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
       btnOrder.append(span);
     }
 
-    if (order.deliveryTransportName === 'Vehicle') {
-      let span = document.createElement('span');
-      span.classList = 'badge text-bg-secondary';
-      span.textContent = 'Авто';
-      btnOrder.prepend(span);
-    }
-
     if (order.deliveryTransportName === 'OnFoot') {
       let span = document.createElement('span');
       span.classList = 'badge text-bg-secondary';
