@@ -35,7 +35,7 @@ export async function render(name, breadcrumbs) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   const departmentName = localStorage.getItem('departmentName');
-  const couriersOrder = await postDataServer ('query_couriersOrder', {departmentName: departmentName});
+  const couriersOrder = await postDataServer('query_couriersOrder', { departmentName: departmentName });
   const unitsSettings = await getServerApi(`unitsSettings`);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
@@ -63,9 +63,7 @@ export async function render(name, breadcrumbs) {
   row.append(referenceDiv);
 
   reference.addEventListener('click', function (e) {
-    window.open(
-      'https://docs.google.com/document/d/1fgS1kdMy6bWIAm0Vr0_WQzOISTmEJRnkcOpGarn0DEE/edit?usp=sharing',
-    );
+    window.open('https://docs.google.com/document/d/1fgS1kdMy6bWIAm0Vr0_WQzOISTmEJRnkcOpGarn0DEE/edit?usp=sharing');
   });
 
   // навигация по программе и рейтингу
@@ -78,7 +76,17 @@ export async function render(name, breadcrumbs) {
   raitingEl.classList.add('raitingNav');
   const premiumEl = components.getTagLI_nav('Бонусы');
   premiumEl.classList.add('premiumNav');
-  ulEl.append(programEl, raitingEl, premiumEl);
+  ulEl.append(programEl, raitingEl);
+
+  let role = localStorage.getItem('role');
+  if (
+    role === 'управляющий' ||
+    role === 'менеджер офиса' ||
+    role === 'администратор' ||
+    role === 'Администратор всей сети'
+  ) {
+    ulEl.append(premiumEl);
+  }
 
   programEl.addEventListener('click', () => {
     programEl.classList.add('active');
@@ -100,7 +108,7 @@ export async function render(name, breadcrumbs) {
     premiumEl.classList.add('active');
     programEl.classList.remove('active');
     raitingEl.classList.remove('active');
-    renderPremium ();
+    renderPremium();
   });
 
   const badTrips_table = components.getTagDiv('badTrips-table');
@@ -162,7 +170,7 @@ function getListUnits(couriersOrder) {
   startRender(couriersOrder, unitsName);
 }
 
-async function startRender (couriersOrder, unitsName) {
+async function startRender(couriersOrder, unitsName) {
   let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
   renderTable(fullDataUnit, 0, couriersOrder);
 
