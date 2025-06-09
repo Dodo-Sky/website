@@ -193,8 +193,9 @@ function showNavManager() {
   let cardRow = components.getCardRow();
   let diszipline = components.getCardNav('Соблюдение дисциплины');
   let badSupply = components.getCardNav('Контроль брака');
+  let orders = components.getCardNav('Проблемные поездки');
 
-  cardRow.append(diszipline, badSupply);
+  cardRow.append(diszipline, badSupply, orders);
   content.innerHTML = '';
   const titte = components.getTagH(5, 'Выберите нужную вам программу');
   titte.classList.add('text-center');

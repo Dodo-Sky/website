@@ -2,6 +2,8 @@ import { getServerApi, postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_badTrips.js';
 import { renderRaiting } from './raiting.js';
+import { renderPremium } from './premium.js';
+
 import * as filter from './filter_badTrips.js';
 
 // Проверка данных на отсутствие несохраненных данных
@@ -74,11 +76,14 @@ export async function render(name, breadcrumbs) {
   programEl.classList.add('active');
   const raitingEl = components.getTagLI_nav('Рейтинг курьеров');
   raitingEl.classList.add('raitingNav');
-  ulEl.append(programEl, raitingEl);
+  const premiumEl = components.getTagLI_nav('Бонусы');
+  premiumEl.classList.add('premiumNav');
+  ulEl.append(programEl, raitingEl, premiumEl);
 
   programEl.addEventListener('click', () => {
     programEl.classList.add('active');
     raitingEl.classList.remove('active');
+    premiumEl.classList.remove('active');
     const selectUnit = document.querySelector('.selectUnit');
 
     const fullDataUnit = couriersOrder.filter((el) => el.unitName === selectUnit.value);
@@ -87,7 +92,15 @@ export async function render(name, breadcrumbs) {
   raitingEl.addEventListener('click', () => {
     raitingEl.classList.add('active');
     programEl.classList.remove('active');
+    premiumEl.classList.remove('active');
     renderRaiting();
+  });
+
+  premiumEl.addEventListener('click', () => {
+    premiumEl.classList.add('active');
+    programEl.classList.remove('active');
+    raitingEl.classList.remove('active');
+    renderPremium ();
   });
 
   const badTrips_table = components.getTagDiv('badTrips-table');
@@ -159,6 +172,9 @@ async function startRender (couriersOrder, unitsName) {
     programNav.classList.add('active');
     const raitingNav = document.querySelector('.raitingNav');
     raitingNav.classList.remove('active');
+    const premiumNav = document.querySelector('.premiumNav');
+    premiumNav.classList.remove('active');
+
     editDataNoChange(fullDataUnit, 0, couriersOrder);
   });
 
