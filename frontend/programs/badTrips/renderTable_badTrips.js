@@ -6,9 +6,6 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 export async function renderTable(arrayData, time, fullDataUnit, filterToCourier) {
-  if (!filterToCourier) {
-    arrayData.sort((a, b) => new Date(a.handedOverToDeliveryAt) - new Date(b.handedOverToDeliveryAt));
-  }
 
   const tableContent = document.querySelector('.badTrips-table');
   tableContent.innerHTML = '';
@@ -373,6 +370,5 @@ export async function renderTable(arrayData, time, fullDataUnit, filterToCourier
   liDirectors.forEach((el) => {
     el.addEventListener('click', () => filter.filterToDirector(el.textContent, fullDataUnit));
   });
-
   editData(fullDataUnit);
 }
