@@ -95,10 +95,10 @@ content.addEventListener('click', async function (e) {
   if (e.target?.dataset?.id === 'Проблемные поездки') {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/badTrips/main_badTrips.js');
+    const module = await import('../programs/badTrips/index.js');
     module.render(nameProgramm, breadcrumbs);
   }
-  
+
   if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;

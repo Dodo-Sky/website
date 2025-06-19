@@ -44,7 +44,13 @@ export {
 // Базовая разметка
 function getTagDiv(addClass) {
   const element = document.createElement('div');
-  element.classList.add(addClass);
+
+  if (Array.isArray(addClass)) {
+    addClass.forEach(className => element.classList.add(className));
+  } else {
+    element.classList.add(addClass);
+  }
+
   return element;
 }
 

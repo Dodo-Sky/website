@@ -2,16 +2,51 @@ import { getServerApi } from '../../apiServer.js';
 import { getTagDiv } from '../../components.js';
 import * as components from '../../components.js';
 import { renderUsersTable } from './renderTable_admin.js';
+import { promocode } from './promo_code.js';
 
-const content = document.querySelector('#content');
 
 export async function render() {
+  // навигация по админке
+  const naviEl = components.getTagUL_nav();
+  naviEl.classList.add('nav-tabs');
+
+  const users = components.getTagLI_nav('Пользователи');
+  users.classList.add('users');
+  users.classList.add('active');
+
+  const promo_code = components.getTagLI_nav('Промокоды');
+  promo_code.classList.add('promo_code');
+
+  naviEl.append(users, promo_code);
+
+  const content = document.querySelector('#content');
+
+  const content_admin = getTagDiv('content_admin');
+  content.append(naviEl, content_admin);
+
+  users.addEventListener('click', () => {
+    users.classList.add('active');
+    promo_code.classList.remove('active');
+    render_user();
+  });
+  promo_code.addEventListener('click', () => {
+    promo_code.classList.add('active');
+    users.classList.remove('active');
+    promocode ();
+  });
+
+  render_user();
+}
+
+async function render_user() {
+  const content = document.querySelector('.content_admin');
+
   content.innerHTML = `
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   let authTokens = await getServerApi('authTokens');
-  authTokens = authTokens.filter (el => el.departmentName === localStorage.getItem ('departmentName'));
+  authTokens = authTokens.filter((el) => el.departmentName === localStorage.getItem('departmentName'));
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 

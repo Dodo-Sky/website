@@ -3,7 +3,7 @@ import { getServerApi, postDataServer } from '../../apiServer.js';
 // import tippy from 'tippy.js';
 
 
-export async function settings_badTrips(title) {
+export async function settingsBadTrips(title) {
   // создание формы
   const contentSetting = document.querySelector('.contentSetting');
   const titleEl = components.getTagH(4, title);

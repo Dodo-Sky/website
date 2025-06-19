@@ -1,4 +1,4 @@
-import { postServer } from "./server_badTrips.js";
+import { postServer } from "./server.js";
 
 export async function editData(dataFromServer) {
   makeButtonActive("graphistComment", dataFromServer);
