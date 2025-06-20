@@ -1,4 +1,10 @@
-import { createUser, updateUser, deleteUserByLogin, getUsers, getServerApi } from '../../apiServer.js';
+import {
+  createUser,
+  updateUser,
+  deleteUserByLogin,
+  getUsers,
+  getServerApi,
+} from '../../apiServer.js';
 import * as components from '../../components.js';
 import { postDataServer } from '../../apiServer.js';
 
@@ -12,6 +18,9 @@ export async function promocode() {
   <div class="col-auto">
     <button type="button" class="btn btn-primary btn_pizza35">Загрузить 35 см</button>
   </div>
+    <div class="col-auto">
+    <p class="check-35">35</p>
+  </div>
 </div>
 
 <div class="row">
@@ -21,6 +30,9 @@ export async function promocode() {
   <div class="col-auto">
     <button type="button" class="btn btn-primary btn_pizza30">Загрузить 30 см</button>
   </div>
+    <div class="col-auto">
+    <p class="check-30">30</p>
+  </div>
 </div>
 
 <div class="row">
@@ -29,6 +41,9 @@ export async function promocode() {
   </div>
   <div class="col-auto">
     <button type="button" class="btn btn-primary btn_pizza25">Загрузить 25 см</button>
+  </div>
+    <div class="col-auto">
+    <p class="check-25">25</p>
   </div>
 </div>
 <div class="content_table"></div>    
@@ -73,6 +88,17 @@ export async function promocode() {
   });
 
   render_table_promocode();
+  await check();
+}
+
+async function check() {
+  const promocode_arr = await fetchPromocode();
+  const p_35 = document.querySelector('.check-35');
+  const p_30 = document.querySelector('.check-30');
+  const p_25 = document.querySelector('.check-25');
+  p_25.textContent = `свободно ${promocode_arr.filter((el) => !el.fio && el.bonus === 'Маленькая пицца').length}`;
+  p_30.textContent = `свободно ${promocode_arr.filter((el) => !el.fio && el.bonus === 'Средняя пицца').length}`;
+  p_35.textContent = `свободно ${promocode_arr.filter((el) => !el.fio && el.bonus === 'Большая пицца').length}`;
 }
 
 async function render_table_promocode() {
@@ -88,33 +114,17 @@ async function render_table_promocode() {
   const theadEl = components.getTagTHead();
   theadEl.classList.add('sticky-top');
   let trEl = components.getTagTR();
-
-  let thEl = components.getTagTH('Дата добавления');
-  trEl.append(thEl);
+  [
+    'Дата добавления',
+    'Промокод',
+    'Бонус',
+    'ФИО сотрудника',
+    'Дата передачи',
+    'Основание',
+  ].forEach((text) => trEl.append(components.getTagTH(text)));
   theadEl.append(trEl);
 
-  thEl = components.getTagTH('Промокод');
-  trEl.append(thEl);
-  theadEl.append(trEl);
-
-  thEl = components.getTagTH('Бонус');
-  trEl.append(thEl);
-  theadEl.append(trEl);
-
-  thEl = components.getTagTH('ФИО сотрудника');
-  trEl.append(thEl);
-  theadEl.append(trEl);
-
-  thEl = components.getTagTH('Дата передачи');
-  trEl.append(thEl);
-  theadEl.append(trEl);
-
-  thEl = components.getTagTH('Основание');
-  trEl.append(thEl);
-  theadEl.append(trEl);
-
-  const department_name = localStorage.getItem('departmentName');
-  const promocode_arr = await postDataServer('get_promocode_arr', { department_name: department_name });
+  const promocode_arr = await fetchPromocode();
 
   // Тело таблицы tBody
   const tBody = components.getTagTBody();
@@ -145,3 +155,7 @@ async function render_table_promocode() {
 
   tableEl.append(captionEl, theadEl, tBody);
 }
+
+const department_name = localStorage.getItem('departmentName');
+const fetchPromocode = async () =>
+  await postDataServer('get_promocode_arr', { department_name: department_name });
