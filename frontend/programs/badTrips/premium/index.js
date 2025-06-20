@@ -14,7 +14,7 @@ export const renderPremium = async () => {
 };
 
 const fetchPremium = async (unitName) =>
-    await postDataServer('render_bonus', { unitName });
+  await postDataServer('render_bonus', { unitName });
 
 const buildTable = (container) => {
   const table = components.getTagTable();
@@ -26,7 +26,7 @@ const buildTable = (container) => {
 const renderTable = (data, table) => {
   table.innerHTML = '';
   const caption = components.getTagCaption(
-      'Еженедельный бонус в зависимости от рейтинга скорости (не менее 40 заказов). 1 место - большая пицца, 2 место - средняя, 3 место - маленькая'
+    'Еженедельный бонус в зависимости от рейтинга скорости (не менее 40 заказов). 1 место - большая пицца, 2 место - средняя, 3 место - маленькая',
   );
   const thead = buildHeader();
   const tbody = buildBody(data);
@@ -37,8 +37,18 @@ const buildHeader = () => {
   const thead = components.getTagTHead();
   thead.classList.add('sticky-top');
   const tr = components.getTagTR();
-  ['Номер недели', 'Период', 'ФИО', 'Бонус', 'Рейтинг по скорости', 'Кол-во заказов', 'Промокод', 'Основание', 'Ваше решение', 'Действие']
-      .forEach(text => tr.append(components.getTagTH(text)));
+  [
+    'Номер недели',
+    'Период',
+    'ФИО',
+    'Бонус',
+    'Рейтинг по скорости',
+    'Кол-во заказов',
+    'Промокод',
+    'Основание',
+    'Ваше решение',
+    'Действие',
+  ].forEach((text) => tr.append(components.getTagTH(text)));
   thead.append(tr);
   return thead;
 };
@@ -47,12 +57,15 @@ const buildBody = (data) => {
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
 
-  data.forEach(premium => {
+  data.forEach((premium) => {
     const tr = components.getTagTR();
-    ['week', 'date_week', 'fio', 'bonus', 'avg_raiting', 'all_orders']
-        .forEach(key => tr.append(components.getTagTD(premium[key])));
+    ['week', 'date_week', 'fio', 'bonus', 'avg_raiting', 'all_orders'].forEach((key) =>
+      tr.append(components.getTagTD(premium[key])),
+    );
 
-    const promoTd = components.getTagTD(premium.hidden_promocode || 'Нет свободного промокода');
+    const promoTd = components.getTagTD(
+      premium.hidden_promocode || 'Нет свободного промокода',
+    );
     tr.append(promoTd);
 
     const reasonTd = components.getTagTD(premium.reason_promo);
@@ -96,7 +109,9 @@ const createActionTd = (premium) => {
 };
 
 const attachRowHandlers = (data) => {
-  const rows = Array.from(document.querySelectorAll('#bad-trips-tabs-content #premium-tab .tBody tr'));
+  const rows = Array.from(
+    document.querySelectorAll('#bad-trips-tabs-content #premium-tab .tBody tr'),
+  );
   rows.forEach((row, idx) => {
     const premium = data[idx];
     const [okBtn, cancelBtn] = row.querySelectorAll('button');
