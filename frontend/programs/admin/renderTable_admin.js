@@ -8,7 +8,6 @@ export async function renderUsersTable(usersData) {
   const units = [
     ...new Set(unitsSettings.filter((el) => el.departmentName === departmentName).map((el) => el.unitName)),
   ].sort();
-  console.log(units);
   const roles = ['администратор', 'менеджер офиса', 'управляющий', 'Гость', 'менеджер смены'];
 
   const table_admin = document.querySelector('.table-admin');

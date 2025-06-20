@@ -1,4 +1,4 @@
-import { postDataServer } from '../../apiServer.js';
+import { postDataServer } from '../../../apiServer.js';
 const variableName = `couriersOrderSQL`;
 
 export function postServer() {

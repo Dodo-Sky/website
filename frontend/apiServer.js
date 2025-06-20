@@ -88,7 +88,6 @@ export async function postDataServer(variableName, payload) {
         ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
-      // body: payload,
     });
     let data = await response.json();
 

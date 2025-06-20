@@ -1,6 +1,6 @@
 import * as components from '../components.js';
 import { main_unitsSettings } from '../programs/unitsSettings/main-unitsSettings.js';
-import { settings_badTrips } from '../programs/badTrips/settings_badTrips.js';
+import { settingsBadTrips } from '../programs/badTrips/settings.js';
 
 const content = document.getElementById('content');
 
@@ -79,7 +79,7 @@ function getActiveSettingsMenu() {
       if (e.target.textContent === 'Проблемные поездки') {
         contentSetting.innerHTML = '';
         const title = e.target.textContent;
-        settings_badTrips(title);
+        settingsBadTrips(title);
       }
     });
   });

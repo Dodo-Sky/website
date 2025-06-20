@@ -2,3 +2,6 @@
 .idea
 **/config.js
 **/test.js
+node_modules
+dist
+.parcel-cache
