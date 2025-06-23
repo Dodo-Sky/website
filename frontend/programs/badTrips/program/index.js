@@ -173,7 +173,10 @@ const createOrderCell = (order) => {
     }
 
     if (order.urlPhoto) {
-        btn.append(components.getTagSpan_badge('фото'));
+        let span = document.createElement('span');
+        span.classList = 'badge text-bg-success';
+        span.textContent = 'фото';
+        btn.append(span)
     }
     if (order.deliveryTransportName === 'OnFoot') {
         const span = components.getTagSpan();
