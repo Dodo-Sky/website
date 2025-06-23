@@ -174,7 +174,6 @@ const createOrderCell = (order) => {
 
     if (order.urlPhoto) {
         btn.append(components.getTagSpan_badge('фото'));
-        buildFullscreenModal(order);
     }
     if (order.deliveryTransportName === 'OnFoot') {
         const span = components.getTagSpan();
@@ -215,6 +214,15 @@ const buildModal = (order) => {
     const body = components.getTagDiv('modal-body');
     body.innerHTML = generateModalInnerHTML(order);
 
+    if (order.urlPhoto) {
+        const photo = document.createElement('img');
+        photo.src = order.urlPhoto;
+        photo.width = 300;
+
+        body.appendChild(photo);
+        buildFullscreenModal(order, photo);
+    }
+
     dialog.append(content);
     content.append(header, body);
     fade.append(dialog);
@@ -222,7 +230,7 @@ const buildModal = (order) => {
     return fade;
 }
 
-const buildFullscreenModal = (order) => {
+const buildFullscreenModal = (order, thumb) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'modal fade';
     wrapper.id = 'fullscreenModal';
@@ -233,17 +241,14 @@ const buildFullscreenModal = (order) => {
       <div class="modal-content bg-dark position-relative">
         <button type="button" class="z-3 btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
         <div class="modal-body p-0 d-flex justify-content-center align-items-center">
-          <img id="modalImage" src="${order.urlPhoto}" alt="Full Image">
+          <img id="modalImage" style="height: 100%;" src="${order.urlPhoto}" alt="Full Image">
         </div>
       </div>
     </div>`;
     document.body.append(wrapper);
+    wrapper.onclick = () => bsModal.hide()
     const bsModal = new bootstrap.Modal(wrapper);
-    const thumb = document.createElement('img');
-    thumb.src = order.urlPhoto;
-    thumb.width = 300;
     thumb.onclick = () => bsModal.show();
-    wrapper.querySelector('.modal-body').append(thumb);
 }
 
 const generateModalInnerHTML = (order) => {
