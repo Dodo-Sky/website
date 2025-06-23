@@ -2,9 +2,6 @@ import * as components from '../../../components.js';
 import { editData } from './editData.js';
 import * as filter from './filter.js';
 
-// const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-// const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
-
 export const renderProgram = async (arrayData, time, fullDataUnit) => {
     // setupRefresh();
     const tableEl = buildTable(arrayData, time, fullDataUnit);
@@ -13,6 +10,9 @@ export const renderProgram = async (arrayData, time, fullDataUnit) => {
     container.append(tableEl);
     attachFilters(fullDataUnit);
     await editData(fullDataUnit);
+
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].forEach((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 }
 
 // const setupRefresh = () => {
@@ -173,8 +173,10 @@ const createOrderCell = (order) => {
     }
 
     if (order.urlPhoto) {
-        btn.append(components.getTagSpan_badge('фото'));
-        buildFullscreenModal(order);
+        let span = document.createElement('span');
+        span.classList = 'badge text-bg-success';
+        span.textContent = 'фото';
+        btn.append(span)
     }
     if (order.deliveryTransportName === 'OnFoot') {
         const span = components.getTagSpan();
@@ -215,6 +217,15 @@ const buildModal = (order) => {
     const body = components.getTagDiv('modal-body');
     body.innerHTML = generateModalInnerHTML(order);
 
+    if (order.urlPhoto) {
+        const photo = document.createElement('img');
+        photo.src = order.urlPhoto;
+        photo.width = 300;
+
+        body.appendChild(photo);
+        buildFullscreenModal(order, photo);
+    }
+
     dialog.append(content);
     content.append(header, body);
     fade.append(dialog);
@@ -222,7 +233,7 @@ const buildModal = (order) => {
     return fade;
 }
 
-const buildFullscreenModal = (order) => {
+const buildFullscreenModal = (order, thumb) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'modal fade';
     wrapper.id = 'fullscreenModal';
@@ -233,31 +244,51 @@ const buildFullscreenModal = (order) => {
       <div class="modal-content bg-dark position-relative">
         <button type="button" class="z-3 btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
         <div class="modal-body p-0 d-flex justify-content-center align-items-center">
-          <img id="modalImage" src="${order.urlPhoto}" alt="Full Image">
+          <img id="modalImage" style="height: 100%;max-width: 50%;" src="${order.urlPhoto}" alt="Full Image">
         </div>
       </div>
     </div>`;
     document.body.append(wrapper);
+    wrapper.onclick = () => bsModal.hide()
     const bsModal = new bootstrap.Modal(wrapper);
-    const thumb = document.createElement('img');
-    thumb.src = order.urlPhoto;
-    thumb.width = 300;
     thumb.onclick = () => bsModal.show();
-    wrapper.querySelector('.modal-body').append(thumb);
 }
 
 const generateModalInnerHTML = (order) => {
+    let isFalseDelivery = order.isFalseDelivery
+        ? '<b>Да</b> - уточните у курьера где он сделал отметку о выдаче заказе'
+        : 'Нет';
+
+    const uncorrectedDeliveryTooltip = `<a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Была ли доставка заказа некорректной.
+    Причины некорректных заказов:Неверная отметка геолокации: если курьер отметился у клиента в радиусе более, чем 300 метров. 
+    Не реальное время поездки курьера: 
+    Заказ выдан через мобильное приложение: если время, когда курьер доставил заказ меньше трети прогноза, то заказ будет некорректным.
+    Заказ выдан через кассу доставки: берется время из поездки, а не заказа: не было определено прогнозного времени — поездка короче 6 минут считается читом.
+    Есть прогнозное время поездки и реальная поездка меньше чем прогнозное время деленное пополам.">Некорректная</a>`;
+
+    const startTimeTooltip = `<a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Время начала поездки = время нажатия курьером кнопки Поехали.
+        Если курьер отжимает кнопку поехали не в курьерской, то это считется фальсификацией данных">начала</a>`;
+
+    const assemblyTimeTooltip = `<a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="В секундах с округлением.
+        Возможны два случая: Курьер встал в очередь, и заказ появился после этого. 
+        Тогда для расчета метрики берется время которое заказ пролежал на полке. 
+        Так как курьер все это время мог собирать заказ. 
+        Курьер встал в очередь после того, как появился заказ. 
+        Тогда для расчета метрики берется время с момента постановки в курьера в очередь, до момента, когда заказ отправлен в поездку.">сборки</a>`;
+
     const common = `
     <b>Общие данные</b><br>
     ФИО курьера: ${order.fio}<br>
     Номер заказа: ${order.orderNumber}<br>
-    Решение менеджера: ${order.decisionManager}<br>
     Тип проблемы: ${order.typeOfOffense}<br>
-    Кол-во заказов: ${order.tripOrdersCount}<br><br>`;
+    Рекомендации: ${order.decisionManager}<br>
+    Количество курьеров в очереди в момент отправки заказа: ${order.numberOfCouriersInQueue}<br>
+    Количество заказов за поездку: ${order.tripOrdersCount}<br><br>`;
 
     const times = `
     <b>Временные данные</b><br>
-    Время начала: ${order.handedOverToDeliveryAtLocal}<br>
+    Время ожидания заказа на тепловой полке (секунды): ${order.heatedShelfTime} сек<br>
+    Время ${startTimeTooltip}: ${order.handedOverToDeliveryAtLocal}<br>
     Время окончания: ${order.orderFulfilmentFlagAtLocal}<br>
     Прогноз: ${order.predictedDeliveryTime} мин<br>
     extraTime: ${order.extraTime} мин<br>
@@ -265,29 +296,27 @@ const generateModalInnerHTML = (order) => {
     Просрочка: <b>${order.expiration} мин</b><br>
     Ответ курьера: ${order.dateResponceCourier || 'Нет ответа'}<br><br>`;
 
-    if (order.typeOfOffense === 'Долгая сборка заказа') {
-        return `
-      ${common}
-      <b>Параметры сборки</b><br>
-      Очередь: ${order.numberOfCouriersInQueue}<br>
-      Время на полке: ${order.heatedShelfTime} сек<br>
-      Время сборки: ${order.orderAssemblyAvgTime} сек<br><br>
-      ${times}`;
-    } else if (order.typeOfOffense === 'Три и более заказа за одну поездку') {
-        return `
-      ФИО курьера: ${order.fio}<br>
-      Номера заказов: ${order.orderNumber}<br>
-      Тип проблемы: ${order.typeOfOffense}<br>
-      Кол-во курьеров в очереди: ${order.numberOfCouriersInQueue}<br>
-      Кол-во заказов: ${order.tripOrdersCount}<br>`;
-    } else {
-        return `
-      ${common}
-      ${times}
-      <b>Параметры поездки</b><br>
-      Сектор: ${order.sectorName}<br>
-      Сертификат: ${order.wasLateDeliveryVoucherGiven ? '<b>Выдан</b>' : 'Нет'}<br>
-      Некорректная доставка: ${order.isFalseDelivery ? '<b>Да</b>' : 'Нет'}<br>`;
+
+    switch (order.typeOfOffense) {
+        case 'Долгая сборка заказа':
+            return `
+               ${common}
+               <b>Параметры сборки</b><br>
+               Очередь: ${order.numberOfCouriersInQueue}<br>
+               Время ${assemblyTimeTooltip}: ${order.orderAssemblyAvgTime} сек<br><br>
+               ${times}`;
+
+        case 'Три и более заказа за одну поездку':
+            return common + times;
+
+        default:
+            return `
+               ${common}
+               ${times}
+               <b>Параметры поездки</b><br>
+               Сектор: ${order.sectorName}<br>
+               Сертификат: ${order.wasLateDeliveryVoucherGiven ? '<b>Выдан</b>' : 'Нет'}<br>
+               ${uncorrectedDeliveryTooltip} доставка: ${order.isFalseDelivery ? '<b>Да</b>' : 'Нет'}<br>`;
     }
 }
 
