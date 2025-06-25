@@ -34,23 +34,23 @@ export async function edit(selectedUnit) {
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
 
-  selectedUnit.idTelegramm.forEach((el) => {
+  selectedUnit.forEach((el) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    const nameFunction = components.getTagTD(el.nameFunction);
+    const nameFunction = components.getTagTD(el.name_task_staff);
     trEl.append(nameFunction);
 
     const id = components.getTagTD();
-    const inputId = components.getTagInput('number', el.id);
+    const inputId = components.getTagInput('number', el.telegram_id);
     inputId.classList.add('inputId');
-    inputId.setAttribute('data-function', `${el.nameFunction}`);
+    inputId.setAttribute('data-function', `${el.name_task_staff}`);
     id.append(inputId);
     trEl.append(id);
 
     const fio = components.getTagTD();
     const inputFio = components.getTagInput('text', el.fio);
     inputFio.classList.add('inputFio');
-    inputFio.setAttribute('data-function', `${el.nameFunction}`);
+    inputFio.setAttribute('data-function', `${el.name_task_staff}`);
     fio.append(inputFio);
     trEl.append(fio);
 
@@ -59,29 +59,34 @@ export async function edit(selectedUnit) {
     const btnHR = components.getTagButton('HR_bot');
     trEl.append(btnEl);
     btnHR.classList = 'btn btn-outline-primary btnHR me-2';
-    btnHR.setAttribute('data-id', `${el.id}`);
-    if (el.nameFunction === 'Управляющий' || el.nameFunction === 'Графист по кухне') btnEl.append(btnHR);
-    if (!el.id) btnHR.disabled = true;
+    btnHR.setAttribute('data-id', `${el.telegram_id}`);
+    if (el.name_task_staff === 'Управляющий' || el.name_task_staff === 'Графист по кухне')
+      btnEl.append(btnHR);
+    if (!el.telegram_id) btnHR.disabled = true;
 
     const btnDelivery = components.getTagButton('Delivery_bot');
     trEl.append(btnEl);
     btnDelivery.classList = 'btn btn-outline-primary btnDelivery me-2';
-    btnDelivery.setAttribute('data-id', `${el.id}`);
-    if (el.nameFunction === 'Управляющий' || el.nameFunction === 'Графист по курьерам') btnEl.append(btnDelivery);
-    if (!el.id) btnDelivery.disabled = true;
+    btnDelivery.setAttribute('data-id', `${el.telegram_id}`);
+    if (
+      el.name_task_staff === 'Управляющий' ||
+      el.name_task_staff === 'Графист по курьерам'
+    )
+      btnEl.append(btnDelivery);
+    if (!el.telegram_id) btnDelivery.disabled = true;
 
     const btnSupply = components.getTagButton('Supply_bot');
     trEl.append(btnEl);
     btnSupply.classList = 'btn btn-outline-primary btnSupply me-2';
-    btnSupply.setAttribute('data-id', `${el.id}`);
-    if (el.nameFunction === 'Групповой чат по сырью') btnEl.append(btnSupply);
-    if (!el.id) btnSupply.disabled = true;
+    btnSupply.setAttribute('data-id', `${el.telegram_id}`);
+    if (el.name_task_staff === 'Групповой чат по сырью') btnEl.append(btnSupply);
+    if (!el.telegram_id) btnSupply.disabled = true;
   });
   tableEl.append(theadEl, tBody);
 
   const btnSubmit = components.getTagButton('Сохранить');
   btnSubmit.classList.add('btnSubmit');
-  btnSubmit.setAttribute('data-id', `${selectedUnit.unitId}`);
+  btnSubmit.setAttribute('data-id', `${selectedUnit.unit_id}`);
   editContent.append(btnSubmit);
 
   // тестовые сообщение о проверке связи
@@ -137,16 +142,15 @@ export async function edit(selectedUnit) {
         nameFunction: idInput.dataset.function,
         id: +idInput.value,
         fio,
+        unitt_id: selectedUnit[0].unit_id
       });
     }
-
-    const dataToServer = { idTelegramm, unitId: selectedUnit.unitId };
-    console.log(dataToServer);
-    const responce = await postDataServer('unitsSettings', dataToServer);
-    if (responce) {
-      alert('Изменения сохранены');
-    } else {
-      alert (`Сообщение ${idTelegramm} не было отправлено`)
-    }
+      const dataToServer = { idTelegramm };
+      const responce = await postDataServer('edit_telegram', dataToServer);
+      if (responce) {
+        alert('Изменения сохранены');
+      } else {
+        alert (`Сообщение ${idTelegramm} не было отправлено`)
+      }
   });
 }

@@ -3,7 +3,7 @@ import { editData } from './edtt_idTelegramm.js';
 import { postDataServer } from '../../apiServer.js';
 
 export async function renderTable(arrayData, staffData) {
-  await arrayData.sort((a, b) => a.lastName.localeCompare(b.lastName));
+  await arrayData.sort((a, b) => a.fio.localeCompare(b.fio));
 
   const tableContent = document.querySelector('.table');
   tableContent.innerHTML = '';
@@ -81,7 +81,7 @@ export async function renderTable(arrayData, staffData) {
   arrayData.forEach((staff) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let fio = components.getTagTD(`${staff.lastName} ${staff.firstName} ${staff.patronymicName}`);
+    let fio = components.getTagTD(staff.fio);
     trEl.append(fio);
     let phoneNumber = components.getTagTD(staff.phoneNumber);
     trEl.append(phoneNumber);
@@ -140,7 +140,6 @@ export async function renderTable(arrayData, staffData) {
   const btnAllDel = document.querySelectorAll('.btnDelivery');
   btnAllDel.forEach((btn) => {
     btn.addEventListener('click', async (e) => {
-      console.log('11111');
       const chatId = e.target.dataset.id;
       const content = 'Все отлично проверка связи прошла успешно';
       const responce = await postDataServer('testDelidery_bot', { chatId, content });

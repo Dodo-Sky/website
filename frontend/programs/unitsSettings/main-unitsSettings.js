@@ -1,4 +1,4 @@
-import { getServerApi } from '../../apiServer.js';
+import { getServerApi, postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { render } from './render-unitsSettings.js';
 
@@ -12,14 +12,11 @@ export async function main_unitsSettings() {
   <span class="visually-hidden">Загрузка...</span>
   </div>`;
 
-  let unitsSettings = await getServerApi('unitsSettings');
-
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
   const departmentName = localStorage.getItem('departmentName');
-  unitsSettings = unitsSettings.filter((el) => el.departmentName === departmentName);
-  unitsSettings.sort((a, b) => a.unitName.localeCompare(b.unitName));
+  let unitsSettings = await postDataServer('get_units', { payload: departmentName });
 
   const units = components.getTagDiv('col-md-3');
   units.setAttribute('id', 'units');
@@ -27,14 +24,8 @@ export async function main_unitsSettings() {
   getListUnits(unitsSettings, content);
 }
 
-function getListUnits(unitsSettings, content) {
-  let unitsName = [];
-  unitsSettings.forEach((units) => {
-    if (!unitsName.includes(units.unitName)) {
-      unitsName.push(units.unitName);
-    }
-  });
-  unitsName = unitsName.sort();
+async function getListUnits(unitsSettings, content) {
+  let unitsName = unitsSettings.map((el) => el.name);
   const select = components.getTagSelect();
   select.classList.add('selectUnit');
   unitsName.forEach((unit) => {
@@ -52,15 +43,10 @@ function getListUnits(unitsSettings, content) {
   edit.setAttribute('id', 'editUnitsSettings');
   content.append(edit);
 
-  startRender(unitsSettings, unitsName);
-}
+  await render(unitsSettings[0]);
 
-function startRender(unitsSettings, unitsName) {
-  let selectedUnit = unitsSettings.find((el) => el.unitName === unitsName[0]);
-  render(selectedUnit);
-
-  document.querySelector('.selectUnit').addEventListener('change', function (e) {
-    let selectedUnit = unitsSettings.find((el) => el.unitName === e.target.value);
-    render(selectedUnit);
+  select.addEventListener('change', async function (e) {
+    let selectedUnit = unitsSettings.find((el) => el.name === e.target.value);
+    await render(selectedUnit);
   });
 }

@@ -17,7 +17,6 @@ function editDataNoChange(data, staffData) {
 }
 
 const content = document.getElementById('content');
-
 export async function render(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
@@ -32,10 +31,7 @@ export async function render(name, breadcrumbs) {
     </div>`;
 
   const departmentName = localStorage.getItem('departmentName');
-  let staffData = await getServerApi(`${departmentName}/staffData`);
-  staffData = staffData.filter(
-    (el) => el.status !== 'Dismissed' && !el.lastName.includes('Управляющий') && el.staffType !== 'PersonalManager',
-  );
+  let staffData = await postDataServer('get_staff', { payload: departmentName });
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -76,12 +72,7 @@ export async function render(name, breadcrumbs) {
 }
 
 async function getListUnits(staffData) {
-  const departmentName = localStorage.getItem('departmentName');
-  const unitsSettings = await getServerApi(`unitsSettings`);
-  let unitsName = unitsSettings
-    .filter((el) => el.departmentName === departmentName && (el.type === 'Пиццерия' || el.type === 'ПРЦ'))
-    .map((el) => el.unitName)
-    .sort();
+  let unitsName = [...new Set (staffData.map (el => el.unit_name))]
   const select = components.getTagSelect();
   select.classList.add('selectUnit');
   unitsName.forEach((unit) => {
@@ -91,31 +82,23 @@ async function getListUnits(staffData) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
+
   filterData(staffData, unitsName);
 }
 
-const courierPositionName = [
-  'Авто, личное ТС',
-  'Пеший',
-  'Электро/Вело, личное ТС',
-  'Мото, личное ТС',
-  'Мото, ТС компании',
-  'Авто, ТС компании',
-  'Электро/Вело, ТС компании',
-];
-
 function filterData(staffData, unitsName) {
-  let staffDataPizzeria = staffData.filter((el) => el.unitName === unitsName[0]);
+  console.log([staffData, unitsName]);
+  let staffDataPizzeria = staffData.filter((el) => el.unit_name === unitsName[0]);
   let filterStaff;
 
-  filterStaff = staffDataPizzeria.filter((el) => courierPositionName.includes(el.positionName));
+  filterStaff = staffDataPizzeria.filter((el) => el.staffType === 'Courier');
   renderTable(filterStaff, staffData);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
-    staffDataPizzeria = staffData.filter((el) => el.unitName === e.target.value);
+    staffDataPizzeria = staffData.filter((el) => el.unit_name === e.target.value);
     liEl.forEach((element) => element.classList.remove('active'));
     document.querySelector('.couriers').classList.add('active');
-    filterStaff = staffDataPizzeria.filter((el) => courierPositionName.includes(el.positionName));
+  filterStaff = staffDataPizzeria.filter((el) => el.staffType === 'Courier');
     editDataNoChange(filterStaff, staffData);
   });
 
@@ -125,10 +108,10 @@ function filterData(staffData, unitsName) {
       liEl.forEach((element) => element.classList.remove('active'));
       e.target.classList.add('active');
       if (e.target.textContent === 'ID телеграмм курьеров') {
-        filterStaff = staffDataPizzeria.filter((el) => courierPositionName.includes(el.positionName));
+        filterStaff = staffDataPizzeria.filter((el) => el.staffType === 'Courier');
         editDataNoChange(filterStaff, staffData);
       } else {
-        filterStaff = staffDataPizzeria.filter((el) => !courierPositionName.includes(el.positionName));
+        filterStaff = staffDataPizzeria.filter((el) => el.staffType !== 'Courier');
         editDataNoChange(filterStaff, staffData);
       }
     });

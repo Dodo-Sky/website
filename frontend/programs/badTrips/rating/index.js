@@ -1,5 +1,7 @@
 import * as components from '../../../components.js';
 import { postDataServer } from '../../../apiServer.js';
+import { startOfWeek, endOfWeek, subWeeks, addDays } from "date-fns";
+
 
 // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 // const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
@@ -200,11 +202,19 @@ export const renderRating = async () => {
 }
 
 const buildPeriodSelector = (container) => {
-  const now = new Date();
-  const dateTo = now.toISOString().slice(0, 10);
-  const fromDate = new Date(now);
-  fromDate.setDate(now.getDate() - 30);
-  const dateFrom = fromDate.toISOString().slice(0, 10);
+
+  const currentDate = new Date();  
+  const result = subWeeks(currentDate, 1);
+  const start = startOfWeek(new Date(result));
+  const dateFrom = addDays (new Date(start), 2).toISOString().slice(0, 10);
+  const end = endOfWeek(new Date(result));
+  const dateTo = addDays (new Date(end), 1).toISOString().slice(0, 10);
+  
+  // const now = new Date();
+  // const dateTo = now.toISOString().slice(0, 10);
+  // const fromDate = new Date(now);
+  // fromDate.setDate(now.getDate() - 30);
+  // const dateFrom = fromDate.toISOString().slice(0, 10);
 
   const row = components.getTagDiv('row');
   row.classList.add('g-3', 'rowEl');
