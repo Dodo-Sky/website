@@ -1,6 +1,6 @@
 import * as components from '../../../components.js';
 import { postDataServer } from '../../../apiServer.js';
-import { startOfWeek, endOfWeek, subWeeks, addDays } from "date-fns";
+import { startOfWeek, endOfWeek, addDays, format } from "date-fns";
 
 
 // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -202,19 +202,10 @@ export const renderRating = async () => {
 }
 
 const buildPeriodSelector = (container) => {
-
-  const currentDate = new Date();  
-  const result = subWeeks(currentDate, 1);
-  const start = startOfWeek(new Date(result));
-  const dateFrom = addDays (new Date(start), 2).toISOString().slice(0, 10);
-  const end = endOfWeek(new Date(result));
-  const dateTo = addDays (new Date(end), 1).toISOString().slice(0, 10);
-  
-  // const now = new Date();
-  // const dateTo = now.toISOString().slice(0, 10);
-  // const fromDate = new Date(now);
-  // fromDate.setDate(now.getDate() - 30);
-  // const dateFrom = fromDate.toISOString().slice(0, 10);
+  const now = new Date();
+  const thisWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+  const lastWeekStart = addDays(thisWeekStart, -7)
+  const lastWeekEnd = endOfWeek(lastWeekStart, { weekStartsOn: 1 })
 
   const row = components.getTagDiv('row');
   row.classList.add('g-3', 'rowEl');
@@ -231,7 +222,7 @@ const buildPeriodSelector = (container) => {
   groupFrom.classList.add('g-3');
   const lblFrom = components.getTagLabel('inputFrom', 'C: ');
   lblFrom.classList.add('col');
-  const inputFrom = components.getTagInput('date', dateFrom);
+  const inputFrom = components.getTagInput('date', format(lastWeekStart, "yyyy-MM-dd"));
   inputFrom.id = 'inputFrom';
   inputFrom.classList.add('col');
   groupFrom.append(lblFrom, inputFrom);
@@ -241,7 +232,7 @@ const buildPeriodSelector = (container) => {
   groupTo.classList.add('g-3');
   const lblTo = components.getTagLabel('labelTo', 'По: ');
   lblTo.classList.add('col');
-  const inputTo = components.getTagInput('date', dateTo);
+  const inputTo = components.getTagInput('date', format(lastWeekEnd, "yyyy-MM-dd"));
   inputTo.id = 'inputTo';
   inputTo.classList.add('col');
   groupTo.append(lblTo, inputTo);
