@@ -31,7 +31,7 @@ export async function renderUnits() {
     (el) => el.department_id === active_programm[0].department_id,
   );
 
-  document.querySelector('.selectUnit').addEventListener('change', function (e) {
+  document.querySelector('#selectUnit').addEventListener('change', function (e) {
     let change_unit = active_programm.filter(
       (el) => el.department_name === e.target.value,
     );
@@ -119,6 +119,7 @@ function editUnit() {
 function getListUnits(departments) {
   const select = components.getTagSelect();
   select.classList.add('selectUnit');
+  select.setAttribute ('id', 'selectUnit');
   departments.forEach((unit) => {
     const option = components.getTagOption(unit.name, unit.name);
     select.append(option);
