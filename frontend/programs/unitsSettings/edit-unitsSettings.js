@@ -37,20 +37,20 @@ export async function edit(selectedUnit) {
   selectedUnit.forEach((el) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    const nameFunction = components.getTagTD(el.name_task_staff);
+    const nameFunction = components.getTagTD(el.task_staff_name);
     trEl.append(nameFunction);
 
     const id = components.getTagTD();
     const inputId = components.getTagInput('number', el.telegram_id);
     inputId.classList.add('inputId');
-    inputId.setAttribute('data-function', `${el.name_task_staff}`);
+    inputId.setAttribute('data-function', `${el.task_staff_name}`);
     id.append(inputId);
     trEl.append(id);
 
     const fio = components.getTagTD();
     const inputFio = components.getTagInput('text', el.fio);
     inputFio.classList.add('inputFio');
-    inputFio.setAttribute('data-function', `${el.name_task_staff}`);
+    inputFio.setAttribute('data-function', `${el.task_staff_name}`);
     fio.append(inputFio);
     trEl.append(fio);
 
@@ -60,7 +60,7 @@ export async function edit(selectedUnit) {
     trEl.append(btnEl);
     btnHR.classList = 'btn btn-outline-primary btnHR me-2';
     btnHR.setAttribute('data-id', `${el.telegram_id}`);
-    if (el.name_task_staff === 'Управляющий' || el.name_task_staff === 'Графист по кухне')
+    if (el.task_staff_name === 'Управляющий' || el.task_staff_name === 'Графист по кухне')
       btnEl.append(btnHR);
     if (!el.telegram_id) btnHR.disabled = true;
 
@@ -69,8 +69,8 @@ export async function edit(selectedUnit) {
     btnDelivery.classList = 'btn btn-outline-primary btnDelivery me-2';
     btnDelivery.setAttribute('data-id', `${el.telegram_id}`);
     if (
-      el.name_task_staff === 'Управляющий' ||
-      el.name_task_staff === 'Графист по курьерам'
+      el.task_staff_name === 'Управляющий' ||
+      el.task_staff_name === 'Графист по курьерам'
     )
       btnEl.append(btnDelivery);
     if (!el.telegram_id) btnDelivery.disabled = true;
@@ -79,7 +79,7 @@ export async function edit(selectedUnit) {
     trEl.append(btnEl);
     btnSupply.classList = 'btn btn-outline-primary btnSupply me-2';
     btnSupply.setAttribute('data-id', `${el.telegram_id}`);
-    if (el.name_task_staff === 'Групповой чат по сырью') btnEl.append(btnSupply);
+    if (el.task_staff_name === 'Групповой чат по сырью') btnEl.append(btnSupply);
     if (!el.telegram_id) btnSupply.disabled = true;
   });
   tableEl.append(theadEl, tBody);

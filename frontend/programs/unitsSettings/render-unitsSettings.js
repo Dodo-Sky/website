@@ -144,7 +144,7 @@ export async function render(select_unit) {
     tBody1.append(trEl);
     tdEl = components.getTagTD(user.telegram_id);
     trEl.append(tdEl);
-    tdEl = components.getTagTD(user.name_task_staff);
+    tdEl = components.getTagTD(user.task_staff_name);
     trEl.append(tdEl);
     tdEl = components.getTagTD(user.fio);
     trEl.append(tdEl);
