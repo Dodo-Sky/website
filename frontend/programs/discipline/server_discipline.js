@@ -11,14 +11,14 @@ export function postServer() {
       const managerDecision = trEl.querySelector(".discipline-managerDecision").value;
 
       let changeServer = {
-        scheduleId : btn.dataset.id,
+        id : btn.dataset.id,
         unitDirectorControl,
         managerDecision,
         departmentName,
       };
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(variableName, changeServer);
-      if (responce.scheduleId === e.target.dataset.id) {
+      if (responce.id === e.target.dataset.id) {
         btn.disabled = true;
       }
     });

@@ -1,7 +1,7 @@
-import { getServerApi } from "../../apiServer.js";
-import { postServer } from "./server_discipline.js";
+import { postServer } from "./server_ discipline.js";
 
 export async function editData(fullDataUnit) {
+  console.log(fullDataUnit);
   makeButtonActive("managerDecision", fullDataUnit);
   makeButtonActive("unitDirectorControl", fullDataUnit);
 
@@ -23,8 +23,8 @@ function makeButtonActive(objectProperty, dataFromServer) {
   property.forEach((el) => {
     el.addEventListener("input", async function (e) {
       let element = await dataFromServer.find((elem) => {
-        if (elem.scheduleId) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.scheduleId;
-        if (!elem.scheduleId) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.staffId + elem.clockInAtLocal;
+        if (elem.id) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.id;
+        if (!elem.id) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.staffId + elem.clockInAtLocal;
       });
       let btn = e.target.parentNode.parentNode.lastChild.firstChild;
       if (e.target.value !== element[objectProperty]) {
