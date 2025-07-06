@@ -1,6 +1,6 @@
 import { getServerApi } from '../../apiServer.js';
 import * as components from '../../components.js';
-import { renderTable } from './renderTable_ discipline.js';
+import { renderTable } from './renderTable_discipline.js';
 import * as filter from './filter_discipline.js';
 
 // Проверка данных на отсутствие несохраненных данных
