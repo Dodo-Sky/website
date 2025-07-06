@@ -1,5 +1,5 @@
 import { getServerApi } from "../../apiServer.js";
-import { postServer } from "./server_ discipline.js";
+import { postServer } from "./server_discipline.js";
 
 export async function editData(fullDataUnit) {
   makeButtonActive("managerDecision", fullDataUnit);
