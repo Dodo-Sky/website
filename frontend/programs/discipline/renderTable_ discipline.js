@@ -8,6 +8,10 @@ const tooltipList = [...tooltipTriggerList].map(
 );
 
 export async function renderTable(arrayData, time, discipline, timeZoneShift) {
+  arrayData.sort(
+    (a, b) =>
+      new Date(a.scheduledShiftStartAtLocal) - new Date(b.scheduledShiftStartAtLocal),
+  );
 
   const tableContent = document.querySelector('.discipline-table');
   tableContent.innerHTML = '';
@@ -154,7 +158,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     let typeViolation = components.getTagTD();
     let fade = components.getTagDiv('modal');
     fade.classList.add('fade');
-    fade.setAttribute('id', schedule.id);
+    fade.setAttribute('id', schedule.scheduleId);
     fade.setAttribute('tabindex', '-1');
     fade.setAttribute('data-bs-backdrop', 'static');
     fade.setAttribute('data-bs-keyboard', 'false');
@@ -199,7 +203,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
       btnOrder.classList.add('btn-outline-danger');
     }
     if (schedule.typeViolation === 'Продление') {
-      btnOrder.textContent = schedule.description;
+      btnOrder.textContent = `Продление ${schedule.description.split(' ')[3]} минут`;
     }
     if (schedule.typeViolation === 'Опоздание') {
       btnOrder.textContent = schedule.description;
@@ -208,7 +212,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     btnOrder.classList.add('btn-outline-secondary');
     btnOrder.classList.remove('btn-primary');
     btnOrder.setAttribute('data-bs-toggle', 'modal');
-    btnOrder.setAttribute('data-bs-target', `#${schedule.id}`);
+    btnOrder.setAttribute('data-bs-target', `#${schedule.scheduleId}`);
     typeViolation.append(btnOrder, fade);
     trEl.append(typeViolation);
 
@@ -245,7 +249,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     btnEl.classList.add('arrayData-btn-save');
     btnEl.setAttribute(
       'data-id',
-      schedule.id ?? schedule.staffId + schedule.clockInAtLocal,
+      schedule.scheduleId ?? schedule.staffId + schedule.clockInAtLocal,
     );
     btnEl.disabled = true;
     tdEl.append(btnEl);
