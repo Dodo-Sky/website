@@ -302,14 +302,19 @@ const buildRatingHeader = () => {
   const tr = components.getTagTR();
 
   const tooltipText = 'Рейтинг определяется как деление планового времени доставки на фактическое. Например плановое время доставки 10 минут а фактически курьер успел за 8 минут то рейтинг будет 125 ( 10мин  / 8мин * 100). У самых быстрых курьеров самый высокий рейтинг. Если рейтинг превышает ниже 100 то это означает что курьер чаще возит свои заказы превышая прогнозное время';
+  const tooltip_average_deliveryTime = 'Рассчитывается среднее время поездки курьера по всем заказам за выбранный период. Время поездки до гостя, то есть с момента как курьер нажал кнопку "Поехали" до времени отметки о передаче заказа гостю';
 
   [
     ['ФИО курьера', null],
-    ['Рейтинг по скорости  ', tooltipText],
+    ['Рейтинг по скорости', tooltipText],
+    ['Cертификаты', null],
     ['Всего заказов', null],
-    ['Поездки с 1 заказом', null],
-    ['Поездки с 2 заказами', null],
-    ['Поездки с 3 заказами', null],
+    ['Проблемные поездки', null],
+    ['Среднее время поездки', tooltip_average_deliveryTime],
+    ['Среднее расстояние', null],
+    ['1 заказ за поездку', null],
+    ['2 заказа за поездку', null],
+    ['3 заказа за поездку', null],
   ].forEach(([label, title]) => {
     const th = components.getTagTH(label, title);
     tr.append(th);
@@ -324,17 +329,25 @@ const buildRatingBody = (data) => {
   tbody.classList.add('tBody');
 
   data.forEach(courier => {
+    console.log(courier);
     const tr = components.getTagTR();
 
     const tdFio = components.getTagTD(courier.fio);
     const tdRating = components.getTagTD(courier.averageRaiting);
-    applyRatingStyles(tdRating, +courier.averageRaiting, +courier.allTrip);
+    if (courier.averageRaiting > 160 && courier.allTrip > 15) tdRating.classList.add ('bg-success-subtle');
+    if (courier.averageRaiting > 100 && courier.averageRaiting < 120 && courier.allTrip > 15) tdRating.classList.add ('bg-warning-subtle');
+    if (courier.averageRaiting < 100 && courier.allTrip > 15) tdRating.classList.add ('bg-danger-subtle');
+
+    const certificate_all = components.getTagTD(courier.certificate_all);
     const tdAll = components.getTagTD(courier.allTrip);
+    const problem_count = components.getTagTD(courier.problem_count);
+    const average_deliveryTime = components.getTagTD(courier.average_deliveryTime);
+    const avg_distance = components.getTagTD(courier.avg_distance);
     const td1 = components.getTagTD(courier.oneOrder);
     const td2 = components.getTagTD(courier.twoOrder);
     const td3 = components.getTagTD(courier.threeOrder);
 
-    tr.append(tdFio, tdRating, tdAll, td1, td2, td3);
+    tr.append(tdFio, tdRating, certificate_all, tdAll, problem_count, average_deliveryTime, avg_distance, td1, td2, td3);
     tbody.append(tr);
   });
 
