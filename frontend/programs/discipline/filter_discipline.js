@@ -1,5 +1,5 @@
 export { filterToDate, filterToDirector, filterToManager, update };
-import { renderTable } from './renderTable_ discipline.js';
+import { renderTable } from './renderTable_discipline.js';
 import { postDataServer } from '../../apiServer.js';
 
 function filterToManager(value, fullDataUnit) {
