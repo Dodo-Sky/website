@@ -1,4 +1,4 @@
-import { postServer } from "./server_ discipline.js";
+import { postServer } from "./server_discipline.js";
 
 export async function editData(fullDataUnit) {
   console.log(fullDataUnit);
