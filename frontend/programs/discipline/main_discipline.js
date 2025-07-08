@@ -1,4 +1,4 @@
-import { getServerApi, postDataServer } from '../../apiServer.js';
+import { getServerApi } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_discipline.js';
 import * as filter from './filter_discipline.js';
@@ -32,10 +32,10 @@ export async function render(name, breadcrumbs) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
 
+  const unitsSettings = await getServerApi(`unitsSettings`);
   const departmentName = localStorage.getItem('departmentName');
-  const discipline = await postDataServer('render_disciplina', { departmentName: departmentName });
-
-  const timeZoneShift = discipline[0].time_zone_shift;
+  const discipline = await getServerApi(`${departmentName}/discipline`);
+  const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
   const spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -59,7 +59,7 @@ export async function render(name, breadcrumbs) {
   getListUnits(discipline, timeZoneShift)
 
   // Обработчик обновить
-  btnUpdate.addEventListener('click', async () => await filter.update(timeZoneShift));
+  btnUpdate.addEventListener('click', () => filter.update(timeZoneShift));
 }
 
 function getListUnits(discipline, timeZoneShift) {
