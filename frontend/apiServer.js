@@ -103,6 +103,31 @@ export async function postDataServer(variableName, payload) {
   }
 }
 
+export async function putDataServer(variableName, payload) {
+  try {
+    const url = `${URL}/${variableName}`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(payload),
+    });
+    let data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка обратитесь к администратору ' + responseData);
+    }
+  } catch (error) {
+    alert('Ошибка ' + error.message);
+  }
+}
+
 // Изменение элемента в массиве объектов переменной на сервере (указываем id элемента а также новую информаицию для этого элемента)
 export async function putServerApi(elementId, payload) {
   try {
@@ -260,4 +285,3 @@ export async function deleteUserByLogin(login) {
     alert('Ошибка удаления пользователя' + error.message);
   }
 }
-
