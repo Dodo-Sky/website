@@ -309,6 +309,7 @@ function getTagTH(textContent, tooltipText) {
   if (tooltipText) {
     const i = document.createElement('i')
     i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
+    i.style.marginLeft = '10px';
     element.append(i)
     element.setAttribute('data-bs-toggle', 'tooltip');
     element.setAttribute('data-bs-placement', 'top');
