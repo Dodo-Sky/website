@@ -7,6 +7,16 @@ const tooltipList = [...tooltipTriggerList].map(
     (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
 );
 
+const formatted = new Intl.DateTimeFormat('ru-RU', {
+    day:    '2-digit',
+    month:  '2-digit',
+    year:   'numeric',
+    hour:   '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+})
+
 export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     const tableContent = document.querySelector('.discipline-table');
     tableContent.innerHTML = '';
@@ -143,7 +153,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
         trEl = components.getTagTR();
         tBody.append(trEl);
         let time = components.getTagTD(
-            new Date(schedule.scheduledShiftStartAtLocal).toDateString().slice(0, 17),
+            formatted.format(new Date(schedule.scheduledShiftStartAtLocal)),
         );
         trEl.append(time);
         let fio = components.getTagTD(schedule.fio);
@@ -166,11 +176,11 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
         let closeBtn = components.getTagButton_close();
         let modalBody = components.getTagDiv('modal-body');
         let clockInAtLocal = schedule.clockInAtLocal
-            ? new Date(schedule.clockInAtLocal).toDateString().slice(0, 17)
+            ? formatted.format(new Date(schedule.clockInAtLocal))
             : 'Нет данных';
 
         let clockOutAtLocal = schedule.clockInAtLocal
-            ? new Date(schedule.clockOutAtLocal).toDateString().slice(0, 17)
+            ? formatted.format(new Date(schedule.clockOutAtLocal))
             : 'Нет данных';
 
         modalBody.innerHTML = `
@@ -179,11 +189,9 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     Описание: ${schedule.description}<br> <br>
 
     <b>Временные данные</b><br>
-    Начало смены по графику: ${new Date(schedule.scheduledShiftStartAtLocal)
-            .toDateString().slice(0, 17)}<br>
+    Начало смены по графику: ${formatted.format(new Date(schedule.scheduledShiftStartAtLocal))}<br>
     Начало смены - факт: ${clockInAtLocal}<br>
-    Окончание смены по графику: ${new Date(schedule.scheduledShiftEndAtLocal)
-            .toDateString().slice(0, 17)} <br>
+    Окончание смены по графику: ${formatted.format(new Date(schedule.scheduledShiftEndAtLocal))} <br>
     Окончание смены - факт: ${clockOutAtLocal} <br>
 `;
         fade.append(divDialog);
