@@ -135,9 +135,9 @@ const createBody = (tableDom, settingList) => {
       await editBadTripsSetting({
         unit_id: setting.unit_id,
         bicycle: inputBicycleCheckbox.checked,
-        extra_time: inputExtraTime.value,
+        extra_time: parseInt(inputExtraTime.value),
         long_on_foot: inputLongOnFootCheckbox.checked,
-        long_on_foot_time: inputLongOnFootTime.value,
+        long_on_foot_time: parseInt(inputLongOnFootTime.value),
       });
 
       btn.disabled = true;
