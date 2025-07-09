@@ -1,6 +1,6 @@
 export { filterToDate, filterToDirector, filterToManager, update };
 import { renderTable } from './renderTable_discipline.js';
-import { getServerApi } from '../../apiServer.js';
+import { postDataServer } from '../../apiServer.js';
 
 function filterToManager(value, fullDataUnit) {
   let selectUnit = document.querySelector('.selectUnit');
@@ -71,7 +71,9 @@ async function update(timeZoneShift) {
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
   const departmentName = localStorage.getItem('departmentName');
-  const discipline = await getServerApi(`${departmentName}/discipline`);
+  const discipline = await postDataServer('render_disciplina', { departmentName: departmentName });
+
+  console.log(discipline);
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
