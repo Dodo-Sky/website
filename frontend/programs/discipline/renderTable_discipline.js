@@ -18,7 +18,7 @@ const formatted = new Intl.DateTimeFormat('ru-RU', {
     hour12: false
 })
 
-export async function renderTable(arrayData, time, discipline, timeZoneShift) {
+export async function renderTable(arrayData, time, discipline) {
     const tableContent = document.querySelector('.discipline-table');
     tableContent.innerHTML = '';
 
@@ -265,7 +265,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
     const liTimes = time_defects.querySelectorAll('li');
     liTimes.forEach((el) => {
         el.addEventListener('click', () => {
-            filter.filterToDate(el.value, discipline, timeZoneShift)
+            filter.filterToDate(el.value, discipline)
         });
     });
 

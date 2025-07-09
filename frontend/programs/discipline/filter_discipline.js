@@ -44,23 +44,23 @@ function filterToDirector(value, fullDataUnit) {
   }
 }
 
-function filterToDate(timeValue, discipline, timeZoneShift) {
+function filterToDate(timeValue, discipline) {
   let selectUnit = document.querySelector('.selectUnit');
   let defectFilterUnit = discipline.filter((el) => el.unitName === selectUnit.value);
   let filterData;
   if (timeValue !== 0) {
     filterData = defectFilterUnit.filter((el) => {
       let now = new Date();
-      now.setHours(now.getHours() + timeZoneShift);
+
       return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - timeValue));
     });
   } else {
     filterData = defectFilterUnit;
   }
-  editDataNoChange(filterData, timeValue, discipline, timeZoneShift);
+  editDataNoChange(filterData, timeValue, discipline);
 }
 
-async function update(timeZoneShift) {
+async function update() {
   let time_defects = document.querySelector('.time-defects');
   let selectedBTN = time_defects.querySelector('button');
   let selectUnit = document.querySelector('.selectUnit');
@@ -105,19 +105,18 @@ async function update(timeZoneShift) {
   }
 
   if (selectedBTN.value === '0') {
-    editDataNoChange(fullDataUnit, selectedBTN.value, discipline, timeZoneShift);
+    editDataNoChange(fullDataUnit, selectedBTN.value, discipline);
     return;
   }
   filterData = fullDataUnit.filter((el) => {
     let now = new Date();
-    now.setHours(now.getHours() + timeZoneShift);
     return new Date(el.scheduledShiftStartAtLocal) > new Date(now.setDate(now.getDate() - selectedBTN.value));
   });
-  editDataNoChange(filterData, selectedBTN.value, discipline, timeZoneShift);
+  editDataNoChange(filterData, selectedBTN.value, discipline);
 }
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, discipline, timeZoneShift) {
+function editDataNoChange(renderData, time, discipline) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -126,6 +125,6 @@ function editDataNoChange(renderData, time, discipline, timeZoneShift) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, discipline, timeZoneShift);
+    renderTable(renderData, time, discipline);
   }
 }

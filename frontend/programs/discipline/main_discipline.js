@@ -4,7 +4,7 @@ import { renderTable } from './renderTable_discipline.js';
 import * as filter from './filter_discipline.js';
 
 // Проверка данных на отсутствие несохраненных данных
-function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
+function editDataNoChange(renderData, time, fullDataUnit) {
   const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
   let isCnanges = false;
   btns.forEach((element) => {
@@ -13,7 +13,7 @@ function editDataNoChange(renderData, time, fullDataUnit, timeZoneShift) {
   if (isCnanges) {
     alert('Сохраните данные');
   } else {
-    renderTable(renderData, time, fullDataUnit, timeZoneShift);
+    renderTable(renderData, time, fullDataUnit);
   }
 }
 
@@ -35,7 +35,6 @@ export async function render(name, breadcrumbs) {
   const departmentName = localStorage.getItem('departmentName');
   const discipline = await postDataServer('render_disciplina', { departmentName: departmentName });
 
-  const timeZoneShift = discipline[0].time_zone_shift;
   const spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
@@ -56,13 +55,13 @@ export async function render(name, breadcrumbs) {
   title.classList.add('sticky-top');
 
   content.append(title, row, divEl);
-  getListUnits(discipline, timeZoneShift)
+  getListUnits(discipline)
 
   // Обработчик обновить
-  btnUpdate.addEventListener('click', async () => await filter.update(timeZoneShift));
+  btnUpdate.addEventListener('click', async () => await filter.update());
 }
 
-function getListUnits(discipline, timeZoneShift) {
+function getListUnits(discipline) {
   let unitsName = [];
   discipline.forEach((order) => {
     if (!unitsName.includes(order.unitName)) {
@@ -79,15 +78,15 @@ function getListUnits(discipline, timeZoneShift) {
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
-  startRender(discipline, timeZoneShift, unitsName);
+  startRender(discipline, unitsName);
 }
 
-function startRender(discipline, timeZoneShift, unitsName) {
+function startRender(discipline, unitsName) {
   let fullDataUnit = discipline.filter((el) => el.unitName === unitsName[0]);
-  renderTable(fullDataUnit, 0, fullDataUnit, timeZoneShift);
+  renderTable(fullDataUnit, 0, fullDataUnit);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
     fullDataUnit = discipline.filter((el) => el.unitName === e.target.value);
-    editDataNoChange(fullDataUnit, 0, discipline, timeZoneShift);
+    editDataNoChange(fullDataUnit, 0, discipline);
   });
 }
