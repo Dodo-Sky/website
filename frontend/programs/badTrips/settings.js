@@ -107,8 +107,9 @@ const createBody = (tableDom, settingList) => {
     const tdLongOnFootDom = components.getTagTD()
     const inputLongOnFootCheckbox = components.getTagInput_checkbox(`long_on_foot_${setting.unit_id}`);
     inputLongOnFootCheckbox.checked = setting.long_on_foot
-    inputLongOnFootCheckbox.addEventListener('change', () => {
+    inputLongOnFootCheckbox.addEventListener('change', (e) => {
       checkDisableSubmitBtn(setting);
+      inputLongOnFootTime.disabled = !e.target.checked;
     })
     tdLongOnFootDom.append(inputLongOnFootCheckbox)
     trDom.append(tdLongOnFootDom)
@@ -117,6 +118,7 @@ const createBody = (tableDom, settingList) => {
     const inputLongOnFootTime = components.getTagInput('number', setting.long_on_foot_time);
     inputLongOnFootTime.id = `long_on_foot_time_${setting.unit_id}`
     inputLongOnFootTime.value = setting.long_on_foot_time
+    inputLongOnFootTime.disabled = !setting.long_on_foot
     inputLongOnFootTime.addEventListener('input', () => {
       checkDisableSubmitBtn(setting);
     })
@@ -134,7 +136,7 @@ const createBody = (tableDom, settingList) => {
         unit_id: setting.unit_id,
         bicycle: inputBicycleCheckbox.checked,
         extra_time: inputExtraTime.value,
-        long_of_foot: inputLongOnFootCheckbox.checked,
+        long_on_foot: inputLongOnFootCheckbox.checked,
         long_on_foot_time: inputLongOnFootTime.value,
       });
 
@@ -164,124 +166,4 @@ export async function settingsBadTrips(title) {
 
   const form = createForm(title)
   await createTable(form, badTripsSettings)
-
-  // const unitsSettings = await getServerApi('unitsSettings');
-  // let units = unitsSettings.filter((el) => el.departmentName === departmentName && el.type === 'Пиццерия').sort();
-
-  // const tableEl = components.getTagTable();
-  // tableEl.classList.add('table-sm');
-  // form.append(tableEl);
-  // const captionEl = components.getTagCaption('Настройки программы Проблемные поездки');
-  // tableEl.append(captionEl);
-  //
-  // // Заголовок таблицы THead
-  // const theadEl = components.getTagTHead();
-  // theadEl.classList.add('sticky-top');
-  // let trEl = components.getTagTR();
-  // theadEl.append(trEl);
-  //
-  // let thEl = components.getTagTH('Пиццерия');
-  // trEl.append(thEl);
-  // thEl = components.getTagTH('extraTime');
-  // thEl.setAttribute ('data-bs-toggle', 'tooltip');
-  // thEl.setAttribute ('data-bs-placement', 'top');
-  // thEl.setAttribute ('data-bs-custom-class', 'ustom-tooltip');
-  // thEl.setAttribute ('data-bs-title', 'This top tooltip is themed via CSS variables.');
-  //
-  // trEl.append(thEl);
-  // thEl = components.getTagTH('Лимит заказов за поездку');
-  // trEl.append(thEl);
-  //
-  // // Тело таблицы tBody
-  // const tBody = components.getTagTBody();
-  // tBody.classList.add('tBody');
-  //
-  // for (const el of units) {
-  //   if (!el.programs) continue;
-  //   const badTrips = el.programs.find((programm) => programm.name === 'Проблемные поездки');
-  //
-  //   trEl = components.getTagTR();
-  //   trEl.classList.add('trEl');
-  //   trEl.setAttribute('id', el.unitId);
-  //   tBody.append(trEl);
-  //
-  //   const unitName = components.getTagTD(el.unitName);
-  //   unitName.classList.add('unitName');
-  //   trEl.append(unitName);
-  //
-  //   const extraTime = components.getTagTD();
-  //   const inputExtraTime = components.getTagInput('number', badTrips.extraTime);
-  //   inputExtraTime.classList.add('inputExtraTime');
-  //   inputExtraTime.setAttribute('id', el.unitId);
-  //   extraTime.append(inputExtraTime);
-  //   trEl.append(extraTime);
-  //
-  //   const maxTripOrdersCount = components.getTagTD();
-  //   const inputMaxTripOrdersCount = components.getTagInput('number', badTrips.maxTripOrdersCount);
-  //   inputMaxTripOrdersCount.classList.add('inputMaxTripOrdersCount');
-  //   inputMaxTripOrdersCount.setAttribute('id', el.unitId);
-  //   maxTripOrdersCount.append(inputMaxTripOrdersCount);
-  //   trEl.append(maxTripOrdersCount);
-  // }
-  // tableEl.append(theadEl, tBody);
-  //
-  // const btn = components.getTagButton('Сохранить', 'submit');
-  // btn.disabled = true;
-  // form.append(btn);
-  // postServer(form, units, btn);
-}
-
-// отправка данных на сервер
-function postServer(form, units, btn) {
-  // Включение / выключение кнопки сохранить
-  const inputExtraTime = document.querySelectorAll('.inputExtraTime');
-  inputExtraTime.forEach((input) => {
-    input.addEventListener('input', function (e) {
-      let unit = units.find((el) => el.unitId === e.target.id);
-      let extraTime = unit.programs?.find((program) => program.name === 'Проблемные поездки').extraTime;
-      if (+e.target.value !== extraTime) btn.disabled = false;
-      if (+e.target.value == extraTime) btn.disabled = true;
-    });
-  });
-
-  const inputMaxTripOrdersCount = document.querySelectorAll('.inputMaxTripOrdersCount');
-  inputMaxTripOrdersCount.forEach((input) => {
-    input.addEventListener('input', function (e) {
-      let unit = units.find((el) => el.unitId === e.target.id);
-      let maxTripOrdersCount = unit.programs?.find(
-        (program) => program.name === 'Проблемные поездки',
-      ).maxTripOrdersCount;
-      if (+e.target.value !== maxTripOrdersCount) btn.disabled = false;
-      if (+e.target.value == maxTripOrdersCount) btn.disabled = true;
-    });
-  });
-
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const trEls = document.querySelectorAll('.trEl');
-    let changeServer = [];
-    for (const el of trEls) {
-      const unit = units.find((elem) => elem.unitId === el.id);
-      if (!unit.programs) continue;
-      const badTrip = unit.programs.find((el) => el.name == 'Проблемные поездки');
-
-      const extraTimeEl = el.querySelector('.inputExtraTime');
-      const maxTripOrdersCountEl = el.querySelector('.inputMaxTripOrdersCount');
-      if (
-        +extraTimeEl.value !== badTrip.extraTime ||
-        +maxTripOrdersCountEl.value !== badTrip.maxTripOrdersCount
-      ) {
-        changeServer.push({
-          unitId: unit.unitId,
-          unitName: unit.unitName,
-          extraTime: +extraTimeEl.value,
-          maxTripOrdersCount: +maxTripOrdersCountEl.value,
-        });
-      }
-    }
-    console.log(changeServer);
-    let responce = await postDataServer('extraTime', changeServer);
-    console.log(responce);
-    if (responce) btn.disabled = true;
-  });
 }
