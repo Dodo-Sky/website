@@ -143,7 +143,7 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
         trEl = components.getTagTR();
         tBody.append(trEl);
         let time = components.getTagTD(
-            new Date(schedule.scheduledShiftStartAtLocal).toLocaleString().slice(0, 17),
+            new Date(schedule.scheduledShiftStartAtLocal).slice(0, 17),
         );
         trEl.append(time);
         let fio = components.getTagTD(schedule.fio);
@@ -166,11 +166,11 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
         let closeBtn = components.getTagButton_close();
         let modalBody = components.getTagDiv('modal-body');
         let clockInAtLocal = schedule.clockInAtLocal
-            ? new Date(schedule.clockInAtLocal).toLocaleString().slice(0, 17)
+            ? new Date(schedule.clockInAtLocal).slice(0, 17)
             : 'Нет данных';
 
         let clockOutAtLocal = schedule.clockInAtLocal
-            ? new Date(schedule.clockOutAtLocal).toLocaleString().slice(0, 17)
+            ? new Date(schedule.clockOutAtLocal).slice(0, 17)
             : 'Нет данных';
 
         modalBody.innerHTML = `
@@ -180,11 +180,9 @@ export async function renderTable(arrayData, time, discipline, timeZoneShift) {
 
     <b>Временные данные</b><br>
     Начало смены по графику: ${new Date(schedule.scheduledShiftStartAtLocal)
-            .toLocaleString()
             .slice(0, 17)}<br>
     Начало смены - факт: ${clockInAtLocal}<br>
     Окончание смены по графику: ${new Date(schedule.scheduledShiftEndAtLocal)
-            .toLocaleString()
             .slice(0, 17)} <br>
     Окончание смены - факт: ${clockOutAtLocal} <br>
 `;
