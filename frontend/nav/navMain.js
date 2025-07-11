@@ -6,6 +6,7 @@ import {
   getUserFioAndUnitName,
 } from '../auth/login.js';
 import * as components from '../components.js';
+import { SUPPORT_URL } from "../config";
 const content = document.querySelector('#content');
 const authInfo = document.querySelector('.auth-info');
 
@@ -77,6 +78,7 @@ export function showNavMain() {
 
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -140,6 +142,7 @@ async function showNavAdmin() {
   breadcrumb.append(navMainEl, navManaergEl);
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -158,6 +161,7 @@ async function showChiefNavAdmin() {
   breadcrumb.append(navMainEl, navManaergEl);
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -186,6 +190,7 @@ async function showNavOfis() {
 
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -213,6 +218,7 @@ function showNavUnitDirector() {
 
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -238,6 +244,7 @@ function showNavManager() {
 
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );
@@ -251,6 +258,7 @@ async function showNavAccountant() {
   breadcrumb.append(navMainEl, navManaergEl);
   authInfo.innerHTML = '';
   authInfo.append(
+    components.getTagButtonLink('Поддержка', SUPPORT_URL),
     components.getTagP(getUserFioAndUnitName()),
     components.getTagButton_logout(),
   );

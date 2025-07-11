@@ -39,6 +39,7 @@ export {
   getCardRow,
   getTagButton_logout,
   getTagColFormLabel,
+  getTagButtonLink,
 };
 
 // Базовая разметка
@@ -93,6 +94,7 @@ function getTagH(size, textContent) {
 function getTagP(textContent) {
   const element = document.createElement('p');
   element.textContent = textContent;
+  element.className = 'mb-0';
   return element;
 }
 function getTagSpan_badge(textContent) {
@@ -373,5 +375,13 @@ function getTagButton_logout() {
     clearAuthData();
     window.location.reload();
   });
+  return element;
+}
+
+function getTagButtonLink(textContent, href) {
+  const element = document.createElement('a');
+  element.className = 'btn btn-link';
+  element.setAttribute('href', href);
+  element.textContent = textContent;
   return element;
 }
