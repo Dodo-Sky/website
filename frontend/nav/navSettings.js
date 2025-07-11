@@ -18,15 +18,12 @@ export function renderLeftNav() {
   const navUnits = components.getTagLI_nav('Настройка подразделений');
   navUnits.classList.add('active');
   navUnits.classList.add('leftMenu');
-  // const navSettingPay = components.getTagLI_nav("Настройки динамичной оплаты");
-  // navSettingPay.classList.add("leftMenu");
-  // const navSupply = components.getTagLI_nav('Настройки уведомления сырья');
-  // navSupply.classList.add('leftMenu');
   const badTrips = components.getTagLI_nav('Проблемные поездки');
   badTrips.classList.add('leftMenu');
+  const discipline = components.getTagLI_nav('Соблюдение дисциплины');
+  discipline.classList.add('leftMenu');
 
-  nav.append(navUnits, badTrips);
-  // nav.append(navUnits, navSettingPay, navSupply, badTrips);
+  nav.append(navUnits, badTrips, discipline);
   divEl_navLeft.append(nav);
 
   //подготвка контейнера для контента настроек
@@ -69,18 +66,17 @@ function getActiveSettingsMenu() {
         main_unitsSettings();
       }
 
-      if (e.target.textContent === 'Настройки уведомления сырья') {
-        contentSetting.innerHTML = '';
-        const titte = components.getTagH(5, `Программа ${e.target.textContent} в разработке`);
-        titte.classList.add('text-center');
-        contentSetting.append(titte);
-      }
-
       if (e.target.textContent === 'Проблемные поездки') {
         contentSetting.innerHTML = '';
         const title = e.target.textContent;
-        settingsBadTrips(title);
+        settingsBadTrips(title);      
       }
+
+      // if (e.target.textContent === 'Соблюдение дисциплины') {
+      //   contentSetting.innerHTML = '';
+      //   const title = e.target.textContent;
+      //   settings_discipline(title);
+      // }
     });
   });
 }
