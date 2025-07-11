@@ -1,0 +1,54 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      BUILD_DIR: dist
+      NODE_VERSION: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Set environment variables for branch
+        id: env
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "SSH_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            echo "USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
+            echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+            echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
+          else
+            echo "SSH_KEY=${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
+            echo "USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
+            echo "HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
+            echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
+          fi
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ env.SSH_KEY }}
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete ./${{ env.BUILD_DIR }}/ ${{ env.USER }}@${{ env.HOST }}:${{ env.TARGET_PATH }}
