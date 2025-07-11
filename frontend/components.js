@@ -382,6 +382,7 @@ function getTagButtonLink(textContent, href) {
   const element = document.createElement('a');
   element.className = 'btn btn-link';
   element.setAttribute('href', href);
+  element.setAttribute('target', '_black')
   element.textContent = textContent;
   return element;
 }
