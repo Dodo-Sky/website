@@ -30,19 +30,21 @@ jobs:
         run: npm run build
 
       - name: Set environment variables for branch
-        id: env
+
         run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
             echo "SSH_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
             echo "USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
             echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
-            echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
           else
             echo "SSH_KEY=${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
             echo "USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
             echo "HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
-            echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
           fi
+            
+          echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
