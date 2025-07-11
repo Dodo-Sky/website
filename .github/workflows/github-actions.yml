@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      BUILD_DIR: dist
       NODE_VERSION: 20
 
     steps:
@@ -30,16 +29,19 @@ jobs:
         run: npm run build
 
       - name: Set environment variables for branch
-
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
           
           if [ "$BRANCH_NAME" = "main" ]; then
-            echo "SSH_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
             echo "USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
             echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
           else
-            echo "SSH_KEY=${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
             echo "USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
             echo "HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
           fi
@@ -51,6 +53,15 @@ jobs:
         with:
           ssh-private-key: ${{ env.SSH_KEY }}
 
-      - name: Deploy via rsync
+      - name: Disable host key checking
         run: |
-          rsync -avz --delete ./${{ env.BUILD_DIR }}/ ${{ env.USER }}@${{ env.HOST }}:${{ env.TARGET_PATH }}
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+      - name: Clean old dist on server
+        run: |
+          ssh ${{ env.USER }}@${{ env.HOST }} "rm -rf ${{ env.TARGET_PATH }}/dist && mkdir -p ${{ env.TARGET_PATH }}/dist"
+
+      - name: Deploy new dist to server
+        run: |
+          rsync -avz ./dist/ ${{ env.USER }}@${{ env.HOST }}:${{ env.TARGET_PATH }}/dist
