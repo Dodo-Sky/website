@@ -142,6 +142,10 @@ export async function renderTable(arrayData, time, discipline) {
   thEl.append(btnDropdown, ulDrop);
   trEl.append(thEl);
 
+  thEl = components.getTagTH('Часы');
+  trEl.append(thEl);
+  theadEl.append(trEl);
+
   thEl = components.getTagTH('Управление');
   trEl.append(thEl);
   theadEl.append(trEl);
@@ -149,6 +153,7 @@ export async function renderTable(arrayData, time, discipline) {
   // Тело таблицы tBody
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
+  console.log(arrayData);
 
   arrayData.forEach((schedule) => {
     trEl = components.getTagTR();
@@ -247,6 +252,9 @@ export async function renderTable(arrayData, time, discipline) {
     directorComment.append(directorCommentTextarea);
     trEl.append(directorComment);
 
+    let working_hours = components.getTagTD(schedule.working_hours);
+    trEl.append(working_hours);
+
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton('Сохранить');
     btnEl.classList.add('arrayData-btn-save');
@@ -259,8 +267,6 @@ export async function renderTable(arrayData, time, discipline) {
     trEl.append(tdEl);
   });
   tableEl.append(captionEl, theadEl, tBody);
-
-  editData(arrayData);
 
   // Обработчик фильтрации по дате
   const time_defects = document.querySelector('.time-defects');
