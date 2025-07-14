@@ -1,0 +1,67 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_VERSION: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Set environment variables for branch
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+            echo "USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
+            echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+          else
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+            echo "USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
+            echo "HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
+          fi
+            
+          echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ env.SSH_KEY }}
+
+      - name: Disable host key checking
+        run: |
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+      - name: Clean old dist on server
+        run: |
+          ssh ${{ env.USER }}@${{ env.HOST }} "rm -rf ${{ env.TARGET_PATH }}/dist && mkdir -p ${{ env.TARGET_PATH }}/dist"
+
+      - name: Deploy new dist to server
+        run: |
+          rsync -avz ./dist/ ${{ env.USER }}@${{ env.HOST }}:${{ env.TARGET_PATH }}/dist
