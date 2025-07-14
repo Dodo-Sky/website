@@ -36,17 +36,17 @@ jobs:
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
             echo "${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
-            echo "USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
-            echo "HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+            echo "HOST=${{ vars.PROD_HOST }}" >> $GITHUB_ENV
+            echo "TARGET_PATH=${{ vars.PROD_TARGET_PATH }}" >> $GITHUB_ENV
           else
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
             echo "${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
-            echo "USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
-            echo "HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
+            echo "HOST=${{ vars.DEV_HOST }}" >> $GITHUB_ENV
+            echo "TARGET_PATH=${{ vars.DEV_TARGET_PATH }}" >> $GITHUB_ENV
           fi
-            
-          echo "TARGET_PATH=/var/www/website" >> $GITHUB_ENV
+
+          echo "USER=${{ vars.GIT_USER }}" >> $GITHUB_ENV
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
