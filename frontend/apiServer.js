@@ -285,3 +285,30 @@ export async function deleteUserByLogin(login) {
     alert('Ошибка удаления пользователя' + error.message);
   }
 }
+
+
+export async function getDisciplineProgramSettings() {
+  const url = `${URL}/discipline-settings`;
+  try {
+    const response = await fetch(url)
+    return await response.json()
+  } catch (error) {
+    console.error('Ошибка получения настроек программы дисциплины', error);
+    alert('Ошибка получения настроек программы дисциплины: ' + error.message);
+  }
+}
+
+export async function updateDisciplineProgramSettings(settingsId, payload) {
+  try {
+    const response = await fetch(`${URL}/discipline-settings/${settingsId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) throw new Error('Ошибка при обновлении');
+  } catch (err) {
+    alert('Ошибка при сохранении настроек');
+    console.error(err);
+  }
+}

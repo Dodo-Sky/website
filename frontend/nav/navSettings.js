@@ -25,7 +25,10 @@ export function renderLeftNav() {
   const badTrips = components.getTagLI_nav('Проблемные поездки');
   badTrips.classList.add('leftMenu');
 
-  nav.append(navUnits, badTrips);
+  const discipline = components.getTagLI_nav('Соблюдение дисциплины');
+  discipline.classList.add('leftMenu');
+
+  nav.append(navUnits, badTrips, discipline);
   // nav.append(navUnits, navSettingPay, navSupply, badTrips);
   divEl_navLeft.append(nav);
 
@@ -80,6 +83,12 @@ function getActiveSettingsMenu() {
         contentSetting.innerHTML = '';
         const title = e.target.textContent;
         settingsBadTrips(title);
+      }
+
+      if (e.target.textContent === 'Соблюдение дисциплины') {
+        contentSetting.innerHTML = '';
+        const module = await import('../programs/discipline/settings_discipline.js');
+        module.render();
       }
     });
   });
