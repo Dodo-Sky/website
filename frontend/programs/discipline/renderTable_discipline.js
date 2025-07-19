@@ -153,7 +153,6 @@ export async function renderTable(arrayData, time, discipline) {
   // Тело таблицы tBody
   const tBody = components.getTagTBody();
   tBody.classList.add('tBody');
-  console.log(arrayData);
 
   arrayData.forEach((schedule) => {
     trEl = components.getTagTR();
@@ -294,4 +293,5 @@ export async function renderTable(arrayData, time, discipline) {
       filter.filterToDirector(el.textContent, discipline),
     );
   });
+  editData (arrayData)
 }

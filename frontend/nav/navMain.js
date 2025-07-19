@@ -132,6 +132,13 @@ content.addEventListener('click', async function (e) {
     const module = await import('../programs/IdTelegramm/main_idTelegramm.js');
     module.render(nameProgramm, breadcrumbs);
   }
+
+  if (e.target?.dataset?.id === 'Планерки') {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import('../programs/planning/main_ planning.js');
+    module.main_planing(nameProgramm, breadcrumbs);
+  }
 });
 
 // навигация администратор
@@ -204,8 +211,9 @@ function showNavUnitDirector() {
   let dismissed = components.getCardNav('Обзвон уволенных');
   let badSupply = components.getCardNav('Контроль брака');
   let idTelegramm = components.getCardNav('ID телеграмм');
+  let planning = components.getCardNav('Планерки');
 
-  cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm);
+  cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm, planning);
   content.innerHTML = '';
   const titte = components.getTagH(5, 'Выберите нужную вам программу');
   titte.classList.add('text-center');
@@ -230,8 +238,9 @@ function showNavManager() {
   let diszipline = components.getCardNav('Соблюдение дисциплины');
   let badSupply = components.getCardNav('Контроль брака');
   let orders = components.getCardNav('Проблемные поездки');
+  let planning = components.getCardNav('Планерки');
 
-  cardRow.append(diszipline, badSupply, orders);
+  cardRow.append(diszipline, badSupply, orders, planning);
   content.innerHTML = '';
   const titte = components.getTagH(5, 'Выберите нужную вам программу');
   titte.classList.add('text-center');
