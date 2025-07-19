@@ -1,7 +1,6 @@
 import { postServer } from "./server_discipline.js";
 
-export async function editData(fullDataUnit) {
-  console.log(fullDataUnit);
+export async function editData (fullDataUnit) {
   makeButtonActive("managerDecision", fullDataUnit);
   makeButtonActive("unitDirectorControl", fullDataUnit);
 
