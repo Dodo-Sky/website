@@ -290,7 +290,15 @@ export async function deleteUserByLogin(login) {
 export async function getDisciplineProgramSettings() {
   const url = `${URL}/discipline-settings`;
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: getAuthHeaders(),
+    })
+    if (!response.ok) {
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка получения настроек программы дисциплины: ' + responseData);
+      return [];
+    }
     return await response.json()
   } catch (error) {
     console.error('Ошибка получения настроек программы дисциплины', error);
@@ -302,7 +310,7 @@ export async function updateDisciplineProgramSettings(settingsId, payload) {
   try {
     const response = await fetch(`${URL}/discipline-settings/${settingsId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(payload),
     });
 
