@@ -39,8 +39,8 @@ const buildBody = (arrayData) => {
 
     const topCount = arrayData.length >= 4 ? 2 : 1;
 
-    const allNoProblemRanks = [...new Set(arrayData.map(o => +o.ranc))].sort((a, b) => b - a);
-    const allAvgRanks = [...new Set(arrayData.map(o => +o.ranc_avg_raiting))].sort((a, b) => a - b);
+    const allNoProblemRanks = [...new Set(arrayData.map(o => +o.ranc))].sort((a, b) => a - b);
+    const allAvgRanks = [...new Set(arrayData.map(o => +o.ranc_avg_raiting))].sort((a, b) => b - a);
 
     const worstNoProblemRank = allNoProblemRanks[0];
     const preWorstNoProblemRank = arrayData.length >= 4 ? allNoProblemRanks[1] : null;
