@@ -1,111 +1,176 @@
 import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from '../../apiServer.js';
 
-// Основная функция отрисовки таблицы
+// Главная функция рендера страницы
 export async function render() {
   const content = document.querySelector('.contentSetting');
   content.innerHTML = '';
 
-  const spinner = createSpinner();
+  const spinner = document.createElement('div');
+  spinner.classList.add('spinner-border');
+  spinner.setAttribute('role', 'status');
+  spinner.innerHTML = `<span class="visually-hidden">Загрузка...</span>`;
   content.append(spinner);
 
   const dataList = await getDisciplineProgramSettings();
   spinner.remove();
 
-  const table = createTable();
-  const tbody = table.querySelector('tbody');
+  const select = document.createElement('select');
+  select.classList.add('form-select', 'mb-3');
+  select.innerHTML = `
+    <option disabled selected>Выберите пиццерию</option>
+    ${dataList.map(d => `<option value="${d.id}">${d.unit_name}</option>`).join('')}
+  `;
+  content.appendChild(select);
 
-  dataList.forEach((data) => {
-    const row = createRow(data);
-    tbody.appendChild(row);
+  const tableWrapper = document.createElement('div');
+  content.appendChild(tableWrapper);
+
+  select.addEventListener('change', () => {
+    const selectedId = parseInt(select.value);
+    const selectedData = dataList.find(d => d.id === selectedId);
+    renderVerticalTable(selectedData, tableWrapper);
   });
-
-  content.appendChild(table);
 }
 
-// Создание спиннера загрузки
-function createSpinner() {
-  const spinner = document.createElement('div');
-  spinner.classList.add('spinner-border');
-  spinner.setAttribute('role', 'status');
-  spinner.innerHTML = `<span class="visually-hidden">Загрузка...</span>`;
-  return spinner;
-}
+function renderVerticalTable(data, container) {
+  container.innerHTML = '';
 
-// Создание заголовков таблицы
-function createTable() {
-  const table = document.createElement('table');
-  table.classList.add('table', 'table-bordered', 'table-sm');
-  table.innerHTML = `
-    <thead class="table-light">
-      <tr>
-        <th>Пиццерия</th>
-        <th>Контроль раннего выхода</th>
-        <th>Интервал менеджера (мин.)</th>
-        <th>Интервал сотрудника (мин.)</th>
-        <th>Действие</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
-  return table;
-}
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('d-flex', 'flex-column', 'gap-3'); // Вертикальный список блоков
 
-// Создание строки таблицы с логикой отслеживания изменений
-function createRow(data) {
-  const row = document.createElement('tr');
+  const makeId = name => `${name}_${data.id}`;
 
-  row.innerHTML = `
-    <td>${data.unit_name}</td>
-    <td><input type="checkbox" id="control_${data.id}" ${data.is_early_clock_in_control_enabled ? 'checked' : ''}></td>
-    <td><input type="number" class="form-control" id="manager_${data.id}" value="${data.early_clock_in_manager_interval ?? ''}"></td>
-    <td><input type="number" class="form-control" id="non_manager_${data.id}" value="${data.early_clock_in_non_manager_interval ?? ''}"></td>
-    <td><button class="btn btn-primary btn-sm" id="save_${data.id}" disabled>Сохранить</button></td>
-  `;
+  const fields = [
+    ['Контроль раннего выхода', 'is_early_clock_in_control_enabled', 'checkbox'],
+    ['Интервал менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
+    ['Интервал сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
+    ['Сообщение директору пиццерии', 'message_to_director_unit', 'checkbox'],
+    ['Время для сообщения директору (мин.)', 'time_message_to_director_min', 'number'],
+    ['Контроль продления смены', 'shift_extending_control', 'checkbox'],
+    ['Время продления смены (мин.)', 'shift_time_extending_control', 'number'],
+    ['Контроль раннего открытия смены', 'shift_early_opening_control', 'checkbox'],
+    ['Время раннего открытия смены (мин.)', 'shift_time_early_opening_control', 'number'],
+    ['Открытие пиццерии большим штатом', 'large_staff_open_pizzeria', 'checkbox'],
+    ['Время начала смены для открытия (мин.)', 'time_start_shift_open_pizzeria', 'number'],
+    ['Количество сотрудников для открытия', 'number_staff_to_open_pizzeria', 'number'],
+    ['Сообщение территориальному директору', 'message_to_territorial_director', 'checkbox'],
+    ['Сообщение графисту', 'message_to_grafist_unit', 'checkbox'],
+  ];
 
-  const checkbox = row.querySelector(`#control_${data.id}`);
-  const managerInput = row.querySelector(`#manager_${data.id}`);
-  const nonManagerInput = row.querySelector(`#non_manager_${data.id}`);
-  const saveButton = row.querySelector(`#save_${data.id}`);
-
-  const initial = {
-    checkbox: checkbox.checked,
-    manager: managerInput.value,
-    nonManager: nonManagerInput.value
+  const controlMap = {
+    is_early_clock_in_control_enabled: ['early_clock_in_manager_interval', 'early_clock_in_non_manager_interval'],
+    message_to_director_unit: ['time_message_to_director_min'],
+    shift_extending_control: ['shift_time_extending_control'],
+    shift_early_opening_control: ['shift_time_early_opening_control'],
+    large_staff_open_pizzeria: ['time_start_shift_open_pizzeria', 'number_staff_to_open_pizzeria'],
   };
 
-  // Отслеживание изменений — если что-то изменилось, активируем кнопку
-  const trackChanges = () => {
-    const changed =
-      checkbox.checked !== initial.checkbox ||
-      managerInput.value !== initial.manager ||
-      nonManagerInput.value !== initial.nonManager;
-    saveButton.disabled = !changed;
-  };
+  const inputs = {};
+  let original = {};
 
-  checkbox.addEventListener('change', trackChanges);
-  managerInput.addEventListener('input', trackChanges);
-  nonManagerInput.addEventListener('input', trackChanges);
+  const formBlocks = {};
 
-  // Обработчик клика по кнопке сохранения
+  // Создание блоков
+  for (const [label, key, type] of fields) {
+    const id = makeId(key);
+    const value = data[key];
+
+    const block = document.createElement('div');
+    block.classList.add('border', 'p-3', 'rounded');
+
+    if (type === 'checkbox') block.classList.add('bg-light');
+
+    const formGroup = document.createElement('div');
+    formGroup.classList.add('form-check');
+
+    const input = document.createElement('input');
+    input.id = id;
+    inputs[key] = input;
+
+    const labelEl = document.createElement('label');
+    labelEl.setAttribute('for', id);
+    labelEl.textContent = label;
+
+    if (type === 'checkbox') {
+      input.type = 'checkbox';
+      input.checked = !!value;
+      input.classList.add('form-check-input');
+      labelEl.classList.add('form-check-label');
+      formGroup.appendChild(input);
+      formGroup.appendChild(labelEl);
+      block.appendChild(formGroup);
+      original[key] = input.checked;
+    } else {
+      input.type = 'number';
+      input.value = value ?? '';
+      input.classList.add('form-control');
+      labelEl.classList.add('form-label');
+
+      block.appendChild(labelEl);
+      block.appendChild(input);
+      original[key] = input.value;
+    }
+
+    formBlocks[key] = block;
+    wrapper.appendChild(block);
+  }
+
+  // Кнопка сохранения
+  const saveButton = document.createElement('button');
+  saveButton.classList.add('btn', 'btn-primary', 'align-self-start', 'mt-2');
+  saveButton.textContent = 'Сохранить';
+  saveButton.disabled = true;
+
+  wrapper.appendChild(saveButton);
+  container.appendChild(wrapper);
+
+  // Обновление зависимостей
+  function applyControlDependencies() {
+    for (const [controlKey, dependentKeys] of Object.entries(controlMap)) {
+      const control = inputs[controlKey];
+      const enabled = control.checked;
+
+      dependentKeys.forEach(depKey => {
+        const input = inputs[depKey];
+        const block = formBlocks[depKey];
+        if (input) input.disabled = !enabled;
+        if (block) {
+          block.classList.toggle('opacity-50', !enabled);
+        }
+      });
+    }
+  }
+
+  function onChange() {
+    applyControlDependencies();
+
+    const isChanged = fields.some(([_, key, type]) => {
+      const el = inputs[key];
+      if (type === 'checkbox') return el.checked !== original[key];
+      return el.value !== original[key];
+    });
+
+    saveButton.disabled = !isChanged;
+  }
+
+  // Добавляем обработчики
+  for (const [, key, type] of fields) {
+    const el = inputs[key];
+    const event = type === 'checkbox' ? 'change' : 'input';
+    el.addEventListener(event, onChange);
+  }
+
+  applyControlDependencies();
+
   saveButton.addEventListener('click', async () => {
-    const payload = {
-      is_early_clock_in_control_enabled: checkbox.checked,
-    };
-
-    const managerValue = parseInt(managerInput.value);
-    const nonManagerValue = parseInt(nonManagerInput.value);
-
-    if (!isNaN(managerValue)) payload.early_clock_in_manager_interval = managerValue;
-    if (!isNaN(nonManagerValue)) payload.early_clock_in_non_manager_interval = nonManagerValue;
+    const payload = {};
+    for (const [, key, type] of fields) {
+      const el = inputs[key];
+      payload[key] = type === 'checkbox' ? el.checked : (el.value === '' ? null : parseInt(el.value));
+      original[key] = type === 'checkbox' ? el.checked : el.value;
+    }
 
     await updateDisciplineProgramSettings(data.id, payload);
-
-    // Обновляем начальные значения после успешного сохранения
-    initial.checkbox = checkbox.checked;
-    initial.manager = managerInput.value;
-    initial.nonManager = nonManagerInput.value;
     saveButton.disabled = true;
   });
-
-  return row;
 }
