@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "rm -rf dist && parcel frontend/index.html",
-    "build": "parcel build frontend/index.html --dist-dir dist --public-url ./"
+    "dev": "rm -rf dist .parcel-cache && parcel frontend/index.html",
+    "build": "rm -rf dist .parcel-cache && parcel build frontend/index.html --dist-dir dist --public-url ./"
   },
   "repository": {
     "type": "git",
