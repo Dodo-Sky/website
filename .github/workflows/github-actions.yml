@@ -22,12 +22,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
       - name: Set environment variables for branch
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
@@ -58,9 +52,19 @@ jobs:
           mkdir -p ~/.ssh
           echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
-      - name: Clean old dist on server
+      - name: Copy .env from server
         run: |
-          ssh ${{ env.USER }}@${{ env.HOST }} "rm -rf ${{ env.TARGET_PATH }}/dist && mkdir -p ${{ env.TARGET_PATH }}/dist"
+          scp ${{ env.USER }}@${{ env.HOST }}:${{ env.TARGET_PATH }}/.env .env
+
+      - name: Clean old dist and cache on server
+        run: |
+          ssh ${{ env.USER }}@${{ env.HOST }} "rm -rf ${{ env.TARGET_PATH }}/dist ${{ env.TARGET_PATH }}/.parcel-cache && mkdir -p ${{ env.TARGET_PATH }}/dist"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
 
       - name: Deploy new dist to server
         run: |
