@@ -41,21 +41,22 @@ function renderVerticalTable(data, container) {
   const makeId = name => `${name}_${data.id}`;
 
   const fields = [
-    ['Контроль раннего выхода', 'is_early_clock_in_control_enabled', 'checkbox'],
-    ['Интервал менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
-    ['Интервал сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
-    ['Сообщение директору пиццерии', 'message_to_director_unit', 'checkbox'],
-    ['Время для сообщения директору (мин.)', 'time_message_to_director_min', 'number'],
-    ['Контроль продления смены', 'shift_extending_control', 'checkbox'],
-    ['Время продления смены (мин.)', 'shift_time_extending_control', 'number'],
-    ['Контроль раннего открытия смены', 'shift_early_opening_control', 'checkbox'],
-    ['Время раннего открытия смены (мин.)', 'shift_time_early_opening_control', 'number'],
-    ['Открытие пиццерии большим штатом', 'large_staff_open_pizzeria', 'checkbox'],
-    ['Время начала смены для открытия (мин.)', 'time_start_shift_open_pizzeria', 'number'],
-    ['Количество сотрудников для открытия', 'number_staff_to_open_pizzeria', 'number'],
-    ['Сообщение территориальному директору', 'message_to_territorial_director', 'checkbox'],
-    ['Сообщение графисту', 'message_to_grafist_unit', 'checkbox'],
+    ['Контроль раннего выхода сотрудников', 'is_early_clock_in_control_enabled', 'checkbox'],
+    ['Допустимое время раннего выхода для менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
+    ['Допустимое время раннего выхода для сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
+    ['Отправлять уведомление директору при опоздании?', 'message_to_director_unit', 'checkbox'],
+    ['Через сколько минут отсутствия отправлять сообщение директору?', 'time_message_to_director_min', 'number'],
+    ['Контролировать продление смен?', 'shift_extending_control', 'checkbox'],
+    ['Максимальное допустимое продление смены (мин.)', 'shift_time_extending_control', 'number'],
+    ['Контролировать раннее открытие смены?', 'shift_early_opening_control', 'checkbox'],
+    ['Максимальное время раннего открытия смены (мин.)', 'shift_time_early_opening_control', 'number'],
+    ['Контроль открытия пиццерии большим штатом?', 'large_staff_open_pizzeria', 'checkbox'],
+    ['Время начала смены для открытия пиццерии (мин. до открытия)', 'time_start_shift_open_pizzeria', 'number'],
+    ['Минимальное количество сотрудников на открытие пиццерии', 'number_staff_to_open_pizzeria', 'number'],
+    ['Отправлять сообщение территориальному директору при нарушении?', 'message_to_territorial_director', 'checkbox'],
+    ['Отправлять сообщение графисту через N минут?', 'message_to_grafist_unit', 'checkbox'],
   ];
+
 
   const controlMap = {
     is_early_clock_in_control_enabled: ['early_clock_in_manager_interval', 'early_clock_in_non_manager_interval'],
