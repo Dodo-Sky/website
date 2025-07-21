@@ -54,7 +54,7 @@ function renderVerticalTable(data, container) {
     ['Время начала смены для открытия пиццерии (мин. до открытия)', 'time_start_shift_open_pizzeria', 'number'],
     ['Минимальное количество сотрудников на открытие пиццерии', 'number_staff_to_open_pizzeria', 'number'],
     ['Отправлять сообщение территориальному директору при нарушении?', 'message_to_territorial_director', 'checkbox'],
-    ['Отправлять сообщение графисту через N минут?', 'message_to_grafist_unit', 'checkbox'],
+    ['Отправлять сообщение графисту через 30 минут?', 'message_to_grafist_unit', 'checkbox'],
   ];
 
 
