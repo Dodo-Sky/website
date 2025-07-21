@@ -1,7 +1,9 @@
-import { getServerApi, postDataServer } from '../../apiServer.js';
+import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
-import {renderDiscipline} from "./renderDiscipline.js";
-import {renderProblemOrders} from "./renderProblemOrders.js";
+import { renderDiscipline } from "./renderDiscipline.js";
+import { renderProblemOrders } from "./renderProblemOrders.js";
+import { getTagSpan } from "../../components.js";
+import {parseIsoDate} from "../../utils";
 
 export async function main_planing(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
@@ -36,31 +38,65 @@ export async function main_planing(name, breadcrumbs) {
 
   navbar.append(dicscipline, problemOrders);
 
-  const table = components.getTagDiv('table');
+  const container = components.getTagDiv('row');
   const title = components.getTagH(3, name);
   title.classList.add('text-center');
   title.classList.add('sticky-top');
-  content.append(title, navbar, spinnerWrap, table);
+  content.append(title, navbar, spinnerWrap, container);
 
   navbar.addEventListener('click', async (e) => {
     if (e.target.textContent === 'Соблюдение дисциплины') {
       dicscipline.classList.add('active');
       problemOrders.classList.remove('active');
       spinnerWrap.style.display = 'flex';
-      table.innerHTML = ""
-      table.append(await renderDiscipline(departmentName));
+      container.innerHTML = ""
+
+      container.append(await renderDiscipline(departmentName));
+
       spinnerWrap.style.display = 'none';
     }
     if (e.target.textContent === 'Проблемные поездки') {
       problemOrders.classList.add('active');
       dicscipline.classList.remove('active');
-      spinnerWrap.style.display = 'flex';
-      table.innerHTML = ""
-      table.append(await renderProblemOrders(departmentName));
-      spinnerWrap.style.display = 'none';
+
+      container.innerHTML = ""
+
+      const { periodRow, inputTo, inputFrom, btnApply } = components.getPeriodSelector(container);
+
+      btnApply.addEventListener('click', async () => {
+        document.querySelector("#planning_orders_table").remove();
+        await generateProblemOrders(spinnerWrap, container, { departmentName, from: inputFrom.value, to: inputTo.value });
+      })
+
+      const { minDate, maxDate } = await fetchPlanningOrdersMinMaxDate(departmentName)
+      const span = getTagSpan()
+      span.classList.add('col-auto')
+      span.textContent = `Внимание. Не ранее ${parseIsoDate(minDate)}. Не позднее ${parseIsoDate(maxDate)}`;
+      periodRow.append(span)
+
+      await generateProblemOrders(spinnerWrap, container, { departmentName, from: inputFrom.value, to: inputTo.value });
     }
   });
 
-  table.append(await renderDiscipline(departmentName));
+  container.style.display = 'none';
+  container.append(await renderDiscipline(departmentName));
   spinnerWrap.style.display = 'none';
+  container.style.display = 'flex';
+}
+
+const fetchPlanningOrdersMinMaxDate = async (departmentName) => {
+  const response = await postDataServer('planning_orders_min_max_date', { departmentName });
+  return response[0]
+}
+
+const generateProblemOrders = async (spinnerWrap, container, request) => {
+  spinnerWrap.style.display = 'flex';
+  container.style.display = 'none';
+
+  const problemOrdersTable = await renderProblemOrders(request.departmentName, request.from, request.to);
+
+  container.append(problemOrdersTable);
+
+  spinnerWrap.style.display = 'none';
+  container.style.display = 'flex';
 }

@@ -1,10 +1,11 @@
-import {postDataServer} from "../../apiServer";
+import { postDataServer } from "../../apiServer";
 import * as components from "../../components";
 
-export const renderProblemOrders = async (departmentName) => {
-    const planning = await postDataServer('planning_orders', { payload: departmentName });
+export const renderProblemOrders = async (departmentName, from, to) => {
+    const planning = await postDataServer('planning_orders', { departmentName, from, to });
     const table = components.getTagTable();
     table.classList.add('table-sm');
+    table.id = 'planning_orders_table';
 
     const caption = components.getTagCaption(
         'Эффективность работы с проблемными поездками за последние 7 дней',
@@ -27,6 +28,7 @@ const buildHeader = () => {
         components.getTagTH('Поездки с отметкой курьера "Проблема"'),
         components.getTagTH('Всего проблемных поездок'),
         components.getTagTH('Средний рейтинг курьера'),
+        components.getTagTH('Среднее время поездки курьера'),
     );
 
     thead.append(tr);
@@ -84,6 +86,7 @@ const buildBody = (arrayData) => {
             components.getTagTD(order.problem),
             components.getTagTD(order.all_orders),
             avg,
+            components.getTagTD(order.avg_delivery_time),
         );
 
         tbody.append(tr);
