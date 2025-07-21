@@ -136,7 +136,7 @@ content.addEventListener('click', async function (e) {
   if (e.target?.dataset?.id === 'Планерки') {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/planning/main_ planning.js');
+    const module = await import('../programs/planning/main_planning.js');
     module.main_planing(nameProgramm, breadcrumbs);
   }
 });
