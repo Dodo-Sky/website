@@ -41,15 +41,15 @@ function renderVerticalTable(data, container) {
   const makeId = name => `${name}_${data.id}`;
 
   const fields = [
-    ['Контроль раннего выхода сотрудников', 'is_early_clock_in_control_enabled', 'checkbox'],
-    ['Допустимое время раннего выхода для менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
-    ['Допустимое время раннего выхода для сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
     ['Отправлять уведомление директору при опоздании?', 'message_to_director_unit', 'checkbox'],
     ['Через сколько минут отсутствия отправлять сообщение директору?', 'time_message_to_director_min', 'number'],
     ['Контролировать продление смен?', 'shift_extending_control', 'checkbox'],
     ['Максимальное допустимое продление смены (мин.)', 'shift_time_extending_control', 'number'],
     ['Контролировать раннее открытие смены?', 'shift_early_opening_control', 'checkbox'],
     ['Максимальное время раннего открытия смены (мин.)', 'shift_time_early_opening_control', 'number'],
+    ['Допустимое время раннего выхода для менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
+    ['Допустимое время раннего выхода для сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
+    ['Контролировать раннее закрытие смены?', 'shift_early_closing_control', 'checkbox'],
     ['Контроль открытия пиццерии большим штатом?', 'large_staff_open_pizzeria', 'checkbox'],
     ['Время начала смены для открытия пиццерии (мин. до открытия)', 'time_start_shift_open_pizzeria', 'number'],
     ['Минимальное количество сотрудников на открытие пиццерии', 'number_staff_to_open_pizzeria', 'number'],
@@ -59,10 +59,9 @@ function renderVerticalTable(data, container) {
 
 
   const controlMap = {
-    is_early_clock_in_control_enabled: ['early_clock_in_manager_interval', 'early_clock_in_non_manager_interval'],
     message_to_director_unit: ['time_message_to_director_min'],
     shift_extending_control: ['shift_time_extending_control'],
-    shift_early_opening_control: ['shift_time_early_opening_control'],
+    shift_early_opening_control: ['shift_time_early_opening_control', 'early_clock_in_manager_interval', 'early_clock_in_non_manager_interval'],
     large_staff_open_pizzeria: ['time_start_shift_open_pizzeria', 'number_staff_to_open_pizzeria'],
   };
 
