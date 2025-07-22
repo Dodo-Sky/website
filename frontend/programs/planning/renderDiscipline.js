@@ -1,13 +1,15 @@
 import {postDataServer} from "../../apiServer.js";
 import * as components from "../../components.js";
+import {downTotal} from "./utils";
 
-export const renderDiscipline = async (departmentName) => {
-    const planning = await postDataServer('planning', { payload: departmentName });
+export const renderDiscipline = async (departmentName, from, to) => {
+    const planning = await postDataServer('planning_discipline', { departmentName, from, to });
     const table = components.getTagTable();
     table.classList.add('table-sm');
+    table.id = 'planning_discipline_table';
 
     const caption = components.getTagCaption(
-        'Эффективность работы с графиками за последние 7 дней',
+        'Эффективность работы с графиками',
     );
     const thead = buildHeader();
     const tbody = buildBody(planning);
@@ -52,29 +54,32 @@ const buildBody = (arrayData) => {
     const preWorstDelayRank = arrayData.length >= 4 ? allDelayRanks[1] : null;
     const bestDelayRanks = allDelayRanks.slice(-topCount);
 
-    arrayData.forEach((order) => {
+    arrayData
+        .sort(downTotal)
+        .forEach((order) => {
         const tr = components.getTagTR();
 
         const extensionRank = +order['Ранг продления'];
         const extension = components.getTagTD(order['Продление смен (час)']);
-
-        if (extensionRank === worstExtensionRank) {
-            extension.classList.add('bg-danger-subtle');
-        } else if (preWorstExtensionRank && extensionRank === preWorstExtensionRank) {
-            extension.classList.add('bg-warning-subtle');
-        } else if (bestExtensionRanks.includes(extensionRank)) {
-            extension.classList.add('bg-success-subtle');
-        }
-
         const delayRank = +order['Ранг по опозданиям'];
         const delays = components.getTagTD(order['Опоздания (час)']);
 
-        if (delayRank === worstDelayRank) {
-            delays.classList.add('bg-danger-subtle');
-        } else if (preWorstDelayRank && delayRank === preWorstDelayRank) {
-            delays.classList.add('bg-warning-subtle');
-        } else if (bestDelayRanks.includes(delayRank)) {
-            delays.classList.add('bg-success-subtle');
+        if (order.name !== 'ИТОГО') {
+            if (extensionRank === worstExtensionRank) {
+                extension.classList.add('bg-danger-subtle');
+            } else if (preWorstExtensionRank && extensionRank === preWorstExtensionRank) {
+                extension.classList.add('bg-warning-subtle');
+            } else if (bestExtensionRanks.includes(extensionRank)) {
+                extension.classList.add('bg-success-subtle');
+            }
+
+            if (delayRank === worstDelayRank) {
+                delays.classList.add('bg-danger-subtle');
+            } else if (preWorstDelayRank && delayRank === preWorstDelayRank) {
+                delays.classList.add('bg-warning-subtle');
+            } else if (bestDelayRanks.includes(delayRank)) {
+                delays.classList.add('bg-success-subtle');
+            }
         }
 
         tr.append(
@@ -86,6 +91,10 @@ const buildBody = (arrayData) => {
             components.getTagTD(order['Всего (положительные)']),
             components.getTagTD(order['Сумма часов']),
         );
+
+        if (order.name === "ИТОГО") {
+            tr.classList.add('fw-bold')
+        }
 
         tbody.append(tr);
     });

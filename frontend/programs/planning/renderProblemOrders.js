@@ -1,5 +1,6 @@
 import { postDataServer } from "../../apiServer";
 import * as components from "../../components";
+import {downTotal} from "./utils";
 
 export const renderProblemOrders = async (departmentName, from, to) => {
     const planning = await postDataServer('planning_orders', { departmentName, from, to });
@@ -8,7 +9,7 @@ export const renderProblemOrders = async (departmentName, from, to) => {
     table.id = 'planning_orders_table';
 
     const caption = components.getTagCaption(
-        'Эффективность работы с проблемными поездками за последние 7 дней',
+        'Эффективность работы с проблемными поездками',
     );
     const thead = buildHeader();
     const tbody = buildBody(planning);
@@ -55,42 +56,49 @@ const buildBody = (arrayData) => {
     console.log("allNoProblemRanks", allNoProblemRanks)
     console.log("allAvgRanks", allAvgRanks)
 
-    arrayData.forEach((order) => {
-        const tr = components.getTagTR();
+    arrayData
+        .sort(downTotal)
+        .forEach((order) => {
+            const tr = components.getTagTR();
 
-        const noProblemRank = +order.ranc;
-        const noProblem = components.getTagTD(order.no_problem);
+            const noProblemRank = +order.ranc;
+            const noProblem = components.getTagTD(order.no_problem);
+            const avgRank = +order.ranc_avg_raiting;
+            const avg = components.getTagTD(order.avg_raiting);
 
-        if (noProblemRank === worstNoProblemRank) {
-            noProblem.classList.add('bg-danger-subtle');
-        } else if (preWorstNoProblemRank && noProblemRank === preWorstNoProblemRank) {
-            noProblem.classList.add('bg-warning-subtle');
-        } else if (bestNoProblemRanks.includes(noProblemRank)) {
-            noProblem.classList.add('bg-success-subtle');
-        }
+            if (order.name !== 'ИТОГО') {
+                if (noProblemRank === worstNoProblemRank) {
+                    noProblem.classList.add('bg-danger-subtle');
+                } else if (preWorstNoProblemRank && noProblemRank === preWorstNoProblemRank) {
+                    noProblem.classList.add('bg-warning-subtle');
+                } else if (bestNoProblemRanks.includes(noProblemRank)) {
+                    noProblem.classList.add('bg-success-subtle');
+                }
 
-        const avgRank = +order.ranc_avg_raiting;
-        const avg = components.getTagTD(order.avg_raiting);
+                if (avgRank === worstAvgRank) {
+                    avg.classList.add('bg-danger-subtle');
+                } else if (preWorstAvgRank && avgRank === preWorstAvgRank) {
+                    avg.classList.add('bg-warning-subtle');
+                } else if (bestAvgRanks.includes(avgRank)) {
+                    avg.classList.add('bg-success-subtle');
+                }
+            }
 
-        if (avgRank === worstAvgRank) {
-            avg.classList.add('bg-danger-subtle');
-        } else if (preWorstAvgRank && avgRank === preWorstAvgRank) {
-            avg.classList.add('bg-warning-subtle');
-        } else if (bestAvgRanks.includes(avgRank)) {
-            avg.classList.add('bg-success-subtle');
-        }
+            tr.append(
+                components.getTagTD(order.name),
+                noProblem,
+                components.getTagTD(order.problem),
+                components.getTagTD(order.all_orders),
+                avg,
+                components.getTagTD(order.avg_delivery_time),
+            );
 
-        tr.append(
-            components.getTagTD(order.name),
-            noProblem,
-            components.getTagTD(order.problem),
-            components.getTagTD(order.all_orders),
-            avg,
-            components.getTagTD(order.avg_delivery_time),
-        );
+            if (order.name === "ИТОГО") {
+                tr.classList.add('fw-bold')
+            }
 
-        tbody.append(tr);
-    });
+            tbody.append(tr);
+        });
 
     return tbody;
 };
