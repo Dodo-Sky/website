@@ -79,7 +79,7 @@ const renderTabContent = async ({ container, spinnerWrap, departmentName, tab, m
   });
 }
 
-export async function main_planing(name, breadcrumbs) {
+export async function main_reports(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
   breadcrumb.append(

@@ -133,11 +133,11 @@ content.addEventListener('click', async function (e) {
     module.render(nameProgramm, breadcrumbs);
   }
 
-  if (e.target?.dataset?.id === 'Планерки') {
+  if (e.target?.dataset?.id === 'Отчеты') {
     const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/planning/main_planning.js');
-    module.main_planing(nameProgramm, breadcrumbs);
+    const module = await import('../programs/reports/main_reports.js');
+    module.main_reports(nameProgramm, breadcrumbs);
   }
 });
 
@@ -211,7 +211,7 @@ function showNavUnitDirector() {
   let dismissed = components.getCardNav('Обзвон уволенных');
   let badSupply = components.getCardNav('Контроль брака');
   let idTelegramm = components.getCardNav('ID телеграмм');
-  let planning = components.getCardNav('Планерки');
+  let planning = components.getCardNav('Отчеты');
 
   cardRow.append(orders, diszipline, badSupply, dismissed, idTelegramm, planning);
   content.innerHTML = '';
@@ -238,7 +238,7 @@ function showNavManager() {
   let diszipline = components.getCardNav('Соблюдение дисциплины');
   let badSupply = components.getCardNav('Контроль брака');
   let orders = components.getCardNav('Проблемные поездки');
-  let planning = components.getCardNav('Планерки');
+  let planning = components.getCardNav('Отчеты');
 
   cardRow.append(diszipline, badSupply, orders, planning);
   content.innerHTML = '';
