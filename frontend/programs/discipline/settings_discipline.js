@@ -1,5 +1,18 @@
 import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from "../../apiServer.js";
 
+const tooltips = {
+  message_to_director_unit: "Показывать ли сообщение директору пиццерии при открытии смены.",
+  time_message_to_director_min: "За сколько минут до смены отправлять сообщение директору.",
+  shift_extending_control: "Контролировать ли продление смены.",
+  shift_time_extending_control: "Максимальное время продления смены в минутах.",
+  shift_early_opening_control: "Контролировать ли раннее открытие смены.",
+  shift_time_early_opening_control: "За сколько минут возможно раннее открытие смены.",
+  early_clock_in_manager_interval: "Допустимый интервал прихода менеджера до смены.",
+  early_clock_in_non_manager_interval: "Допустимый интервал прихода сотрудника до смены.",
+  message_to_territorial_director: "Показывать ли сообщение территориальному директору.",
+  message_to_grafist_unit: "Показывать ли сообщение графисту.",
+};
+
 // Главная функция рендера страницы
 export async function render() {
   const content = document.querySelector(".contentSetting");
@@ -31,9 +44,8 @@ export async function render() {
     renderVerticalTable(selectedData, tableWrapper);
   });
 
-  // Если есть хотя бы один пункт — рендерим его сразу
   if (dataList.length > 0) {
-    select.selectedIndex = 1; // первый доступный (index 0 — это disabled)
+    select.selectedIndex = 1;
     const selectedId = parseInt(select.value);
     const selectedData = dataList.find((d) => d.id === selectedId);
     renderVerticalTable(selectedData, tableWrapper);
@@ -44,7 +56,7 @@ function renderVerticalTable(data, container) {
   container.innerHTML = "";
 
   const wrapper = document.createElement("div");
-  wrapper.classList.add("d-flex", "flex-column", "gap-3"); // Вертикальный список блоков
+  wrapper.classList.add("d-flex", "flex-column", "gap-3");
 
   const makeId = (name) => `${name}_${data.id}`;
 
@@ -77,17 +89,14 @@ function renderVerticalTable(data, container) {
 
   const inputs = {};
   let original = {};
-
   const formBlocks = {};
 
-  // Создание блоков
   for (const [label, key, type] of fields) {
     const id = makeId(key);
     const value = data[key];
 
     const block = document.createElement("div");
     block.classList.add("border", "p-3", "rounded");
-
     if (type === "checkbox") block.classList.add("bg-light");
 
     const formGroup = document.createElement("div");
@@ -99,8 +108,15 @@ function renderVerticalTable(data, container) {
 
     const labelEl = document.createElement("label");
     labelEl.setAttribute("for", id);
-    labelEl.textContent = label;
-
+    const tooltipText = tooltips[key];
+    if (tooltipText) {
+      labelEl.innerHTML = `
+    ${label}
+    <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" title="${tooltipText}" style="cursor: pointer;"></i>
+  `;
+    } else {
+      labelEl.textContent = label;
+    }
     if (type === "checkbox") {
       input.type = "checkbox";
       input.checked = !!value;
@@ -115,7 +131,6 @@ function renderVerticalTable(data, container) {
       input.value = value ?? "";
       input.classList.add("form-control");
       labelEl.classList.add("form-label");
-
       block.appendChild(labelEl);
       block.appendChild(input);
       original[key] = input.value;
@@ -125,7 +140,6 @@ function renderVerticalTable(data, container) {
     wrapper.appendChild(block);
   }
 
-  // Кнопка сохранения
   const saveButton = document.createElement("button");
   saveButton.classList.add("btn", "btn-primary", "align-self-start", "mt-2");
   saveButton.textContent = "Сохранить";
@@ -134,7 +148,12 @@ function renderVerticalTable(data, container) {
   wrapper.appendChild(saveButton);
   container.appendChild(wrapper);
 
-  // Обновление зависимостей
+  // Инициализация Bootstrap тултипов
+  const tooltipTriggerList = [].slice.call(wrapper.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach((tooltipTriggerEl) => {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+
   function applyControlDependencies() {
     for (const [controlKey, dependentKeys] of Object.entries(controlMap)) {
       const control = inputs[controlKey];
@@ -163,7 +182,6 @@ function renderVerticalTable(data, container) {
     saveButton.disabled = !isChanged;
   }
 
-  // Добавляем обработчики
   for (const [, key, type] of fields) {
     const el = inputs[key];
     const event = type === "checkbox" ? "change" : "input";
