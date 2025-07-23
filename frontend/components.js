@@ -1,4 +1,5 @@
 import { clearAuthData } from './auth/login.js';
+import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
 
 export {
   getTagDiv,
@@ -40,6 +41,7 @@ export {
   getTagButton_logout,
   getTagColFormLabel,
   getTagButtonLink,
+  getPeriodSelector
 };
 
 // Базовая разметка
@@ -385,4 +387,52 @@ function getTagButtonLink(textContent, href) {
   element.setAttribute('target', '_black')
   element.textContent = textContent;
   return element;
+}
+
+const getPeriodSelector = (container) => {
+  const now = new Date();
+  const thisWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+  const lastWeekStart = addDays(thisWeekStart, -7)
+  const lastWeekEnd = endOfWeek(lastWeekStart, { weekStartsOn: 1 })
+
+  const periodRow = getTagDiv(['row', 'align-items-center', 'mt-2', 'rowEl']);
+  container.append(periodRow);
+
+  const labelWrap = getTagDiv('col-auto')
+  const label = getTagDiv('col-form-label');
+  label.textContent = 'Выберете период';
+  labelWrap.appendChild(label);
+  periodRow.append(labelWrap);
+
+  const labelFromWrap = getTagDiv(['col-auto', 'p-0'])
+  const labelFrom = getTagLabel('inputFrom', 'С: ')
+  labelFrom.className = 'col-form-label p-0'
+  labelFromWrap.append(labelFrom);
+  periodRow.append(labelFromWrap);
+  const inputFromWrap = getTagDiv('col-auto')
+  const inputFrom = getTagInput('date', format(lastWeekStart, "yyyy-MM-dd"))
+  inputFrom.id = 'inputFrom';
+  inputFrom.classList.add('form-control');
+  inputFromWrap.append(inputFrom);
+  periodRow.append(inputFromWrap);
+
+  const labelToWrap = getTagDiv(['col-auto', 'p-0'])
+  const labelTo = getTagLabel('inputTo', 'По: ')
+  labelTo.className = 'col-form-label p-0'
+  labelToWrap.append(labelTo);
+  periodRow.append(labelToWrap);
+  const inputToWrap = getTagDiv('col-auto')
+  const inputTo = getTagInput('date', format(lastWeekEnd, "yyyy-MM-dd"))
+  inputTo.id = 'inputTo';
+  inputTo.classList.add('form-control');
+  inputToWrap.append(inputTo);
+  periodRow.append(inputToWrap);
+
+  const btnCol = getTagDiv('col-auto');
+  const btnApply = getTagButton('Выбрать');
+  btnApply.classList.add('arrayData-btn-save');
+  btnCol.append(btnApply);
+  periodRow.append(btnCol);
+
+  return { periodRow, inputFrom, inputTo, btnApply };
 }

@@ -1,16 +1,94 @@
-import { getServerApi, postDataServer } from '../../apiServer.js';
+import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
-import {renderDiscipline} from "./renderDiscipline.js";
-import {renderProblemOrders} from "./renderProblemOrders.js";
+import { renderDiscipline } from "./renderDiscipline.js";
+import { renderProblemOrders } from "./renderProblemOrders.js";
+import { getTagSpan } from "../../components.js";
+import { parseIsoDate } from "../../utils";
+
+const tabs = {
+  discipline: {
+    label: 'Соблюдение дисциплины',
+    tableId: 'planning_discipline_table',
+    minMaxDateEndpoint: 'planning_discipline_min_max_date',
+    render: async (spinnerWrap, container, request) => {
+      spinnerWrap.style.display = 'flex';
+      container.style.display = 'none';
+
+      const table = await renderDiscipline(request.departmentName, request.from, request.to);
+      container.append(table);
+
+      spinnerWrap.style.display = 'none';
+      container.style.display = 'flex';
+    },
+  },
+  problemOrders: {
+    label: 'Проблемные поездки',
+    tableId: 'planning_orders_table',
+    minMaxDateEndpoint: 'planning_orders_min_max_date',
+    render: async (spinnerWrap, container, request) => {
+      spinnerWrap.style.display = 'flex';
+      container.style.display = 'none';
+
+      const table = await renderProblemOrders(request.departmentName, request.from, request.to);
+      container.append(table);
+
+      spinnerWrap.style.display = 'none';
+      container.style.display = 'flex';
+    },
+  },
+};
+
+const fetchAllMinMaxDates = async (departmentName) => {
+  const entries = await Promise.all(
+      Object.entries(tabs).map(async ([key, tab]) => {
+        const res = await postDataServer(tab.minMaxDateEndpoint, { departmentName });
+
+        return [key, res[0]];
+      })
+  );
+
+  return Object.fromEntries(entries);
+}
+
+const renderTabContent = async ({ container, spinnerWrap, departmentName, tab, minMax }) => {
+  container.innerHTML = '';
+
+  const { periodRow, inputTo, inputFrom, btnApply } = components.getPeriodSelector(container);
+
+  const { minDate, maxDate } = minMax;
+  const span = getTagSpan();
+  span.classList.add('col-auto');
+  span.textContent = `Внимание. Не ранее ${parseIsoDate(minDate)}. Не позднее ${parseIsoDate(maxDate)}`;
+  periodRow.append(span);
+
+  btnApply.addEventListener('click', async () => {
+    const oldTable = document.querySelector(`#${tab.tableId}`);
+    if (oldTable) oldTable.remove();
+
+    await tab.render(spinnerWrap, container, {
+      departmentName,
+      from: inputFrom.value,
+      to: inputTo.value,
+    });
+  });
+
+  await tab.render(spinnerWrap, container, {
+    departmentName,
+    from: inputFrom.value,
+    to: inputTo.value,
+  });
+}
 
 export async function main_planing(name, breadcrumbs) {
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = '';
-  let navMainEl = components.getTagLI_breadcrumb('Главная');
-  let navManaergEl = components.getTagLI_breadcrumb(breadcrumbs);
-  let navControlEl = components.getTagLI_breadcrumbActive(name);
-  breadcrumb.append(navMainEl, navManaergEl, navControlEl);
+  breadcrumb.append(
+      components.getTagLI_breadcrumb('Главная'),
+      components.getTagLI_breadcrumb(breadcrumbs),
+      components.getTagLI_breadcrumbActive(name)
+  );
 
+  const departmentName = localStorage.getItem('departmentName');
   content.innerHTML = ``;
 
   const spinnerWrap = components.getTagDiv('spinnerWrap');
@@ -23,44 +101,46 @@ export async function main_planing(name, breadcrumbs) {
   spinner.append(round)
   spinnerWrap.append(spinner);
 
-  const departmentName = localStorage.getItem('departmentName');
-
   const navbar = components.getTagUL_nav();
   navbar.classList.add('nav-tabs');
-  const dicscipline = components.getTagLI_nav('Соблюдение дисциплины');
-  dicscipline.classList.add('planning-nav');
-  dicscipline.classList.add('dicscipline');
-  dicscipline.classList.add('active');
-  const problemOrders = components.getTagLI_nav('Проблемные поездки');
-  problemOrders.classList.add('planning-nav');
 
-  navbar.append(dicscipline, problemOrders);
-
-  const table = components.getTagDiv('table');
+  const container = components.getTagDiv('row');
   const title = components.getTagH(3, name);
-  title.classList.add('text-center');
-  title.classList.add('sticky-top');
-  content.append(title, navbar, spinnerWrap, table);
+  title.classList.add('text-center', 'sticky-top');
 
-  navbar.addEventListener('click', async (e) => {
-    if (e.target.textContent === 'Соблюдение дисциплины') {
-      dicscipline.classList.add('active');
-      problemOrders.classList.remove('active');
-      spinnerWrap.style.display = 'flex';
-      table.innerHTML = ""
-      table.append(await renderDiscipline(departmentName));
-      spinnerWrap.style.display = 'none';
-    }
-    if (e.target.textContent === 'Проблемные поездки') {
-      problemOrders.classList.add('active');
-      dicscipline.classList.remove('active');
-      spinnerWrap.style.display = 'flex';
-      table.innerHTML = ""
-      table.append(await renderProblemOrders(departmentName));
-      spinnerWrap.style.display = 'none';
-    }
+  content.append(title, navbar, spinnerWrap, container);
+
+  Object.entries(tabs).forEach(([key, tab]) => {
+    const navItem = components.getTagLI_nav(tab.label);
+    navItem.classList.add('planning-nav');
+    if (key === 'discipline') navItem.classList.add('active');
+    navItem.dataset.tabKey = key;
+    navbar.append(navItem);
   });
 
-  table.append(await renderDiscipline(departmentName));
-  spinnerWrap.style.display = 'none';
+  const minMaxByTab = await fetchAllMinMaxDates(departmentName);
+
+  navbar.addEventListener('click', async (e) => {
+    const tabKey = e.target?.dataset?.tabKey;
+    if (!tabKey || !tabs[tabKey]) return;
+
+    navbar.querySelectorAll('li').forEach((li) => li.classList.remove('active'));
+    e.target.classList.add('active');
+
+    await renderTabContent({
+      container,
+      spinnerWrap,
+      departmentName,
+      tab: tabs[tabKey],
+      minMax: minMaxByTab[tabKey],
+    });
+  });
+
+  await renderTabContent({
+    container,
+    spinnerWrap,
+    departmentName,
+    tab: tabs.discipline,
+    minMax: minMaxByTab.discipline
+  });
 }
