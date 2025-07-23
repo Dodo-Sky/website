@@ -30,6 +30,14 @@ export async function render() {
     const selectedData = dataList.find(d => d.id === selectedId);
     renderVerticalTable(selectedData, tableWrapper);
   });
+
+    // Если есть хотя бы один пункт — рендерим его сразу
+  if (dataList.length > 0) {
+    select.selectedIndex = 1; // первый доступный (index 0 — это disabled)
+    const selectedId = parseInt(select.value);
+    const selectedData = dataList.find(d => d.id === selectedId);
+    renderVerticalTable(selectedData, tableWrapper);
+  }
 }
 
 function renderVerticalTable(data, container) {
