@@ -1,6 +1,5 @@
 import { postDataServer } from "../../apiServer";
 import * as components from "../../components";
-import {downTotal} from "./utils";
 
 export const renderProblemOrders = async (departmentName, from, to) => {
     const planning = await postDataServer('planning_orders', { departmentName, from, to });
@@ -36,69 +35,82 @@ const buildHeader = () => {
     return thead;
 };
 
+const pasteOrder = (order, tbody, data) => {
+    const tr = components.getTagTR();
+
+    const noProblemRank = +order.ranc;
+    const noProblem = components.getTagTD(order.no_problem);
+    const avgRank = +order.ranc_avg_raiting;
+    const avg = components.getTagTD(order.avg_raiting);
+
+    if (order.name !== 'ИТОГО') {
+        if (noProblemRank === data.worstNoProblemRank) {
+            noProblem.classList.add('bg-danger-subtle');
+        } else if (data.preWorstNoProblemRank && noProblemRank === data.preWorstNoProblemRank) {
+            noProblem.classList.add('bg-warning-subtle');
+        } else if (data.bestNoProblemRanks.includes(noProblemRank)) {
+            noProblem.classList.add('bg-success-subtle');
+        }
+
+        if (avgRank === data.worstAvgRank) {
+            avg.classList.add('bg-danger-subtle');
+        } else if (data.preWorstAvgRank && avgRank === data.preWorstAvgRank) {
+            avg.classList.add('bg-warning-subtle');
+        } else if (data.bestAvgRanks.includes(avgRank)) {
+            avg.classList.add('bg-success-subtle');
+        }
+    }
+
+    tr.append(
+        components.getTagTD(order.name),
+        noProblem,
+        components.getTagTD(order.problem),
+        components.getTagTD(order.all_orders),
+        avg,
+        components.getTagTD(order.avg_delivery_time),
+    );
+
+    if (order.name === "ИТОГО") {
+        tr.classList.add('fw-bold')
+    }
+
+    tbody.append(tr);
+}
+
 const buildBody = (arrayData) => {
     const tbody = components.getTagTBody();
     tbody.classList.add('tBody');
 
-    const topCount = arrayData.length >= 4 ? 2 : 1;
+    const orders = []
+    let total = null
 
-    const allNoProblemRanks = [...new Set(arrayData.map(o => +o.ranc))].sort((a, b) => a - b);
-    const allAvgRanks = [...new Set(arrayData.map(o => +o.ranc_avg_raiting))].sort((a, b) => b - a);
+    arrayData.forEach((o) => {
+        if (o.name === 'ИТОГО') {
+            total = o
+        } else {
+            orders.push(o)
+        }
+    })
 
-    const worstNoProblemRank = allNoProblemRanks[0];
-    const preWorstNoProblemRank = arrayData.length >= 4 ? allNoProblemRanks[1] : null;
-    const bestNoProblemRanks = allNoProblemRanks.slice(-topCount);
+    const topCount = orders.length >= 4 ? 2 : 1;
 
-    const worstAvgRank = allAvgRanks[0];
-    const preWorstAvgRank = arrayData.length >= 4 ? allAvgRanks[1] : null;
-    const bestAvgRanks = allAvgRanks.slice(-topCount);
+    const allNoProblemRanks = [...new Set(orders.map(o => +o.ranc))].sort((a, b) => a - b);
+    const allAvgRanks = [...new Set(orders.map(o => +o.ranc_avg_raiting))].sort((a, b) => b - a);
 
-    console.log("allNoProblemRanks", allNoProblemRanks)
-    console.log("allAvgRanks", allAvgRanks)
+    const data = {
+        worstNoProblemRank: allNoProblemRanks[0],
+        preWorstNoProblemRank: orders.length >= 4 ? allNoProblemRanks[1] : null,
+        bestNoProblemRanks: allNoProblemRanks.slice(-topCount),
+        worstAvgRank: allAvgRanks[0],
+        preWorstAvgRank: orders.length >= 4 ? allAvgRanks[1] : null,
+        bestAvgRanks: allAvgRanks.slice(-topCount)
+    }
 
-    arrayData
-        .sort(downTotal)
-        .forEach((order) => {
-            const tr = components.getTagTR();
+    orders.forEach((order) => pasteOrder(order, tbody, data));
 
-            const noProblemRank = +order.ranc;
-            const noProblem = components.getTagTD(order.no_problem);
-            const avgRank = +order.ranc_avg_raiting;
-            const avg = components.getTagTD(order.avg_raiting);
-
-            if (order.name !== 'ИТОГО') {
-                if (noProblemRank === worstNoProblemRank) {
-                    noProblem.classList.add('bg-danger-subtle');
-                } else if (preWorstNoProblemRank && noProblemRank === preWorstNoProblemRank) {
-                    noProblem.classList.add('bg-warning-subtle');
-                } else if (bestNoProblemRanks.includes(noProblemRank)) {
-                    noProblem.classList.add('bg-success-subtle');
-                }
-
-                if (avgRank === worstAvgRank) {
-                    avg.classList.add('bg-danger-subtle');
-                } else if (preWorstAvgRank && avgRank === preWorstAvgRank) {
-                    avg.classList.add('bg-warning-subtle');
-                } else if (bestAvgRanks.includes(avgRank)) {
-                    avg.classList.add('bg-success-subtle');
-                }
-            }
-
-            tr.append(
-                components.getTagTD(order.name),
-                noProblem,
-                components.getTagTD(order.problem),
-                components.getTagTD(order.all_orders),
-                avg,
-                components.getTagTD(order.avg_delivery_time),
-            );
-
-            if (order.name === "ИТОГО") {
-                tr.classList.add('fw-bold')
-            }
-
-            tbody.append(tr);
-        });
+    if (total) {
+        pasteOrder(total, tbody, data);
+    }
 
     return tbody;
 };

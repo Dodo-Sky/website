@@ -1,6 +1,5 @@
 import {postDataServer} from "../../apiServer.js";
 import * as components from "../../components.js";
-import {downTotal} from "./utils";
 
 export const renderDiscipline = async (departmentName, from, to) => {
     const planning = await postDataServer('planning_discipline', { departmentName, from, to });
@@ -37,67 +36,83 @@ const buildHeader = () => {
     return thead;
 };
 
+const pasteDiscipline = (discipline, tbody, data) => {
+    const tr = components.getTagTR();
+
+    const extensionRank = +discipline['Ранг продления'];
+    const extension = components.getTagTD(discipline['Продление смен (час)']);
+    const delayRank = +discipline['Ранг по опозданиям'];
+    const delays = components.getTagTD(discipline['Опоздания (час)']);
+
+    if (discipline.name !== 'ИТОГО') {
+        if (extensionRank === data.worstExtensionRank) {
+            extension.classList.add('bg-danger-subtle');
+        } else if (data.preWorstExtensionRank && extensionRank === data.preWorstExtensionRank) {
+            extension.classList.add('bg-warning-subtle');
+        } else if (data.bestExtensionRanks.includes(extensionRank)) {
+            extension.classList.add('bg-success-subtle');
+        }
+
+        if (delayRank === data.worstDelayRank) {
+            delays.classList.add('bg-danger-subtle');
+        } else if (data.preWorstDelayRank && delayRank === data.preWorstDelayRank) {
+            delays.classList.add('bg-warning-subtle');
+        } else if (data.bestDelayRanks.includes(delayRank)) {
+            delays.classList.add('bg-success-subtle');
+        }
+    }
+
+    tr.append(
+        components.getTagTD(discipline.name),
+        extension,
+        components.getTagTD(discipline['Вне графика (час)']),
+        delays,
+        components.getTagTD(discipline['Всего (отрицательные)']),
+        components.getTagTD(discipline['Всего (положительные)']),
+        components.getTagTD(discipline['Сумма часов']),
+    );
+
+    if (discipline.name === "ИТОГО") {
+        tr.classList.add('fw-bold')
+    }
+
+    tbody.append(tr);
+}
+
 const buildBody = (arrayData) => {
     const tbody = components.getTagTBody();
     tbody.classList.add('tBody');
 
-    const topCount = arrayData.length >= 4 ? 2 : 1;
+    const disciplines = []
+    let total = null
 
-    const allExtensionRanks = [...new Set(arrayData.map(o => +o['Ранг продления']))].sort((a, b) => a - b);
-    const allDelayRanks = [...new Set(arrayData.map(o => +o['Ранг по опозданиям']))].sort((a, b) => a - b);
-
-    const worstExtensionRank = allExtensionRanks[0];
-    const preWorstExtensionRank = arrayData.length >= 4 ? allExtensionRanks[1] : null;
-    const bestExtensionRanks = allExtensionRanks.slice(-topCount);
-
-    const worstDelayRank = allDelayRanks[0];
-    const preWorstDelayRank = arrayData.length >= 4 ? allDelayRanks[1] : null;
-    const bestDelayRanks = allDelayRanks.slice(-topCount);
-
-    arrayData
-        .sort(downTotal)
-        .forEach((order) => {
-        const tr = components.getTagTR();
-
-        const extensionRank = +order['Ранг продления'];
-        const extension = components.getTagTD(order['Продление смен (час)']);
-        const delayRank = +order['Ранг по опозданиям'];
-        const delays = components.getTagTD(order['Опоздания (час)']);
-
-        if (order.name !== 'ИТОГО') {
-            if (extensionRank === worstExtensionRank) {
-                extension.classList.add('bg-danger-subtle');
-            } else if (preWorstExtensionRank && extensionRank === preWorstExtensionRank) {
-                extension.classList.add('bg-warning-subtle');
-            } else if (bestExtensionRanks.includes(extensionRank)) {
-                extension.classList.add('bg-success-subtle');
-            }
-
-            if (delayRank === worstDelayRank) {
-                delays.classList.add('bg-danger-subtle');
-            } else if (preWorstDelayRank && delayRank === preWorstDelayRank) {
-                delays.classList.add('bg-warning-subtle');
-            } else if (bestDelayRanks.includes(delayRank)) {
-                delays.classList.add('bg-success-subtle');
-            }
+    arrayData.forEach(d => {
+        if (d.name === 'ИТОГО') {
+            total = d
+        } else {
+            disciplines.push(d)
         }
+    })
 
-        tr.append(
-            components.getTagTD(order.name),
-            extension,
-            components.getTagTD(order['Вне графика (час)']),
-            delays,
-            components.getTagTD(order['Всего (отрицательные)']),
-            components.getTagTD(order['Всего (положительные)']),
-            components.getTagTD(order['Сумма часов']),
-        );
+    const topCount = disciplines.length >= 4 ? 2 : 1;
 
-        if (order.name === "ИТОГО") {
-            tr.classList.add('fw-bold')
-        }
+    const allExtensionRanks = [...new Set(disciplines.map(o => +o['Ранг продления']))].sort((a, b) => a - b);
+    const allDelayRanks = [...new Set(disciplines.map(o => +o['Ранг по опозданиям']))].sort((a, b) => a - b);
 
-        tbody.append(tr);
-    });
+    const data = {
+        worstExtensionRank: allExtensionRanks[0],
+        preWorstExtensionRank: disciplines.length >= 4 ? allExtensionRanks[1] : null,
+        bestExtensionRanks: allExtensionRanks.slice(-topCount),
+        worstDelayRank: allDelayRanks[0],
+        preWorstDelayRank: disciplines.length >= 4 ? allDelayRanks[1] : null,
+        bestDelayRanks: allDelayRanks.slice(-topCount)
+    }
+
+    disciplines.forEach((order) => pasteDiscipline(order, tbody, data));
+
+    if (total) {
+        pasteDiscipline(total, tbody, data);
+    }
 
     return tbody;
 };
