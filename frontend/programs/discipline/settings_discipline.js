@@ -1,76 +1,78 @@
-import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from '../../apiServer.js';
+import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from "../../apiServer.js";
 
 // Главная функция рендера страницы
 export async function render() {
-  const content = document.querySelector('.contentSetting');
-  content.innerHTML = '';
+  const content = document.querySelector(".contentSetting");
+  content.innerHTML = "";
 
-  const spinner = document.createElement('div');
-  spinner.classList.add('spinner-border');
-  spinner.setAttribute('role', 'status');
+  const spinner = document.createElement("div");
+  spinner.classList.add("spinner-border");
+  spinner.setAttribute("role", "status");
   spinner.innerHTML = `<span class="visually-hidden">Загрузка...</span>`;
   content.append(spinner);
 
   const dataList = await getDisciplineProgramSettings();
   spinner.remove();
 
-  const select = document.createElement('select');
-  select.classList.add('form-select', 'mb-3');
+  const select = document.createElement("select");
+  select.classList.add("form-select", "mb-3");
   select.innerHTML = `
     <option disabled selected>Выберите пиццерию</option>
-    ${dataList.map(d => `<option value="${d.id}">${d.unit_name}</option>`).join('')}
+    ${dataList.map((d) => `<option value="${d.id}">${d.unit_name}</option>`).join("")}
   `;
   content.appendChild(select);
 
-  const tableWrapper = document.createElement('div');
+  const tableWrapper = document.createElement("div");
   content.appendChild(tableWrapper);
 
-  select.addEventListener('change', () => {
+  select.addEventListener("change", () => {
     const selectedId = parseInt(select.value);
-    const selectedData = dataList.find(d => d.id === selectedId);
+    const selectedData = dataList.find((d) => d.id === selectedId);
     renderVerticalTable(selectedData, tableWrapper);
   });
 
-    // Если есть хотя бы один пункт — рендерим его сразу
+  // Если есть хотя бы один пункт — рендерим его сразу
   if (dataList.length > 0) {
     select.selectedIndex = 1; // первый доступный (index 0 — это disabled)
     const selectedId = parseInt(select.value);
-    const selectedData = dataList.find(d => d.id === selectedId);
+    const selectedData = dataList.find((d) => d.id === selectedId);
     renderVerticalTable(selectedData, tableWrapper);
   }
 }
 
 function renderVerticalTable(data, container) {
-  container.innerHTML = '';
+  container.innerHTML = "";
 
-  const wrapper = document.createElement('div');
-  wrapper.classList.add('d-flex', 'flex-column', 'gap-3'); // Вертикальный список блоков
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("d-flex", "flex-column", "gap-3"); // Вертикальный список блоков
 
-  const makeId = name => `${name}_${data.id}`;
+  const makeId = (name) => `${name}_${data.id}`;
 
   const fields = [
-    ['Контроль раннего выхода', 'is_early_clock_in_control_enabled', 'checkbox'],
-    ['Интервал менеджера (мин.)', 'early_clock_in_manager_interval', 'number'],
-    ['Интервал сотрудника (мин.)', 'early_clock_in_non_manager_interval', 'number'],
-    ['Сообщение директору пиццерии', 'message_to_director_unit', 'checkbox'],
-    ['Время для сообщения директору (мин.)', 'time_message_to_director_min', 'number'],
-    ['Контроль продления смены', 'shift_extending_control', 'checkbox'],
-    ['Время продления смены (мин.)', 'shift_time_extending_control', 'number'],
-    ['Контроль раннего открытия смены', 'shift_early_opening_control', 'checkbox'],
-    ['Время раннего открытия смены (мин.)', 'shift_time_early_opening_control', 'number'],
-    ['Открытие пиццерии большим штатом', 'large_staff_open_pizzeria', 'checkbox'],
-    ['Время начала смены для открытия (мин.)', 'time_start_shift_open_pizzeria', 'number'],
-    ['Количество сотрудников для открытия', 'number_staff_to_open_pizzeria', 'number'],
-    ['Сообщение территориальному директору', 'message_to_territorial_director', 'checkbox'],
-    ['Сообщение графисту', 'message_to_grafist_unit', 'checkbox'],
+    ["Сообщение директору пиццерии", "message_to_director_unit", "checkbox"],
+    ["Время для сообщения директору (мин.)", "time_message_to_director_min", "number"],
+    ["Контроль продления смены", "shift_extending_control", "checkbox"],
+    ["Время продления смены (мин.)", "shift_time_extending_control", "number"],
+    ["Контроль раннего открытия смены", "shift_early_opening_control", "checkbox"],
+    ["Время раннего открытия смены (мин.)", "shift_time_early_opening_control", "number"],
+    ["Интервал менеджера (мин.)", "early_clock_in_manager_interval", "number"],
+    ["Интервал сотрудника (мин.)", "early_clock_in_non_manager_interval", "number"],
+    ["Настройки времени работы команды запуска", "large_staff_open_pizzeria", "checkbox"],
+    ["Время начала смены для открытия (мин.)", "time_start_shift_open_pizzeria", "number"],
+    ["Количество сотрудников для открытия", "number_staff_to_open_pizzeria", "number"],
+    ["Сообщение территориальному директору", "message_to_territorial_director", "checkbox"],
+    ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
   ];
 
   const controlMap = {
-    is_early_clock_in_control_enabled: ['early_clock_in_manager_interval', 'early_clock_in_non_manager_interval'],
-    message_to_director_unit: ['time_message_to_director_min'],
-    shift_extending_control: ['shift_time_extending_control'],
-    shift_early_opening_control: ['shift_time_early_opening_control'],
-    large_staff_open_pizzeria: ['time_start_shift_open_pizzeria', 'number_staff_to_open_pizzeria'],
+    message_to_director_unit: ["time_message_to_director_min"],
+    shift_extending_control: ["shift_time_extending_control"],
+    shift_early_opening_control: [
+      "shift_time_early_opening_control",
+      "early_clock_in_manager_interval",
+      "early_clock_in_non_manager_interval",
+    ],
+    large_staff_open_pizzeria: ["time_start_shift_open_pizzeria", "number_staff_to_open_pizzeria"],
   };
 
   const inputs = {};
@@ -83,36 +85,36 @@ function renderVerticalTable(data, container) {
     const id = makeId(key);
     const value = data[key];
 
-    const block = document.createElement('div');
-    block.classList.add('border', 'p-3', 'rounded');
+    const block = document.createElement("div");
+    block.classList.add("border", "p-3", "rounded");
 
-    if (type === 'checkbox') block.classList.add('bg-light');
+    if (type === "checkbox") block.classList.add("bg-light");
 
-    const formGroup = document.createElement('div');
-    formGroup.classList.add('form-check');
+    const formGroup = document.createElement("div");
+    formGroup.classList.add("form-check");
 
-    const input = document.createElement('input');
+    const input = document.createElement("input");
     input.id = id;
     inputs[key] = input;
 
-    const labelEl = document.createElement('label');
-    labelEl.setAttribute('for', id);
+    const labelEl = document.createElement("label");
+    labelEl.setAttribute("for", id);
     labelEl.textContent = label;
 
-    if (type === 'checkbox') {
-      input.type = 'checkbox';
+    if (type === "checkbox") {
+      input.type = "checkbox";
       input.checked = !!value;
-      input.classList.add('form-check-input');
-      labelEl.classList.add('form-check-label');
+      input.classList.add("form-check-input");
+      labelEl.classList.add("form-check-label");
       formGroup.appendChild(input);
       formGroup.appendChild(labelEl);
       block.appendChild(formGroup);
       original[key] = input.checked;
     } else {
-      input.type = 'number';
-      input.value = value ?? '';
-      input.classList.add('form-control');
-      labelEl.classList.add('form-label');
+      input.type = "number";
+      input.value = value ?? "";
+      input.classList.add("form-control");
+      labelEl.classList.add("form-label");
 
       block.appendChild(labelEl);
       block.appendChild(input);
@@ -124,9 +126,9 @@ function renderVerticalTable(data, container) {
   }
 
   // Кнопка сохранения
-  const saveButton = document.createElement('button');
-  saveButton.classList.add('btn', 'btn-primary', 'align-self-start', 'mt-2');
-  saveButton.textContent = 'Сохранить';
+  const saveButton = document.createElement("button");
+  saveButton.classList.add("btn", "btn-primary", "align-self-start", "mt-2");
+  saveButton.textContent = "Сохранить";
   saveButton.disabled = true;
 
   wrapper.appendChild(saveButton);
@@ -138,12 +140,12 @@ function renderVerticalTable(data, container) {
       const control = inputs[controlKey];
       const enabled = control.checked;
 
-      dependentKeys.forEach(depKey => {
+      dependentKeys.forEach((depKey) => {
         const input = inputs[depKey];
         const block = formBlocks[depKey];
         if (input) input.disabled = !enabled;
         if (block) {
-          block.classList.toggle('opacity-50', !enabled);
+          block.classList.toggle("opacity-50", !enabled);
         }
       });
     }
@@ -154,7 +156,7 @@ function renderVerticalTable(data, container) {
 
     const isChanged = fields.some(([_, key, type]) => {
       const el = inputs[key];
-      if (type === 'checkbox') return el.checked !== original[key];
+      if (type === "checkbox") return el.checked !== original[key];
       return el.value !== original[key];
     });
 
@@ -164,18 +166,18 @@ function renderVerticalTable(data, container) {
   // Добавляем обработчики
   for (const [, key, type] of fields) {
     const el = inputs[key];
-    const event = type === 'checkbox' ? 'change' : 'input';
+    const event = type === "checkbox" ? "change" : "input";
     el.addEventListener(event, onChange);
   }
 
   applyControlDependencies();
 
-  saveButton.addEventListener('click', async () => {
+  saveButton.addEventListener("click", async () => {
     const payload = {};
     for (const [, key, type] of fields) {
       const el = inputs[key];
-      payload[key] = type === 'checkbox' ? el.checked : (el.value === '' ? null : parseInt(el.value));
-      original[key] = type === 'checkbox' ? el.checked : el.value;
+      payload[key] = type === "checkbox" ? el.checked : el.value === "" ? null : parseInt(el.value);
+      original[key] = type === "checkbox" ? el.checked : el.value;
     }
 
     await updateDisciplineProgramSettings(data.id, payload);
