@@ -80,6 +80,7 @@ function renderVerticalTable(data, container) {
     ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
   ];
 
+
   const controlMap = {
     message_to_director_unit: ["time_message_to_director_min"],
     shift_extending_control: ["shift_time_extending_control"],
