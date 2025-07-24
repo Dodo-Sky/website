@@ -1,6 +1,7 @@
 import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderDiscipline } from "./renderDiscipline.js";
+import { renderDisciplineHistory } from "./renderDisciplineHistory.js";
 import { renderProblemOrders } from "./renderProblemOrders.js";
 import { getTagSpan } from "../../components.js";
 import { parseIsoDate } from "../../utils";
@@ -15,7 +16,11 @@ const tabs = {
       container.style.display = 'none';
 
       const table = await renderDiscipline(request.departmentName, request.from, request.to);
-      container.append(table);
+      const chart = components.getTagDiv("planning_discipline_history");
+      chart.id = 'planning_discipline_history';
+      container.append(table, chart);
+
+      await renderDisciplineHistory(chart, request.departmentName)
 
       spinnerWrap.style.display = 'none';
       container.style.display = 'flex';
