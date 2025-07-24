@@ -159,7 +159,7 @@ export async function renderTable(arrayData, time, discipline) {
   trEl.append(thEl);
   theadEl.append(trEl);
 
-  thEl = components.getTagTH('Причина прогула положительная?');
+  thEl = components.getTagTH('Прогул уважительный?');
   trEl.append(thEl);
   theadEl.append(trEl);
 
