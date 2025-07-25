@@ -73,6 +73,7 @@ function renderVerticalTable(data, container) {
     ["Время раннего открытия смены (мин.)", "shift_time_early_opening_control", "number"],
     ["Интервал менеджера (мин.)", "early_clock_in_manager_interval", "number"],
     ["Интервал сотрудника (мин.)", "early_clock_in_non_manager_interval", "number"],
+    ["Контроль раннего закрытия смены", "shift_early_closing_control", "checkbox"],
     ["Настройки времени работы команды запуска", "large_staff_open_pizzeria", "checkbox"],
     ["Время начала смены для открытия (мин.)", "time_start_shift_open_pizzeria", "number"],
     ["Количество сотрудников для открытия", "number_staff_to_open_pizzeria", "number"],
