@@ -1,7 +1,7 @@
 import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from "../../apiServer.js";
 
 const tooltips = {
-  message_to_director_unit: "Отправляем уведомление директору через 30 минут после задержки?",
+  message_to_director_unit: "Отправляем уведомление управляющему пиццерией через 30 минут после задержки?",
   time_message_to_director_min: "Через сколько времени отстутвия сотрудника на месте отправляется сообщение?",
   shift_extending_control: "Контролируем продление смен?",
   shift_time_extending_control: "Продленное время (в минутах) после истечения которого будет создано нарушение о продлении смены",
@@ -65,8 +65,8 @@ function renderVerticalTable(data, container) {
   const makeId = (name) => `${name}_${data.id}`;
 
   const fields = [
-    ["Сообщение директору пиццерии", "message_to_director_unit", "checkbox"],
-    ["Время для сообщения директору (мин.)", "time_message_to_director_min", "number"],
+    ["Сообщение управляющему пиццерии", "message_to_director_unit", "checkbox"],
+    ["Время для сообщения управляющему пиццерии (мин.)", "time_message_to_director_min", "number"],
     ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
     ["Контроль продления смены", "shift_extending_control", "checkbox"],
     ["Время продления смены (мин.)", "shift_time_extending_control", "number"],
@@ -77,7 +77,7 @@ function renderVerticalTable(data, container) {
     ["Настройки времени работы команды запуска", "large_staff_open_pizzeria", "checkbox"],
     ["Время начала смены для открытия (мин.)", "time_start_shift_open_pizzeria", "number"],
     ["Количество сотрудников для открытия", "number_staff_to_open_pizzeria", "number"],
-    ["Сообщение территориальному директору", "message_to_territorial_director", "checkbox"],
+    ["Сообщение территориальному управляющему о нарушении сроков управляющим", "message_to_territorial_director", "checkbox"],
   ];
 
   const controlMap = {
