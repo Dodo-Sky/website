@@ -9,12 +9,14 @@ export function postServer() {
       const trEl = e.target.parentNode.parentNode;
       const unitDirectorControl = trEl.querySelector(".discipline-unitDirectorControl").value;
       const managerDecision = trEl.querySelector(".discipline-managerDecision").value;
+      const reasonAbsenteeism = trEl.querySelector(".discipline-reason_absenteeism").checked;
 
       let changeServer = {
         id : btn.dataset.id,
         unitDirectorControl,
         managerDecision,
         departmentName,
+        reasonAbsenteeism
       };
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
       let responce = await postDataServer(variableName, changeServer);

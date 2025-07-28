@@ -1,6 +1,7 @@
 import * as components from '../../components.js';
 import { editData } from './edit_discipline.js';
 import * as filter from './filter_discipline.js';
+import { getUserRole } from "../../auth/login";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map(
@@ -17,6 +18,18 @@ const formatted = new Intl.DateTimeFormat('ru-RU', {
   second: '2-digit',
   hour12: false,
 });
+
+const isDisabledReasonAbsenteeism = (schedule) => {
+    const role = getUserRole();
+    console.log("role", role);
+    console.log("schedule.typeViolation", schedule.typeViolation);
+
+    if (['администратор', 'Администратор всей сети', 'управляющий'].includes(role) && ['Прогул', 'Опоздание'].includes(schedule.typeViolation)) {
+        return false
+    }
+
+    return true
+}
 
 export async function renderTable(arrayData, time, discipline) {
   const tableContent = document.querySelector('.discipline-table');
@@ -146,6 +159,10 @@ export async function renderTable(arrayData, time, discipline) {
   trEl.append(thEl);
   theadEl.append(trEl);
 
+  thEl = components.getTagTH('Прогул уважительный?');
+  trEl.append(thEl);
+  theadEl.append(trEl);
+
   thEl = components.getTagTH('Управление');
   trEl.append(thEl);
   theadEl.append(trEl);
@@ -253,6 +270,14 @@ export async function renderTable(arrayData, time, discipline) {
 
     let working_hours = components.getTagTD(schedule.working_hours);
     trEl.append(working_hours);
+
+    let reasonAbsenteeismTd = components.getTagTD();
+    let reasonAbsenteeismCheckbox = components.getTagInput_checkbox(`discipline-reason_absenteeism-${schedule.id}`);
+    reasonAbsenteeismCheckbox.classList.add('discipline-reason_absenteeism');
+    reasonAbsenteeismCheckbox.checked = schedule.reason_absenteeism;
+    reasonAbsenteeismCheckbox.disabled = isDisabledReasonAbsenteeism(schedule);
+    reasonAbsenteeismTd.append(reasonAbsenteeismCheckbox);
+    trEl.append(reasonAbsenteeismTd);
 
     let tdEl = components.getTagTD();
     let btnEl = components.getTagButton('Сохранить');

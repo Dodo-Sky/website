@@ -80,6 +80,7 @@ function renderVerticalTable(data, container) {
     ["Сообщение территориальному управляющему о нарушении сроков управляющим", "message_to_territorial_director", "checkbox"],
   ];
 
+
   const controlMap = {
     message_to_director_unit: ["time_message_to_director_min"],
     shift_extending_control: ["shift_time_extending_control"],

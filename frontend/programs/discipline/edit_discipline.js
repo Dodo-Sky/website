@@ -3,6 +3,7 @@ import { postServer } from "./server_discipline.js";
 export async function editData (fullDataUnit) {
   makeButtonActive("managerDecision", fullDataUnit);
   makeButtonActive("unitDirectorControl", fullDataUnit);
+  makeButtonActive("reason_absenteeism", fullDataUnit);
 
   // проверка сохранения данных юзером
   window.addEventListener("beforeunload", function (event) {
@@ -26,10 +27,20 @@ function makeButtonActive(objectProperty, dataFromServer) {
         if (!elem.id) return e.target.parentNode.parentNode.lastChild.firstChild.dataset.id === elem.staffId + elem.clockInAtLocal;
       });
       let btn = e.target.parentNode.parentNode.lastChild.firstChild;
-      if (e.target.value !== element[objectProperty]) {
+      let value = e.target.value
+
+      if (e.target.type === "checkbox") {
+        value = e.target.checked;
+      }
+
+      console.log("objectProperty", objectProperty)
+      console.log("element", element)
+      console.log("element[objectProperty]", element[objectProperty])
+
+      if (value !== element[objectProperty]) {
         btn.disabled = false;
       }
-      if (e.target.value === element[objectProperty]) {
+      if (value === element[objectProperty]) {
         btn.disabled = true;
       }
     });

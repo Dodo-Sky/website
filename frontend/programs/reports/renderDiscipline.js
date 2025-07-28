@@ -27,9 +27,9 @@ const buildHeader = () => {
         components.getTagTH('Продление смен (час)'),
         components.getTagTH('Вне графика (час)'),
         components.getTagTH('Опоздания (час)'),
-        components.getTagTH('Всего (отрицательные)'),
-        components.getTagTH('Всего (положительные)'),
-        components.getTagTH('Сумма часов'),
+        components.getTagTH('Прогулы без уважительной причины'),
+        components.getTagTH('Уважительные прогулы'),
+        components.getTagTH('Баланс часов'),
     );
 
     thead.append(tr);
@@ -39,12 +39,12 @@ const buildHeader = () => {
 const pasteDiscipline = (discipline, tbody, data) => {
     const tr = components.getTagTR();
 
-    const extensionRank = +discipline['Ранг продления'];
-    const extension = components.getTagTD(discipline['Продление смен (час)']);
-    const delayRank = +discipline['Ранг по опозданиям'];
-    const delays = components.getTagTD(discipline['Опоздания (час)']);
+    const extensionRank = +discipline.extensionRank;
+    const extension = components.getTagTD(discipline.extensionShifts);
+    const delayRank = +discipline.delayRank;
+    const delays = components.getTagTD(discipline.late);
 
-    if (discipline.name !== 'ИТОГО') {
+    if (discipline.unitName !== 'ИТОГО') {
         if (extensionRank === data.worstExtensionRank) {
             extension.classList.add('bg-danger-subtle');
         } else if (data.preWorstExtensionRank && extensionRank === data.preWorstExtensionRank) {
@@ -63,16 +63,16 @@ const pasteDiscipline = (discipline, tbody, data) => {
     }
 
     tr.append(
-        components.getTagTD(discipline.name),
+        components.getTagTD(discipline.unitName),
         extension,
-        components.getTagTD(discipline['Вне графика (час)']),
+        components.getTagTD(discipline.outsideSchedule),
         delays,
-        components.getTagTD(discipline['Всего (отрицательные)']),
-        components.getTagTD(discipline['Всего (положительные)']),
-        components.getTagTD(discipline['Сумма часов']),
+        components.getTagTD(discipline.badAbsenteeism),
+        components.getTagTD(discipline.goodAbsenteeism),
+        components.getTagTD(discipline.balanceHours),
     );
 
-    if (discipline.name === "ИТОГО") {
+    if (discipline.unitName === "ИТОГО") {
         tr.classList.add('fw-bold')
     }
 
@@ -87,7 +87,7 @@ const buildBody = (arrayData) => {
     let total = null
 
     arrayData.forEach(d => {
-        if (d.name === 'ИТОГО') {
+        if (d.unitName === 'ИТОГО') {
             total = d
         } else {
             disciplines.push(d)
@@ -96,8 +96,8 @@ const buildBody = (arrayData) => {
 
     const topCount = disciplines.length >= 4 ? 2 : 1;
 
-    const allExtensionRanks = [...new Set(disciplines.map(o => +o['Ранг продления']))].sort((a, b) => a - b);
-    const allDelayRanks = [...new Set(disciplines.map(o => +o['Ранг по опозданиям']))].sort((a, b) => a - b);
+    const allExtensionRanks = [...new Set(disciplines.map(o => +o.extensionRank))].sort((a, b) => a - b);
+    const allDelayRanks = [...new Set(disciplines.map(o => +o.delayRank))].sort((a, b) => a - b);
 
     const data = {
         worstExtensionRank: allExtensionRanks[0],
