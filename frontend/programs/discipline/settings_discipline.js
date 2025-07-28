@@ -67,6 +67,7 @@ function renderVerticalTable(data, container) {
   const fields = [
     ["Сообщение директору пиццерии", "message_to_director_unit", "checkbox"],
     ["Время для сообщения директору (мин.)", "time_message_to_director_min", "number"],
+    ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
     ["Контроль продления смены", "shift_extending_control", "checkbox"],
     ["Время продления смены (мин.)", "shift_time_extending_control", "number"],
     ["Контроль раннего открытия смены", "shift_early_opening_control", "checkbox"],
@@ -77,7 +78,6 @@ function renderVerticalTable(data, container) {
     ["Время начала смены для открытия (мин.)", "time_start_shift_open_pizzeria", "number"],
     ["Количество сотрудников для открытия", "number_staff_to_open_pizzeria", "number"],
     ["Сообщение территориальному директору", "message_to_territorial_director", "checkbox"],
-    ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
   ];
 
   const controlMap = {
