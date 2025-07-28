@@ -1,7 +1,7 @@
 import { getDisciplineProgramSettings, updateDisciplineProgramSettings } from "../../apiServer.js";
 
 const tooltips = {
-  message_to_director_unit: "Отправляем уведомление директору через 30 минут после задержки?",
+  message_to_director_unit: "Отправляем уведомление управляющему пиццерией через 30 минут после задержки?",
   time_message_to_director_min: "Через сколько времени отстутвия сотрудника на месте отправляется сообщение?",
   shift_extending_control: "Контролируем продление смен?",
   shift_time_extending_control: "Продленное время (в минутах) после истечения которого будет создано нарушение о продлении смены",
@@ -65,8 +65,9 @@ function renderVerticalTable(data, container) {
   const makeId = (name) => `${name}_${data.id}`;
 
   const fields = [
-    ["Сообщение директору пиццерии", "message_to_director_unit", "checkbox"],
-    ["Время для сообщения директору (мин.)", "time_message_to_director_min", "number"],
+    ["Сообщение управляющему пиццерии", "message_to_director_unit", "checkbox"],
+    ["Время для сообщения управляющему пиццерии (мин.)", "time_message_to_director_min", "number"],
+    ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
     ["Контроль продления смены", "shift_extending_control", "checkbox"],
     ["Время продления смены (мин.)", "shift_time_extending_control", "number"],
     ["Контроль раннего открытия смены", "shift_early_opening_control", "checkbox"],
@@ -77,8 +78,7 @@ function renderVerticalTable(data, container) {
     ["Настройки времени работы команды запуска", "large_staff_open_pizzeria", "checkbox"],
     ["Время начала смены для открытия (мин.)", "time_start_shift_open_pizzeria", "number"],
     ["Количество сотрудников для открытия", "number_staff_to_open_pizzeria", "number"],
-    ["Сообщение территориальному директору", "message_to_territorial_director", "checkbox"],
-    ["Сообщение графисту", "message_to_grafist_unit", "checkbox"],
+    ["Сообщение территориальному управляющему о нарушении сроков управляющим", "message_to_territorial_director", "checkbox"],
   ];
 
 
@@ -96,6 +96,7 @@ function renderVerticalTable(data, container) {
   const inputs = {};
   let original = {};
   const formBlocks = {};
+  const dataBlocks = {}; // для обновления alert при изменении
 
   for (const [label, key, type] of fields) {
     const id = makeId(key);
@@ -105,6 +106,93 @@ function renderVerticalTable(data, container) {
     block.classList.add("border", "p-3", "rounded");
     if (type === "checkbox") block.classList.add("bg-light");
 
+    // Специальный рендер с двумя колонками
+    if (
+      key === "message_to_director_unit" ||
+      key === "message_to_territorial_director"
+    ) {
+      const fioKey = key === "message_to_director_unit" ? "unit_director_fio" : "territorial_director_fio";
+      const telegramKey = key === "message_to_director_unit" ? "unit_director_telegram_id" : "territorial_director_telegram_id";
+
+      const fio = data[fioKey];
+      const telegram = data[telegramKey];
+
+      const row = document.createElement("div");
+      row.classList.add("row", "h-100"); // обеспечиваем высоту
+
+      const leftCol = document.createElement("div");
+      leftCol.classList.add("col-md-6", "d-flex", "align-items-center");
+
+      const formCheck = document.createElement("div");
+      formCheck.classList.add("form-check");
+
+      const input = document.createElement("input");
+      input.id = id;
+      input.type = "checkbox";
+      input.checked = !!value;
+      input.classList.add("form-check-input");
+
+      const labelEl = document.createElement("label");
+      labelEl.setAttribute("for", id);
+      labelEl.classList.add("form-check-label");
+
+      const tooltipText = tooltips[key];
+      if (tooltipText) {
+        labelEl.innerHTML = `
+          ${label}
+          <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" title="${tooltipText}" style="cursor: pointer;"></i>
+        `;
+      } else {
+        labelEl.textContent = label;
+      }
+
+      formCheck.appendChild(input);
+      formCheck.appendChild(labelEl);
+      leftCol.appendChild(formCheck);
+
+      const rightCol = document.createElement("div");
+      rightCol.classList.add("col-md-6");
+
+      const dataBox = document.createElement("div");
+      updateDataBox();
+
+      function updateDataBox() {
+        dataBox.innerHTML = "";
+        if (!input.checked) {
+          dataBox.className = ""
+          return
+        };
+
+        if (!fio || !telegram) {
+          dataBox.className = "alert alert-danger py-2 px-3 mb-0";
+          dataBox.textContent = "Управляющий не назначен";
+        } else {
+          dataBox.className = "alert alert-success py-2 px-3 mb-0";
+          dataBox.innerHTML = `
+            <div><strong>ФИО:</strong> ${fio}</div>
+            <div><strong>Telegram ID:</strong> <code>${telegram}</code></div>
+          `;
+        }
+      }
+
+      rightCol.appendChild(dataBox);
+      row.appendChild(leftCol);
+      row.appendChild(rightCol);
+      block.appendChild(row);
+
+      inputs[key] = input;
+      original[key] = input.checked;
+      formBlocks[key] = block;
+      dataBlocks[key] = updateDataBox;
+
+      // Обновляем alert при клике
+      input.addEventListener("change", updateDataBox);
+
+      wrapper.appendChild(block);
+      continue;
+    }
+
+    // Стандартный рендер
     const formGroup = document.createElement("div");
     formGroup.classList.add("form-check");
 
@@ -117,12 +205,13 @@ function renderVerticalTable(data, container) {
     const tooltipText = tooltips[key];
     if (tooltipText) {
       labelEl.innerHTML = `
-    ${label}
-    <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" title="${tooltipText}" style="cursor: pointer;"></i>
-  `;
+        ${label}
+        <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" title="${tooltipText}" style="cursor: pointer;"></i>
+      `;
     } else {
       labelEl.textContent = label;
     }
+
     if (type === "checkbox") {
       input.type = "checkbox";
       input.checked = !!value;
@@ -154,7 +243,6 @@ function renderVerticalTable(data, container) {
   wrapper.appendChild(saveButton);
   container.appendChild(wrapper);
 
-  // Инициализация Bootstrap тултипов
   const tooltipTriggerList = [].slice.call(wrapper.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.forEach((tooltipTriggerEl) => {
     new bootstrap.Tooltip(tooltipTriggerEl);
@@ -191,7 +279,10 @@ function renderVerticalTable(data, container) {
   for (const [, key, type] of fields) {
     const el = inputs[key];
     const event = type === "checkbox" ? "change" : "input";
-    el.addEventListener(event, onChange);
+    el.addEventListener(event, () => {
+      onChange();
+      if (dataBlocks[key]) dataBlocks[key]();
+    });
   }
 
   applyControlDependencies();
