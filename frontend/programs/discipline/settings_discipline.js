@@ -109,10 +109,20 @@ function renderVerticalTable(data, container) {
     // Специальный рендер с двумя колонками
     if (
       key === "message_to_director_unit" ||
-      key === "message_to_territorial_director"
+      key === "message_to_territorial_director" ||
+      key === "message_to_grafist_unit"
     ) {
-      const fioKey = key === "message_to_director_unit" ? "unit_director_fio" : "territorial_director_fio";
-      const telegramKey = key === "message_to_director_unit" ? "unit_director_telegram_id" : "territorial_director_telegram_id";
+      let fioKey, telegramKey;
+      if (key === "message_to_director_unit") {
+        fioKey = "unit_director_fio";
+        telegramKey = "unit_director_telegram_id";
+      } else if (key === "message_to_territorial_director") {
+        fioKey = "territorial_director_fio";
+        telegramKey = "territorial_director_telegram_id";
+      } else if (key === "message_to_grafist_unit") {
+        fioKey = "kitchen_grafist_fio";
+        telegramKey = "kitchen_grafist_telegram_id";
+      }
 
       const fio = data[fioKey];
       const telegram = data[telegramKey];
@@ -165,7 +175,11 @@ function renderVerticalTable(data, container) {
 
         if (!fio || !telegram) {
           dataBox.className = "alert alert-danger py-2 px-3 mb-0";
-          dataBox.textContent = "Управляющий не назначен";
+          if (key === "message_to_grafist_unit") {
+            dataBox.textContent = "Графист не назначен";
+          } else {
+            dataBox.textContent = "Управляющий не назначен";
+          }
         } else {
           dataBox.className = "alert alert-success py-2 px-3 mb-0";
           dataBox.innerHTML = `
