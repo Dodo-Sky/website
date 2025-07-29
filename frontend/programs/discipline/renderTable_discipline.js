@@ -226,13 +226,17 @@ export async function renderTable(arrayData, time, discipline) {
     if (schedule.typeViolation === 'Прогул') {
       btnOrder.classList.add('btn-outline-danger');
     }
-    if (schedule.typeViolation === 'Продление') {
+    else if (schedule.typeViolation === 'Продление') {
       btnOrder.textContent = schedule.description;
     }
-    if (schedule.typeViolation === 'Опоздание') {
+    else if (schedule.typeViolation === 'Опоздание') {
       btnOrder.textContent = schedule.description;
       btnOrder.classList.add('btn-outline-warning');
     }
+    else if (schedule.typeViolation === 'Раннее закрытие смены') {
+      btnOrder.classList.add('btn-outline-success');
+    }
+
     btnOrder.classList.add('btn-outline-secondary');
     btnOrder.classList.remove('btn-primary');
     btnOrder.setAttribute('data-bs-toggle', 'modal');
