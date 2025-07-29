@@ -262,6 +262,11 @@ export async function renderTable(arrayData, time, discipline) {
     directorCommentTextarea.classList.add('discipline-unitDirectorControl');
     directorCommentTextarea.setAttribute('cols', '75');
 
+    if (schedule.typeViolation === 'Открытие до начала смены') {
+      graphistCommentTextarea.placeholder = 'Почему открыли раньше графика?'
+      directorCommentTextarea.placeholder = 'Принятое решение';
+    }
+
     let role = localStorage.getItem('role');
     if (role === 'менеджер смены') {
       directorCommentTextarea.disabled = true;
