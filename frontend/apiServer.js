@@ -320,3 +320,22 @@ export async function updateDisciplineProgramSettings(settingsId, payload) {
     console.error(err);
   }
 }
+
+export async function getShiftHistoryByShiftId(shiftId) {
+  const url = `${URL}/shifts/${shiftId}/history`;
+  try {
+    const response = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      const responseData = await response.text();
+      handleUnauthorizedResponse(responseData);
+      alert('Ошибка получения истории смены: ' + responseData);
+      return [];
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Ошибка получения истории смены', error);
+    alert('Ошибка получения истории смены: ' + error.message);
+  }
+}

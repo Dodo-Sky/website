@@ -2,6 +2,7 @@ import * as components from '../../components.js';
 import { editData } from './edit_discipline.js';
 import * as filter from './filter_discipline.js';
 import { getUserRole } from "../../auth/login";
+import { getShiftHistoryByShiftId } from "../../apiServer";
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map(
@@ -9,7 +10,7 @@ const tooltipList = [...tooltipTriggerList].map(
 );
 
 const formatted = new Intl.DateTimeFormat('ru-RU', {
-  timeZone: 'UTC',
+  timeZone: 'Asia/Yekaterinburg',
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
@@ -19,16 +20,75 @@ const formatted = new Intl.DateTimeFormat('ru-RU', {
   hour12: false,
 });
 
-const isDisabledReasonAbsenteeism = (schedule) => {
-    const role = getUserRole();
-    console.log("role", role);
-    console.log("schedule.typeViolation", schedule.typeViolation);
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+});
 
-    if (['администратор', 'Администратор всей сети', 'управляющий'].includes(role) && ['Прогул', 'Опоздание'].includes(schedule.typeViolation)) {
-        return false
+function formatDate(dateString) {
+  if (!dateString) return '—';
+  return dateFormatter.format(new Date(dateString));
+}
+
+function appendHistorySection(modalBody, title, dates) {
+  if (dates.length === 0) return;
+
+  modalBody.innerHTML += `<b>${title}</b><br>`;
+  for (const { oldDate, newDate } of dates) {
+    if (!oldDate) {
+      modalBody.innerHTML += `Добавлено: ${formatDate(newDate)}<br>`;
+    } else {
+      modalBody.innerHTML += `${formatDate(oldDate)} → ${formatDate(newDate)}<br>`;
     }
+  }
+}
 
-    return true
+function createOrderModalFullInfoButtonHandler(shiftId, modalBody) {
+  return async function () {
+    try {
+      const shiftHistory = await getShiftHistoryByShiftId(shiftId);
+      if (shiftHistory.length === 0) return;
+
+      modalBody.innerHTML += `<br><b>История изменений</b><br>`;
+
+      const clockInAtDates = shiftHistory
+        .filter((item) => item.old_clock_in_at_local || item.new_clock_in_at_local)
+        .map((item) => ({
+          oldDate: item.old_clock_in_at_local,
+          newDate: item.new_clock_in_at_local,
+        }));
+
+      const clockOutAtDates = shiftHistory
+        .filter((item) => item.old_clock_out_at_local || item.new_clock_out_at_local)
+        .map((item) => ({
+          oldDate: item.old_clock_out_at_local,
+          newDate: item.new_clock_out_at_local,
+        }));
+
+      appendHistorySection(modalBody, 'Время начала смены', clockInAtDates);
+      appendHistorySection(modalBody, 'Время окончания смены', clockOutAtDates);
+
+    } catch (error) {
+      console.error('Ошибка загрузки истории:', error);
+      modalBody.innerHTML += `<br><b class="text-danger">Не удалось загрузить историю</b>`;
+    }
+  };
+}
+
+const isDisabledReasonAbsenteeism = (schedule) => {
+  const role = getUserRole();
+  console.log("role", role);
+  console.log("schedule.typeViolation", schedule.typeViolation);
+
+  if (['администратор', 'Администратор всей сети', 'управляющий'].includes(role) && ['Прогул', 'Опоздание'].includes(schedule.typeViolation)) {
+    return false
+  }
+
+  return true
 }
 
 export async function renderTable(arrayData, time, discipline) {
@@ -225,15 +285,12 @@ export async function renderTable(arrayData, time, discipline) {
     let btnOrder = components.getTagButton(schedule.typeViolation);
     if (schedule.typeViolation === 'Прогул') {
       btnOrder.classList.add('btn-outline-danger');
-    }
-    else if (schedule.typeViolation === 'Продление') {
+    } else if (schedule.typeViolation === 'Продление') {
       btnOrder.textContent = schedule.description;
-    }
-    else if (schedule.typeViolation === 'Опоздание') {
+    } else if (schedule.typeViolation === 'Опоздание') {
       btnOrder.textContent = schedule.description;
       btnOrder.classList.add('btn-outline-warning');
-    }
-    else if (schedule.typeViolation === 'Раннее закрытие смены') {
+    } else if (schedule.typeViolation === 'Раннее закрытие смены') {
       btnOrder.classList.add('btn-outline-success');
     }
 
@@ -241,6 +298,10 @@ export async function renderTable(arrayData, time, discipline) {
     btnOrder.classList.remove('btn-primary');
     btnOrder.setAttribute('data-bs-toggle', 'modal');
     btnOrder.setAttribute('data-bs-target', `#${schedule.id}`);
+    if (schedule.shiftId !== null) {
+      btnOrder.addEventListener('click', createOrderModalFullInfoButtonHandler(schedule.shiftId, modalBody));
+    }
+
     typeViolation.append(btnOrder, fade);
     trEl.append(typeViolation);
 
@@ -327,5 +388,5 @@ export async function renderTable(arrayData, time, discipline) {
       filter.filterToDirector(el.textContent, discipline),
     );
   });
-  editData (arrayData)
+  editData(arrayData)
 }
