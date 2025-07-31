@@ -10,7 +10,7 @@ const tooltipList = [...tooltipTriggerList].map(
 );
 
 const formatted = new Intl.DateTimeFormat('ru-RU', {
-  timeZone: 'Asia/Yekaterinburg',
+  timeZone: 'UTC',
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
@@ -48,7 +48,9 @@ function appendHistorySection(modalBody, title, dates) {
 }
 
 function createOrderModalFullInfoButtonHandler(shiftId, modalBody) {
+  let loaded = false;
   return async function () {
+    if (loaded) return; // Предотвращаем повторную загрузку
     try {
       const shiftHistory = await getShiftHistoryByShiftId(shiftId);
       if (shiftHistory.length === 0) return;
@@ -71,10 +73,11 @@ function createOrderModalFullInfoButtonHandler(shiftId, modalBody) {
 
       appendHistorySection(modalBody, 'Время начала смены', clockInAtDates);
       appendHistorySection(modalBody, 'Время окончания смены', clockOutAtDates);
-
     } catch (error) {
       console.error('Ошибка загрузки истории:', error);
       modalBody.innerHTML += `<br><b class="text-danger">Не удалось загрузить историю</b>`;
+    } finally {
+      loaded = true;
     }
   };
 }
