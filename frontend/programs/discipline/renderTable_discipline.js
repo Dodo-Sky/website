@@ -21,6 +21,7 @@ const formatted = new Intl.DateTimeFormat('ru-RU', {
 });
 
 const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'UTC',
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
