@@ -21,7 +21,7 @@ export const buildSeries = (metricKey, allWeeks, history) => {
 
     return Object.entries(grouped).map(([unitName, valuesByWeek]) => ({
         name: unitName,
-        data: allWeeks.map(week => valuesByWeek[week] ?? null)
+        data: allWeeks.map(week => valuesByWeek[week] !== null ? parseFloat(valuesByWeek[week]) : null)
     }));
 };
 
@@ -30,6 +30,8 @@ export const renderChart = (chartContainer, metricKey, allWeeks, history) => {
         chartInstance.destroy();
         chartContainer.innerHTML = "";
     }
+
+    const series = buildSeries(metricKey, allWeeks, history);
 
     const options = {
         chart: {
@@ -42,7 +44,8 @@ export const renderChart = (chartContainer, metricKey, allWeeks, history) => {
                 show: false
             }
         },
-        series: buildSeries(metricKey, allWeeks, history),
+        colors: series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`),
+        series,
         stroke: {
             curve: 'smooth'
         },
@@ -54,6 +57,7 @@ export const renderChart = (chartContainer, metricKey, allWeeks, history) => {
         },
         tooltip: {
             shared: true,
+            intersect: false,
             x: {
                 show: true
             }
