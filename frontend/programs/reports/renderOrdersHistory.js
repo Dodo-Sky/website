@@ -12,6 +12,7 @@ const metricNames = {
 
 export const renderOrdersHistory = async (container, departmentName) => {
     const selectEl = components.getTagSelect();
+    selectEl.id = 'orders-history-select';
     selectEl.style.width = "max-content";
     Object.keys(metricNames).forEach((key) => {
         const option = components.getTagOption(metricNames[key], key);

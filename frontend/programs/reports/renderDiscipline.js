@@ -27,8 +27,10 @@ const buildHeader = () => {
         components.getTagTH('Продление смен (час)'),
         components.getTagTH('Вне графика (час)'),
         components.getTagTH('Опоздания (час)'),
-        components.getTagTH('Прогулы без уважительной причины'),
-        components.getTagTH('Уважительные прогулы'),
+        components.getTagTH('Прогулы без уважительной причины (час)'),
+        components.getTagTH('Уважительные прогулы (час)'),
+        components.getTagTH('Открытие до начала смены (час)'),
+        components.getTagTH('Раннее закрытие смены (час)'),
         components.getTagTH('Баланс часов'),
     );
 
@@ -69,6 +71,8 @@ const pasteDiscipline = (discipline, tbody, data) => {
         delays,
         components.getTagTD(discipline.badAbsenteeism),
         components.getTagTD(discipline.goodAbsenteeism),
+        components.getTagTD(discipline.openingBeforeStartShift),
+        components.getTagTD(discipline.earlyClosingShift),
         components.getTagTD(discipline.balanceHours),
     );
 

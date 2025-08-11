@@ -8,11 +8,14 @@ const metricNames = {
     late: 'Опоздания',
     badAbsenteeism: 'Прогулы без уважительной причины',
     goodAbsenteeism: 'Уважительные прогулы',
+    openingBeforeStartShift: 'Открытие до начала смены',
+    earlyClosingShift: 'Раннее закрытие смены',
     balanceHours: 'Баланс часов'
 };
 
 export const renderDisciplineHistory = async (container, departmentName) => {
     const selectEl = components.getTagSelect();
+    selectEl.id = 'discipline-history-select';
     selectEl.style.width = "max-content";
     Object.keys(metricNames).forEach((key) => {
         const option = components.getTagOption(metricNames[key], key);

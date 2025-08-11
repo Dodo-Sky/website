@@ -15,6 +15,11 @@ const tabs = {
     render: async (spinnerWrap, container, request) => {
       spinnerWrap.style.display = 'flex';
       container.style.display = 'none';
+      const selectEl = document.querySelector('#discipline-history-select');
+
+      if (selectEl) {
+        selectEl.remove()
+      }
 
       const table = await renderDiscipline(request.departmentName, request.from, request.to);
       const chart = components.getTagDiv("planning_discipline_history");
@@ -34,6 +39,11 @@ const tabs = {
     render: async (spinnerWrap, container, request) => {
       spinnerWrap.style.display = 'flex';
       container.style.display = 'none';
+      const selectEl = document.querySelector('#orders-history-select');
+
+      if (selectEl) {
+        selectEl.remove()
+      }
 
       const table = await renderProblemOrders(request.departmentName, request.from, request.to);
       const chart = components.getTagDiv("planning_orders_history");
