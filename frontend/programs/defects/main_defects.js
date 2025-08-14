@@ -1,4 +1,4 @@
-import { getServerApi, getDataServer } from '../../apiServer.js';
+import {getServerApi, getDataServer, postDataServer} from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_defects.js';
 import * as filter from './filter_defects.js';
@@ -31,19 +31,21 @@ export async function render(name, breadcrumbs) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const defects = await getServerApi('defects');
-  let staffData = await getDataServer('defecstStaff');
-  const unitsSettings = await getServerApi(`unitsSettings`);
   const departmentName = localStorage.getItem('departmentName');
+  const defects = await getDataServer('product-defects');
+  let units = await postDataServer('get_units', { payload: departmentName });
+  units = units.filter((unit) => unit.type === "Пиццерия")
+  // let staffData = await getDataServer('defecstStaff');
+  const unitsSettings = await getServerApi(`unitsSettings`);
   const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
-  localStorage.setItem('staffData', JSON.stringify(staffData));
+  // localStorage.setItem('staffData', JSON.stringify(staffData));
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
   let row = components.getTagDiv('row');
-  const units = components.getTagDiv('col-auto');
-  units.setAttribute('id', 'units');
-  row.append(units);
+  const unitsEl = components.getTagDiv('col-auto');
+  unitsEl.setAttribute('id', 'units');
+  row.append(unitsEl);
 
   const update = components.getTagDiv('col-auto');
   const btnUpdate = components.getTagButton('Обновить');
@@ -60,35 +62,35 @@ export async function render(name, breadcrumbs) {
   // Обработчик обновить
   btnUpdate.addEventListener('click', () => filter.update(timeZoneShift));
 
-  getListUnits(defects);
-  startRender(defects, timeZoneShift);
+  console.log("units", units);
+  console.log("defects", defects);
+
+  getListUnits(units);
+  startRender(defects, units[0], timeZoneShift);
 }
 
-function getListUnits(defects) {
-  let unitsName = [];
-  defects.forEach((defect) => {
-    if (!unitsName.includes(defect.unitName)) {
-      unitsName.push(defect.unitName);
-    }
-  });
-  unitsName = unitsName.sort();
+function getListUnits(units) {
+  units.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   const select = components.getTagSelect();
   select.classList.add('selectUnit');
-  unitsName.forEach((unit) => {
-    const option = components.getTagOption(unit, unit);
-    select.append(option);
-  });
+  units
+      .forEach((unit) => {
+        const option = components.getTagOption(unit.name, unit.id);
+        select.append(option);
+      });
 
   const unitsEl = document.getElementById('units');
   unitsEl.append(select);
 }
 
-function startRender(defects, timeZoneShift) {
-  let fullDataUnit = defects.filter((el) => el.unitName === 'Тюмень-1');
+function startRender(defects, unit, timeZoneShift) {
+  let fullDataUnit = defects.filter((el) => el.unit_id === unit.id);
+  console.log("fullDataUnit", fullDataUnit);
+
   renderTable(defects, 0, fullDataUnit, timeZoneShift);
 
   document.querySelector('.selectUnit').addEventListener('change', function (e) {
-    fullDataUnit = defects.filter((el) => el.unitName === e.target.value);
+    fullDataUnit = defects.filter((el) => el.unit_id === e.target.value);
     editDataNoChange(defects, 0, fullDataUnit, timeZoneShift);
   });
 }
