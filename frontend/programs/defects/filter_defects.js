@@ -1,6 +1,6 @@
 export { filterToDate, filterToDirector, filterToManager, update };
 import { renderTable } from './renderTable_defects.js';
-import { getServerApi } from '../../apiServer.js';
+import {getDataServer, getServerApi} from '../../apiServer.js';
 
 function filterToManager(value, defects) {
   let selectUnit = document.querySelector('.selectUnit');
@@ -71,7 +71,7 @@ async function update(timeZoneShift) {
     <div class="spinner-border" role="status">
     <span class="visually-hidden">Загрузка...</span>
     </div>`;
-  const defectsUpdate = await getServerApi('defects');
+  const defectsUpdate = await getDataServer('product-defects');
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
