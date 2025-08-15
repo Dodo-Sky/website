@@ -4,7 +4,7 @@ import {getDataServer, getServerApi} from '../../apiServer.js';
 
 function filterToManager(value, defects) {
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = defects.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = defects.filter((el) => el.unit_id === selectUnit.value);
   let filterData;
   if (value === 'Показать все') {
     editDataNoChange(defects, 0, defectFilterUnit);
@@ -25,7 +25,7 @@ function filterToManager(value, defects) {
 
 function filterToDirector(value, defects) {
   let selectUnit = document.querySelector('.selectUnit');
-  let defectFilterUnit = defects.filter((el) => el.unitName === selectUnit.value);
+  let defectFilterUnit = defects.filter((el) => el.unit_id === selectUnit.value);
   let filterData;
   if (value === 'Показать все') {
     editDataNoChange(defects, 0, defectFilterUnit);

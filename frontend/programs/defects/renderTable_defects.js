@@ -10,7 +10,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
 
   const tableContent = document.querySelector('.defects-table');
   tableContent.innerHTML = '';
-  // const staffData = JSON.parse(localStorage.getItem('staffData'));
+  const staffData = JSON.parse(localStorage.getItem('staffData'));
 
   const tableEl = components.getTagTable();
   tableEl.classList.add('table-sm');
@@ -182,10 +182,13 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     nameViolatorTextarea.setAttribute('list', 'datalistOptions');
     let datalist = components.getTagDatalist();
     datalist.setAttribute('id', 'datalistOptions');
-    // staffData.forEach((el) => {
-    //   let option = components.getTagOption('', el);
-    //   datalist.append(option);
-    // });
+    const currentUnitId = document.querySelector(".selectUnit").value;
+    staffData
+        .filter((s) => s.unitId === currentUnitId)
+        .forEach((s) => {
+          let option = components.getTagOption('', `${s.lastName} ${s.firstName}`);
+          datalist.append(option);
+        });
     nameViolatorTD.append(nameViolatorTextarea, datalist);
     trEl.append(nameViolatorTD);
 
@@ -195,7 +198,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     decisionManagerTextarea.setAttribute('cols', '45');
     decisionManagerTD.append(decisionManagerTextarea);
 
-    if (defect.decisionManager === 'Просрочка') {
+    if (defect.graphist_comment === 'Просрочка') {
       decisionManagerTextarea.classList.add('bg-danger-subtle');
     }
     trEl.append(decisionManagerTD);
@@ -209,7 +212,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     }
     controlTD.append(controlTextarea);
 
-    if (defect.control === 'Просрочка') {
+    if (defect.manager_comment === 'Просрочка') {
       controlTextarea.classList.add('bg-danger-subtle');
     }
     trEl.append(controlTD);

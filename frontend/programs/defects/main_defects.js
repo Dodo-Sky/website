@@ -35,10 +35,10 @@ export async function render(name, breadcrumbs) {
   const defects = await getDataServer('product-defects');
   let units = await postDataServer('get_units', { payload: departmentName });
   units = units.filter((unit) => unit.type === "Пиццерия")
-  // let staffData = await getDataServer('defecstStaff');
+  let staffData = await getDataServer('staff');
   const unitsSettings = await getServerApi(`unitsSettings`);
   const timeZoneShift = unitsSettings.find((el) => el.departmentName === departmentName)?.timeZoneShift;
-  // localStorage.setItem('staffData', JSON.stringify(staffData));
+  localStorage.setItem('staffData', JSON.stringify(staffData));
   let spiner = document.querySelector('.spinner-border');
   spiner.style.display = 'none';
 
