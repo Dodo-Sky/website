@@ -76,7 +76,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Менеджер');
   // количество задач в работе
-  let count = fullDataUnit.filter((el) => !el.decisionManager).length;
+  let count = fullDataUnit.filter((el) => !el.graphist_comment).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -85,7 +85,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     btnDropdown.append(spanWork);
   }
   //  Количество просроченных менеджером задач
-  let countDelays = fullDataUnit.filter((el) => el.decisionManager === 'Просрочка').length;
+  let countDelays = fullDataUnit.filter((el) => el.graphist_comment === 'Просрочка').length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -107,7 +107,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   thEl.classList.add('dropend');
   btnDropdown = components.getTagButton_dropdown('Управляющий');
   // количество задач в работе
-  count = fullDataUnit.filter((el) => !el.control).length;
+  count = fullDataUnit.filter((el) => !el.manager_comment).length;
   if (count) {
     const spanWork = components.getTagSpan();
     spanWork.classList.add('badge');
@@ -116,7 +116,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     btnDropdown.append(spanWork);
   }
   // Количество просроченных управляющим задач
-  countDelays = fullDataUnit.filter((el) => el.control === 'Просрочка').length;
+  countDelays = fullDataUnit.filter((el) => el.manager_comment === 'Просрочка').length;
   if (countDelays) {
     const spanEl = components.getTagSpan_badge(countDelays);
     spanEl.textContent = countDelays;
@@ -143,38 +143,33 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   fullDataUnit.forEach((defect) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let soldAtLocal = components.getTagTD(new Date(defect.soldAtLocal).toLocaleString().slice(0, 17));
+    let soldAtLocal = components.getTagTD(new Date(defect.sold_at_local).toLocaleString().slice(0, 17));
     trEl.append(soldAtLocal);
-    let productName = components.getTagTD(defect.productName);
+    let productName = components.getTagTD(defect.product_name);
     trEl.append(productName);
 
     let disposalTD = components.getTagTD();
     let selectEL = components.getTagSelect();
     selectEL.classList.add('defects-disposal');
     let choiseOpt = components.getTagOption('', '');
-    let yesOpt = components.getTagOption('Да', 'Да');
-    let noOpt = components.getTagOption('Нет', 'Нет');
-    if (defect.disposal.toLowerCase() === 'да') {
+    let yesOpt = components.getTagOption('Да', true);
+    let noOpt = components.getTagOption('Нет', false);
+    if (defect.is_trashed) {
       yesOpt.selected = true;
-    }
-    if (defect.disposal.toLowerCase() === 'нет') {
+    } else {
       noOpt.selected = true;
     }
-    if (defect.disposal === '') {
-      choiseOpt.selected = true;
-    }
-    if (!defect.disposal) {
-      choiseOpt.selected = true;
-    }
+
     if (role === 'Гость') {
       selectEL.disabled = true;
     }
+
     selectEL.append(choiseOpt, yesOpt, noOpt);
     disposalTD.append(selectEL);
     trEl.append(disposalTD);
 
     let reasonDefectTD = components.getTagTD();
-    let reasonDefectTextarea = components.getTagTextarea(defect.reasonDefect);
+    let reasonDefectTextarea = components.getTagTextarea(defect.reason);
     reasonDefectTextarea.classList.add('defects-reasonDefect');
     reasonDefectTextarea.setAttribute('cols', '75');
     reasonDefectTD.append(reasonDefectTextarea);
@@ -182,31 +177,34 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
 
     let nameViolatorTD = components.getTagTD();
     let nameViolatorTextarea = components.getTagInput();
-    nameViolatorTextarea.value = defect.nameViolator;
+    nameViolatorTextarea.value = defect.staff_name;
     nameViolatorTextarea.classList.add('defects-nameViolator');
     nameViolatorTextarea.setAttribute('list', 'datalistOptions');
     let datalist = components.getTagDatalist();
     datalist.setAttribute('id', 'datalistOptions');
-    staffData.forEach((el) => {
-      let option = components.getTagOption('', el);
-      datalist.append(option);
-    });
+    const currentUnitId = document.querySelector(".selectUnit").value;
+    staffData
+        .filter((s) => s.unitId === currentUnitId)
+        .forEach((s) => {
+          let option = components.getTagOption('', `${s.lastName} ${s.firstName}`);
+          datalist.append(option);
+        });
     nameViolatorTD.append(nameViolatorTextarea, datalist);
     trEl.append(nameViolatorTD);
 
     let decisionManagerTD = components.getTagTD();
-    let decisionManagerTextarea = components.getTagTextarea(defect.decisionManager);
+    let decisionManagerTextarea = components.getTagTextarea(defect.graphist_comment);
     decisionManagerTextarea.classList.add('defects-decisionManager');
     decisionManagerTextarea.setAttribute('cols', '45');
     decisionManagerTD.append(decisionManagerTextarea);
 
-    if (defect.decisionManager === 'Просрочка') {
+    if (defect.graphist_comment === 'Просрочка') {
       decisionManagerTextarea.classList.add('bg-danger-subtle');
     }
     trEl.append(decisionManagerTD);
 
     let controlTD = components.getTagTD();
-    let controlTextarea = components.getTagTextarea(defect.control);
+    let controlTextarea = components.getTagTextarea(defect.manager_comment);
     controlTextarea.classList.add('defects-control');
     controlTextarea.setAttribute('cols', '45');
     if (role === 'менеджер смены') {
@@ -214,7 +212,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
     }
     controlTD.append(controlTextarea);
 
-    if (defect.control === 'Просрочка') {
+    if (defect.manager_comment === 'Просрочка') {
       controlTextarea.classList.add('bg-danger-subtle');
     }
     trEl.append(controlTD);

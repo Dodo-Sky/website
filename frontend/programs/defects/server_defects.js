@@ -1,28 +1,26 @@
-import { postDataServer } from "../../apiServer.js";
-const programName = "defects";
+import {postDataServer, putDataServer} from "../../apiServer.js";
 
 export function postServer() {
   const bnts = document.querySelectorAll(".defects-btn-save");
   bnts.forEach((btn) => {
     btn.addEventListener("click", async function (e) {
       const trEl = e.target.parentNode.parentNode;
-      const disposal = trEl.querySelector(".defects-disposal").value;
-      const reasonDefect = trEl.querySelector(".defects-reasonDefect").value;
-      const nameViolator = trEl.querySelector(".defects-nameViolator").value;
-      const decisionManager = trEl.querySelector(".defects-decisionManager").value;
-      const control = trEl.querySelector(".defects-control").value;
+      const is_trashed = trEl.querySelector(".defects-disposal").value;
+      const reason = trEl.querySelector(".defects-reasonDefect").value;
+      const staff_name = trEl.querySelector(".defects-nameViolator").value;
+      const graphist_comment = trEl.querySelector(".defects-decisionManager").value;
+      const manager_comment = trEl.querySelector(".defects-control").value;
 
       let changeServer = {
-        disposal,
-        reasonDefect,
-        nameViolator,
-        decisionManager,
-        control,
-        id: e.target.dataset.id,
+        is_trashed,
+        reason,
+        staff_name,
+        graphist_comment,
+        manager_comment,
       };
 
       // Отправляем на сервер изменения, смотрим ответ и делаем кнопку неактивной
-      let responce = await postDataServer(programName, changeServer);
+      let responce = await putDataServer(`product-defects/${e.target.dataset.id}`, changeServer);
       if (responce.id === e.target.dataset.id) {
         btn.disabled = true;
       }
