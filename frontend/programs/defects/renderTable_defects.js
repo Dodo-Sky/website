@@ -4,6 +4,17 @@ import * as filter from './filter_defects.js';
 
 let role = localStorage.getItem('role');
 
+const parseDate = (date) => {
+    const d = new Date(date);
+    const day = d.getDate();
+    const month = d.getMonth() + 1 < 10 ? `0${d.getMonth() + 1}` : d.getMonth();
+    const year = d.getFullYear();
+    const hour = d.getUTCHours();
+    const minute = d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes();
+
+    return `${day}.${month}.${year}, ${hour}:${minute}`;
+}
+
 export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   time = +time;
   defects.sort((a, b) => new Date(a.soldAtLocal) - new Date(b.soldAtLocal));
@@ -143,7 +154,7 @@ export async function renderTable(defects, time, fullDataUnit, timeZoneShift) {
   fullDataUnit.forEach((defect) => {
     trEl = components.getTagTR();
     tBody.append(trEl);
-    let soldAtLocal = components.getTagTD(new Date(defect.sold_at_local).toLocaleString().slice(0, 17));
+    let soldAtLocal = components.getTagTD(parseDate(defect.sold_at_local));
     trEl.append(soldAtLocal);
     let productName = components.getTagTD(defect.product_name);
     trEl.append(productName);
