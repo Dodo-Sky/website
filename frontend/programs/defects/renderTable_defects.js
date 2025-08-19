@@ -6,11 +6,12 @@ let role = localStorage.getItem('role');
 
 const parseDate = (date) => {
     const d = new Date(date);
-    const day = d.getDate();
-    const month = d.getMonth() + 1 < 10 ? `0${d.getMonth() + 1}` : d.getMonth();
-    const year = d.getFullYear();
-    const hour = d.getUTCHours();
-    const minute = d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes();
+
+    const day = d.getUTCDate().toString().padStart(2, "0");
+    const month = (d.getUTCMonth() + 1).toString().padStart(2, "0");
+    const year = d.getUTCFullYear();
+    const hour = d.getUTCHours().toString().padStart(2, "0");
+    const minute = d.getUTCMinutes().toString().padStart(2, "0");
 
     return `${day}.${month}.${year}, ${hour}:${minute}`;
 }
