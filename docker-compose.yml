@@ -1,0 +1,49 @@
+services:
+  website-local:
+    image: node:18
+    container_name: website-local
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "1234:1234"
+    networks:
+      - dodo-sky-network
+    profiles: ["local"]
+
+  website-dev:
+    image: nginx:alpine
+    container_name: website-dev
+    restart: always
+    volumes:
+      - website_data:/usr/share/nginx/html
+    ports:
+      - "3000:80"
+    networks:
+      - dodo-sky-network
+    profiles: ["dev"]
+
+  website:
+    image: nginx:alpine
+    container_name: website
+    restart: always
+    expose:
+      - "80"
+    volumes:
+      - website_data:/usr/share/nginx/html
+    environment:
+      VIRTUAL_HOST: dodo-sky.ru
+      LETSENCRYPT_HOST: dodo-sky.ru
+    networks:
+      - dodo-sky-network
+    profiles: ["prod"]
+
+volumes:
+  website_data:
+    name: website_data
+
+networks:
+  dodo-sky-network:
+    external: true
