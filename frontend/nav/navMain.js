@@ -120,10 +120,16 @@ content.addEventListener('click', async function (e) {
   }
 
   if (e.target?.dataset?.id === 'Соблюдение дисциплины') {
-    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
-    const module = await import('../programs/discipline/main_discipline.js');
-    module.render(nameProgramm, breadcrumbs);
+    const module = await import('../programs/discipline/discipline')
+    module.render();
+
+    breadcrumb.innerHTML = ""
+    breadcrumb.append(
+        components.getTagLI_breadcrumb('Главная'),
+        components.getTagLI_breadcrumb(breadcrumbs),
+        components.getTagLI_breadcrumbActive("Соблюдение дисциплины")
+    );
   }
 
   if (e.target?.dataset?.id === 'ID телеграмм') {
