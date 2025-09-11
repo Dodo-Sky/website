@@ -17,8 +17,6 @@ services:
     image: nginx:alpine
     container_name: website-dev
     restart: always
-    volumes:
-      - website_data:/usr/share/nginx/html
     ports:
       - "3000:80"
     networks:
@@ -31,8 +29,6 @@ services:
     restart: always
     expose:
       - "80"
-    volumes:
-      - website_data:/usr/share/nginx/html
     environment:
       VIRTUAL_HOST: dodo-sky.ru
       LETSENCRYPT_HOST: dodo-sky.ru
