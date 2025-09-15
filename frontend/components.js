@@ -11,6 +11,8 @@ export {
   getTagH,
   getTagP,
   getTagNav,
+  getTagUl,
+  getTagLi,
   getTagUL_nav,
   getTagUL_dropdownMenu,
   getTagLI_navItem,
@@ -41,17 +43,22 @@ export {
   getTagButton_logout,
   getTagColFormLabel,
   getTagButtonLink,
-  getPeriodSelector
+  getPeriodSelector,
+  getSpinner
 };
 
 // Базовая разметка
-function getTagDiv(addClass) {
+function getTagDiv(addClass, id = "") {
   const element = document.createElement('div');
 
   if (Array.isArray(addClass)) {
     addClass.forEach(className => element.classList.add(className));
   } else {
     element.classList.add(addClass);
+  }
+
+  if (id && id.length) {
+    element.id = id;
   }
 
   return element;
@@ -87,9 +94,16 @@ function getTagButton_dropdown(textContent) {
   return element;
 }
 
-function getTagH(size, textContent) {
+function getTagH(size, textContent, className = "") {
   const element = document.createElement(`h${size}`);
   element.textContent = textContent;
+
+  if (Array.isArray(className)) {
+    className.forEach(cn => element.classList.add(cn));
+  } else if (className.length) {
+    element.classList.add(className);
+  }
+
   return element;
 }
 
@@ -104,6 +118,30 @@ function getTagSpan_badge(textContent) {
   element.textContent = textContent;
   element.className =
     'badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger';
+  return element;
+}
+
+function getTagUl(className = "") {
+  const element = document.createElement('ul');
+
+  if (Array.isArray(className)) {
+    className.forEach(cn => element.classList.add(cn));
+  } else if (className.length) {
+    element.classList.add(className);
+  }
+
+  return element;
+}
+
+function getTagLi(className = "") {
+  const element = document.createElement('li');
+
+  if (Array.isArray(className)) {
+    className.forEach(cn => element.classList.add(cn));
+  } else if (className.length) {
+    element.classList.add(className);
+  }
+
   return element;
 }
 
@@ -251,9 +289,14 @@ function getTagTextarea(textContent) {
   return element;
 }
 
-function getTagSelect() {
+function getTagSelect(id = "") {
   const element = document.createElement('select');
   element.classList.add('form-select');
+
+  if (id && id.length) {
+    element.id = id;
+  }
+
   return element;
 }
 
@@ -277,9 +320,9 @@ function getTagDiv_table() {
   return element;
 }
 
-function getTagTable() {
+function getTagTable(className = "") {
   const element = document.createElement('table');
-  element.className = 'table table-hover table-bordered caption-top';
+  element.className = 'table table-hover table-bordered caption-top ' + className;
   return element;
 }
 
@@ -435,4 +478,19 @@ const getPeriodSelector = (container) => {
   periodRow.append(btnCol);
 
   return { periodRow, inputFrom, inputTo, btnApply };
+}
+
+const getSpinner = (id = "spinner") => {
+  const spinnerWrap = getTagDiv('spinnerWrap');
+  spinnerWrap.id = id
+  spinnerWrap.style.display = 'flex';
+  spinnerWrap.style.margin = '50px';
+  const spinner = getTagDiv('spinner-border');
+  spinner.dataset.role = "status"
+  spinner.style.margin = "auto"
+  const round = getTagSpan("visually-hidden")
+  spinner.append(round)
+  spinnerWrap.append(spinner);
+
+  return spinnerWrap
 }
