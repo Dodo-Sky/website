@@ -5,7 +5,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-      - /app/node_modules
+      - website_data:/data
     command: sh -c "npm install && npm run dev"
     env_file:
       - .env
@@ -23,6 +23,8 @@ services:
       - .env
     ports:
       - "3000:80"
+    volumes:
+      - website_data:/data
     networks:
       - dodo-sky-network
     profiles: ["dev"]
@@ -35,6 +37,8 @@ services:
       - "80"
     env_file:
         - .env
+    volumes:
+      - website_data:/data
     networks:
       - dodo-sky-network
     profiles: ["prod"]

@@ -23,6 +23,9 @@ const createPageItem = (label, disabled, active, onClick) => {
 
 const onPageChange = async (searchParams) => {
     const spinner = document.getElementById("discipline-spinner");
+    const tableContent = document.getElementById("discipline-table-content");
+
+    tableContent.innerHTML = "";
     spinner.style.display = 'flex';
 
     const response = await getDiscipline(searchParams);

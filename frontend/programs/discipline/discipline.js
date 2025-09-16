@@ -60,6 +60,13 @@ export const render = async () => {
 
     unitSelect.addEventListener('change', async (e) => {
         searchParams.unitId = e.target.value;
+        searchParams.period = "all";
+        searchParams.managerDecision = "all";
+        searchParams.directorDecision = "all";
+        searchParams.page = 1;
+        searchParams.size = 10;
+
+        tableContent.innerHTML = '';
         spinner.style.display = 'flex';
 
         const response = await getDiscipline(searchParams);
@@ -71,6 +78,7 @@ export const render = async () => {
     });
 
     btnUpdate.addEventListener('click', async () => {
+        tableContent.innerHTML = '';
         spinner.style.display = 'flex';
 
         const response = await getDiscipline(searchParams);
