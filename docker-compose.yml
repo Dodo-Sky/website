@@ -1,6 +1,6 @@
 services:
   website-local:
-    image: node:18
+    image: node:20
     container_name: website-local
     working_dir: /app
     volumes:

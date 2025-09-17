@@ -33,7 +33,7 @@ export const render = async () => {
         managerDecision: "all", // all | inwork | delay
         directorDecision: "all", // all | inwork | delay
         page: 1,
-        size: 10,
+        size: 30,
     }
     const departmentName = localStorage.getItem('departmentName');
 
@@ -64,7 +64,6 @@ export const render = async () => {
         searchParams.managerDecision = "all";
         searchParams.directorDecision = "all";
         searchParams.page = 1;
-        searchParams.size = 10;
 
         tableContent.innerHTML = '';
         spinner.style.display = 'flex';

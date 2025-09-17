@@ -367,8 +367,14 @@ export const renderTable = async (searchParams, data) => {
     timeUlDrop.querySelectorAll("li").forEach((li) => {
         li.addEventListener("click", async (event) => {
             searchParams.period = event.target.dataset.value;
+            searchParams.managerDecision = "all";
+            searchParams.directorDecision = "all";
+            searchParams.page = 1;
 
             const spinner = document.getElementById("discipline-spinner");
+            const tableContent = document.getElementById("discipline-table-content");
+
+            tableContent.innerHTML = "";
             spinner.style.display = 'flex';
 
             const response = await getDiscipline(searchParams);
@@ -383,8 +389,14 @@ export const renderTable = async (searchParams, data) => {
     managerUlDrop.querySelectorAll("li").forEach((li) => {
         li.addEventListener("click", async (event) => {
             searchParams.managerDecision = event.target.dataset.value;
+            searchParams.period = "all";
+            searchParams.directorDecision = "all";
+            searchParams.page = 1;
 
             const spinner = document.getElementById("discipline-spinner");
+            const tableContent = document.getElementById("discipline-table-content");
+
+            tableContent.innerHTML = "";
             spinner.style.display = 'flex';
 
             const response = await getDiscipline(searchParams);
@@ -399,8 +411,14 @@ export const renderTable = async (searchParams, data) => {
     directorUlDrop.querySelectorAll("li").forEach((li) => {
         li.addEventListener("click", async (event) => {
             searchParams.directorDecision = event.target.dataset.value;
+            searchParams.period = "all";
+            searchParams.managerDecision = "all";
+            searchParams.page = 1;
 
             const spinner = document.getElementById("discipline-spinner");
+            const tableContent = document.getElementById("discipline-table-content");
+
+            tableContent.innerHTML = "";
             spinner.style.display = 'flex';
 
             const response = await getDiscipline(searchParams);
