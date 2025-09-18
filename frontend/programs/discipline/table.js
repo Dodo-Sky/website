@@ -15,6 +15,16 @@ const formatted = new Intl.DateTimeFormat('ru-RU', {
     hour12: false,
 });
 
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+    timeZone: 'UTC',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+});
+
 const isDisabledReasonAbsenteeism = (row) => {
     const role = getUserRole();
 
@@ -23,6 +33,24 @@ const isDisabledReasonAbsenteeism = (row) => {
     }
 
     return true
+}
+
+const formatDate = (dateString) => {
+    if (!dateString) return '—';
+    return dateFormatter.format(new Date(dateString));
+}
+
+const appendHistorySection = (modalBody, title, dates) => {
+    if (dates.length === 0) return;
+
+    modalBody.innerHTML += `<b>${title}</b><br>`;
+    for (const { oldDate, newDate } of dates) {
+        if (!oldDate) {
+            modalBody.innerHTML += `Добавлено: ${formatDate(newDate)}<br>`;
+        } else {
+            modalBody.innerHTML += `${formatDate(oldDate)} → ${formatDate(newDate)}<br>`;
+        }
+    }
 }
 
 const createOrderModalFullInfoButtonHandler = (shiftId, modalBody) => {
@@ -220,8 +248,8 @@ export const renderTable = async (searchParams, data) => {
         const tr = components.getTagTR();
 
         const timeTd = components.getTagTD();
-        timeTd.textContent = row.rowdShiftStartAtLocal
-            ? formatted.format(new Date(row.rowdShiftStartAtLocal))
+        timeTd.textContent = row.scheduledShiftStartAtLocal
+            ? formatted.format(new Date(row.scheduledShiftStartAtLocal))
             : formatted.format(new Date(row.clockInAtLocal));
 
         const staffTd = components.getTagTD();
