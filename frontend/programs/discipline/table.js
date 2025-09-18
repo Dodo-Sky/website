@@ -5,7 +5,7 @@ import {getShiftHistoryByShiftId, postDataServer} from "../../apiServer";
 import {renderPagination} from "./pagination";
 
 const formatted = new Intl.DateTimeFormat('ru-RU', {
-    timeZone: 'UTC',
+    // timeZone: 'UTC',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
