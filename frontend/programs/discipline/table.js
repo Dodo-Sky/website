@@ -341,7 +341,7 @@ export const renderTable = async (searchParams, data) => {
         let role = localStorage.getItem('role');
 
         if (role === 'менеджер смены') {
-            directorCommentTextarea.disabled = true;
+            directorTextarea.disabled = true;
         }
 
         const hoursTd = components.getTagTD();
