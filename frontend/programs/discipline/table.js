@@ -4,27 +4,6 @@ import {getUserRole} from "../../auth/login";
 import {getShiftHistoryByShiftId, postDataServer} from "../../apiServer";
 import {renderPagination} from "./pagination";
 
-const formatted = new Intl.DateTimeFormat('ru-RU', {
-    // timeZone: 'UTC',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-});
-
-const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
-    timeZone: 'UTC',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-});
-
 const isDisabledReasonAbsenteeism = (row) => {
     const role = getUserRole();
 
@@ -35,9 +14,9 @@ const isDisabledReasonAbsenteeism = (row) => {
     return true
 }
 
-const formatDate = (dateString) => {
+const formatDate = (dateString, format) => {
     if (!dateString) return '—';
-    return dateFormatter.format(new Date(dateString));
+    return dayjs(dateString).format(format);
 }
 
 const appendHistorySection = (modalBody, title, dates) => {
@@ -46,9 +25,9 @@ const appendHistorySection = (modalBody, title, dates) => {
     modalBody.innerHTML += `<b>${title}</b><br>`;
     for (const { oldDate, newDate } of dates) {
         if (!oldDate) {
-            modalBody.innerHTML += `Добавлено: ${formatDate(newDate)}<br>`;
+            modalBody.innerHTML += `Добавлено: ${formatDate(newDate, "DD.MM.YYYY, HH:mm:ss")}<br>`;
         } else {
-            modalBody.innerHTML += `${formatDate(oldDate)} → ${formatDate(newDate)}<br>`;
+            modalBody.innerHTML += `${formatDate(oldDate, "DD.MM.YYYY, HH:mm:ss")} → ${formatDate(newDate, "DD.MM.YYYY, HH:mm:ss")}<br>`;
         }
     }
 }
@@ -249,8 +228,8 @@ export const renderTable = async (searchParams, data) => {
 
         const timeTd = components.getTagTD();
         timeTd.textContent = row.scheduledShiftStartAtLocal
-            ? formatted.format(new Date(row.scheduledShiftStartAtLocal))
-            : formatted.format(new Date(row.clockInAtLocal));
+            ? formatDate(row.scheduledShiftStartAtLocal, 'DD.MM.YYYY HH:mm:ss')
+            : formatDate(row.clockInAtLocal, 'DD.MM.YYYY HH:mm:ss')
 
         const staffTd = components.getTagTD();
         staffTd.textContent = row.fio;
@@ -271,11 +250,11 @@ export const renderTable = async (searchParams, data) => {
         let closeBtn = components.getTagButton_close();
         let modalBody = components.getTagDiv('modal-body');
         let clockInAtLocal = row.clockInAtLocal
-            ? formatted.format(new Date(row.clockInAtLocal))
+            ? formatDate(row.clockInAtLocal, "DD.MM.YYYY, HH:mm:ss")
             : 'Нет данных';
 
-        let clockOutAtLocal = row.clockInAtLocal
-            ? formatted.format(new Date(row.clockOutAtLocal))
+        let clockOutAtLocal = row.clockOutAtLocal
+            ? formatDate(row.clockOutAtLocal, "DD.MM.YYYY, HH:mm:ss")
             : 'Нет данных';
 
         modalBody.innerHTML = `
@@ -284,9 +263,9 @@ export const renderTable = async (searchParams, data) => {
             Описание: ${row.description}<br> <br>
         
             <b>Временные данные</b><br>
-            Начало смены по графику: ${row.rowdShiftStartAtLocal ? formatted.format(new Date(row.rowdShiftStartAtLocal)) : 'нет данных'}<br>
+            Начало смены по графику: ${row.rowdShiftStartAtLocal ? formatDate(row.rowdShiftStartAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'}<br>
             Начало смены - факт: ${clockInAtLocal}<br>
-            Окончание смены по графику: ${row.rowdShiftEndAtLocal ? formatted.format(new Date(row.rowdShiftEndAtLocal)) : 'нет данных'} <br>
+            Окончание смены по графику: ${row.rowdShiftEndAtLocal ? formatDate(row.rowdShiftEndAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'} <br>
             Окончание смены - факт: ${clockOutAtLocal} <br>
         `;
         fade.append(divDialog);
