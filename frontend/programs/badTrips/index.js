@@ -1,10 +1,9 @@
-import { getServerApi, postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderProgram } from './program/index.js';
-import { updateProgram } from './program/update.js';
 import { renderRating } from './rating/index.js';
 import { renderPremium } from './premium/index.js';
-import { updatePremium } from './premium/update.js';
+import { renderUnitSelector } from "../../common/updateUnitSelector";
+import { postDataServer } from "../../apiServer";
 
 const content = document.getElementById('content');
 
@@ -24,103 +23,78 @@ const changeActiveTab = (className) => {
   tab.classList.add('show');
 }
 
-const fetchData = async () => {
-  content.innerHTML = `
-    <div class='spinner-border' role='status'>
-    <span class='visually-hidden'>Загрузка...</span>
-    </div>`;
+const changeUnitSelector = async (e, searchParams) => {
+  searchParams.unitId = e.target.value;
+  searchParams.period = "all";
+  searchParams.graphistComment = "all"
+  searchParams.directorComment = "all"
+  searchParams.page = 1;
 
-  const departmentName = localStorage.getItem('departmentName');
+  const activeTab = getActiveTab();
 
-  const couriersOrder = await postDataServer('query_couriersOrder', { departmentName: departmentName });
-  const unitsSettings = await getServerApi(`unitsSettings`);
+  if (activeTab) {
+    const tabId = activeTab.id
 
-  let spinner = document.querySelector('.spinner-border');
-  spinner.style.display = 'none';
-
-  return { couriersOrder, unitsSettings };
-}
-
-// Проверка данных на отсутствие несохраненных данных
-const checkUnsavedChanges = async  (data, time, dataFromServer, filterToCourier) => {
-  const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
-  let isChanges = false;
-
-  for (let i = 0; i < btns.length; i++) {
-    const btn = btns[i];
-    if (!btn.disabled) {
-      isChanges = true;
-      break;
+    switch (tabId) {
+      case "program-tab":
+        const programSpinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
+        programSpinner.style.display = 'flex';
+        await renderProgram(searchParams)
+        break
+      case "premium-tab":
+        const premiumSpinner = document.querySelector('#bad-trips-tabs-content #premium-tab #bad-trips-premium-spinner');
+        premiumSpinner.style.display = 'flex';
+        await renderPremium(searchParams)
+        break
+      case "rating-tab":
+        const ratingSpinner = document.querySelector('#bad-trips-tabs-content #rating-tab #bad-trips-rating-spinner');
+        ratingSpinner.style.display = 'flex';
+        await renderRating(searchParams)
     }
   }
+}
 
-  if (isChanges) {
-    alert('Сохраните данные');
-  } else {
-    await renderProgram(data, time, dataFromServer, filterToCourier);
+const btnUpdateListener = async (searchParams) => {
+  const activeTab = getActiveTab();
+
+  if (activeTab) {
+    const tabId = activeTab.id
+
+    switch (tabId) {
+      case "program-tab":
+        const programSpinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
+        programSpinner.style.display = 'flex';
+        await renderProgram(searchParams)
+        break
+      case "premium-tab":
+        const premiumSpinner = document.querySelector('#bad-trips-tabs-content #premium-tab #bad-trips-premium-spinner');
+        premiumSpinner.style.display = 'flex';
+        await renderPremium(searchParams)
+        break
+      case "rating-tab":
+        const ratingSpinner = document.querySelector('#bad-trips-tabs-content #rating-tab #bad-trips-rating-spinner');
+        ratingSpinner.style.display = 'flex';
+        await renderRating(searchParams)
+    }
   }
 }
 
-const generateBreadcrumbs = (name, breadcrumbs) => {
-  const breadcrumb = document.querySelector('.breadcrumb');
+const generateDocs = (containerId) => {
+  const container = document.getElementById(containerId);
+  const docsCol = components.getTagDiv('col-auto');
+  const docsBtn = components.getTagButton('Справка по программе Проблемные поездки');
+  docsBtn.classList = 'btn btn-outline-secondary reference';
+  docsCol.append(docsBtn);
 
-  breadcrumb.innerHTML = '';
-
-  let navMainEl = components.getTagLI_breadcrumb('Главная');
-  let navManagerEl = components.getTagLI_breadcrumb(breadcrumbs);
-  let navControlEl = components.getTagLI_breadcrumbActive(name);
-
-  breadcrumb.append(navMainEl, navManagerEl, navControlEl);
-}
-
-const generateHeader = () => {
-  let row = components.getTagDiv('row');
-  const unitsCol = components.getTagDiv('col-auto');
-  const sortCol = components.getTagDiv('col-auto');
-  row.append(unitsCol, sortCol);
-
-  row.classList.add('mb-3');
-  const units = components.getTagDiv('col-auto');
-  units.setAttribute('id', 'units');
-  unitsCol.append(units);
-
-  const updateEl = components.getTagDiv('col-auto');
-  const btnUpdate = components.getTagButton('Обновить');
-  btnUpdate.setAttribute('id', 'update');
-  updateEl.append(btnUpdate);
-  row.append(updateEl);
-  btnUpdate.addEventListener('click', async () => {
-    const activeTab = getActiveTab();
-
-    if (activeTab) {
-      const tabId = activeTab.id
-
-      switch (tabId) {
-        case "program-tab":
-          await updateProgram()
-          break
-        case "premium-tab":
-          await updatePremium()
-          break
-      }
-    }
-  })
-
-  const referenceDiv = components.getTagDiv('col-auto');
-  const reference = components.getTagButton('Справка по программе Проблемные поездки');
-  reference.classList = 'btn btn-outline-secondary reference';
-  referenceDiv.append(reference);
-  row.append(referenceDiv);
-
-  reference.addEventListener('click', function (e) {
+  docsBtn.addEventListener('click', () => {
     window.open('https://docs.google.com/document/d/1fgS1kdMy6bWIAm0Vr0_WQzOISTmEJRnkcOpGarn0DEE/edit?usp=sharing');
   });
 
-  return row;
+  container.append(docsCol);
 }
 
 // навигация по программе и рейтингу
-const generateNav = async (couriersOrder) => {
+const generateNav = async (searchParams) => {
   const navEl = components.getTagUL_nav();
   navEl.classList.add('nav-tabs');
 
@@ -150,35 +124,54 @@ const generateNav = async (couriersOrder) => {
   }
 
   programEl.addEventListener('click', async () => {
+    searchParams.period = "all"
+    searchParams.graphistComment = "all"
+    searchParams.directorComment = "all"
+
     programEl.classList.add('active');
     ratingEl.classList.remove('active');
     premiumEl.classList.remove('active');
 
-    changeActiveTab('#bad-trips-tabs-content #program-tab');
-    const selectUnit = document.querySelector('.selectUnit');
-    const fullDataUnit = couriersOrder.filter((el) => el.unitName === selectUnit.value);
+    const programSpinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
+    programSpinner.style.display = 'flex';
 
-    await checkUnsavedChanges(fullDataUnit, 0, couriersOrder);
+    changeActiveTab('#bad-trips-tabs-content #program-tab');
+
+    await renderProgram(searchParams);
   });
 
   ratingEl.addEventListener('click', async () => {
+    searchParams.period = "all"
+    searchParams.graphistComment = "all"
+    searchParams.directorComment = "all"
+
     ratingEl.classList.add('active');
     programEl.classList.remove('active');
     premiumEl.classList.remove('active');
 
+    const ratingSpinner = document.querySelector('#bad-trips-tabs-content #rating-tab #bad-trips-rating-spinner');
+    ratingSpinner.style.display = 'flex';
+
     changeActiveTab('#bad-trips-tabs-content #rating-tab');
 
-    await renderRating();
+    await renderRating(searchParams);
   });
 
   premiumEl.addEventListener('click', async () => {
+    searchParams.period = "all"
+    searchParams.graphistComment = "all"
+    searchParams.directorComment = "all"
+
     premiumEl.classList.add('active');
     programEl.classList.remove('active');
     ratingEl.classList.remove('active');
 
+    const premiumSpinner = document.querySelector('#bad-trips-tabs-content #premium-tab #bad-trips-premium-spinner');
+    premiumSpinner.style.display = 'flex';
+
     changeActiveTab('#bad-trips-tabs-content #premium-tab');
 
-    await renderPremium();
+    await renderPremium(searchParams);
   });
 
   return navEl;
@@ -188,84 +181,60 @@ const generateTabs = () => {
   const tabs = components.getTagDiv('tab-content')
   tabs.id = 'bad-trips-tabs-content';
 
-  const programContent = components.getTagDiv(['tab-pane', 'fade', 'show', 'active', 'program-content']);
-  programContent.id = "program-tab"
-  const ratingContent = components.getTagDiv(['tab-pane', 'fade', 'rating-content']);
-  ratingContent.id = "rating-tab"
-  const premiumContent = components.getTagDiv(['tab-pane', 'fade', 'premium-content']);
-  premiumContent.id = "premium-tab"
+  const programTabContent = components.getTagDiv(['tab-pane', 'fade', 'show', 'active'], "program-tab");
+  const programContent = components.getTagDiv("program-content", "program-content");
+  const programSpinner = components.getSpinner("bad-trips-program-spinner");
+  programTabContent.append(programSpinner, programContent);
 
-  tabs.append(programContent, ratingContent, premiumContent)
+  const ratingTabContent = components.getTagDiv(['tab-pane', 'fade'], "rating-tab");
+  const ratingContent = components.getTagDiv("rating-content", "rating-content");
+  const ratingSpinner = components.getSpinner("bad-trips-rating-spinner");
+  ratingTabContent.append(ratingSpinner, ratingContent);
+
+  const premiumTabContent = components.getTagDiv(['tab-pane', 'fade'], "premium-tab");
+  const premiumContent = components.getTagDiv("premium-content", "premium-content");
+  const premiumSpinner = components.getSpinner("bad-trips-premium-spinner");
+  premiumTabContent.append(premiumSpinner, premiumContent);
+
+  tabs.append(programTabContent, ratingTabContent, premiumTabContent)
 
   return tabs
 }
 
-const generateTitle = () => {
-  const title = components.getTagH(3, name);
-
-  title.classList.add('text-center');
-  title.classList.add('sticky-top');
-
-  return title;
-}
-
-const getListUnits = (couriersOrder) => {
-  let unitsSet = new Set();
-
-  couriersOrder.forEach((order) => {
-    unitsSet.add(order.unitName);
-  });
-
-  const unitsName = Array.from(unitsSet).sort();
-  const select = components.getTagSelect();
-  select.classList.add('selectUnit');
-
-  for (const unit of unitsName) {
-    const option = components.getTagOption(unit, unit);
-    select.appendChild(option);
+export async function render() {
+  const searchParams = {
+    unitId: '',
+    period: "all", // all | week | 3days | day
+    graphistComment: "all", // all | inwork | delay
+    directorComment: "all", // all | inwork | delay
+    page: 1,
+    size: 30,
   }
+  const departmentName = localStorage.getItem('departmentName');
 
-  const unitsEl = document.getElementById('units');
-  unitsEl.append(select);
-  return unitsName;
-}
+  content.innerHTML = ""
 
-const startRender = async (couriersOrder, unitsName) => {
-  let fullDataUnit = couriersOrder.filter((el) => el.unitName === unitsName[0]);
-  await renderProgram(fullDataUnit, 0, couriersOrder);
+  const title = components.getTagH(3, "Проблемные поездки", ["text-center", "sticky-top"]);
 
-  document.querySelector('.selectUnit').addEventListener('change', async (e) => {
-    fullDataUnit = couriersOrder.filter((el) => el.unitName === e.target.value);
+  content.append(
+      title,
+      components.getTagDiv(['row', 'mb-2'], "bad-trips-unit-selector"),
+      await generateNav(searchParams),
+      generateTabs()
+  );
 
-    await checkUnsavedChanges(fullDataUnit, 0, couriersOrder);
+  const units = await postDataServer('get_units', { payload: departmentName });
+  const filteredUnits = units.filter(unit => unit.type === "Пиццерия" || unit.type === "ПРЦ");
+  searchParams.unitId = filteredUnits[0].id;
 
-    const activeTab = getActiveTab();
-
-    if (activeTab) {
-      const tabId = activeTab.id
-
-      switch (tabId) {
-        case "program-tab":
-          await updateProgram()
-          break
-        case "rating-tab":
-          await renderRating()
-          break
-        case "premium-tab":
-          await updatePremium()
-          break
-      }
-    }
+  renderUnitSelector({
+    units: filteredUnits,
+    programName: "bad-trips",
+    selectListener: async (e) => await changeUnitSelector(e, searchParams),
+    btnListener: async () => await btnUpdateListener(searchParams)
   });
-}
 
-export async function render(name, breadcrumbs) {
-  generateBreadcrumbs(name, breadcrumbs);
+  generateDocs("bad-trips-unit-selector")
 
-  const { couriersOrder, unitsSettings } = await fetchData()
-
-  content.append(generateTitle(), generateHeader(), await generateNav(couriersOrder), generateTabs());
-
-  const unitsName = getListUnits(couriersOrder);
-  await startRender(couriersOrder, unitsName);
+  await renderProgram(searchParams);
 }

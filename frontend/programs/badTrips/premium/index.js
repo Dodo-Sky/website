@@ -1,20 +1,21 @@
 import * as components from '../../../components.js';
-import { postDataServer } from '../../../apiServer.js';
+import {getDataServer, postDataServer} from '../../../apiServer.js';
 
-export const renderPremium = async () => {
-  const departmentName = localStorage.getItem('departmentName');
-  const unitName = document.querySelector('.selectUnit').value;
-  const content = document.querySelector('#bad-trips-tabs-content #premium-tab');
+export const renderPremium = async (searchParams) => {
+  const spinner = document.querySelector('#bad-trips-tabs-content #premium-tab #bad-trips-premium-spinner');
+  const content = document.querySelector('#bad-trips-tabs-content #premium-tab #premium-content');
   content.innerHTML = '';
 
-  const premiumArr = await fetchPremium(unitName);
+  const premiumArr = await fetchPremium(searchParams.unitId);
   const table = buildTable(content);
   renderTable(premiumArr, table);
   attachRowHandlers(premiumArr);
+
+  spinner.style.display = 'none';
 };
 
-const fetchPremium = async (unitName) =>
-  await postDataServer('render_bonus', { unitName });
+const fetchPremium = async (unitId) =>
+  await getDataServer(`render_bonus?unitId=${unitId}`);
 
 const buildTable = (container) => {
   const table = components.getTagTable();
