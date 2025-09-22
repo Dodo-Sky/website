@@ -25,9 +25,7 @@ const onPageChange = async (searchParams) => {
 export const renderProgram = async (searchParams, res) => {
     let response = res ? res : await getProblemOrders(searchParams);
 
-    console.log("response", response);
-
-    const tableEl = buildTable(searchParams, response.items);
+    const tableEl = buildTable(searchParams, response.items, response.totalItems);
     const spinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
     const container = document.querySelector('#bad-trips-tabs-content #program-tab #program-content');
     const paginationContent = components.getTagDiv("flex-column", 'bad-trips-program-pagination')
@@ -43,25 +41,25 @@ export const renderProgram = async (searchParams, res) => {
     spinner.style.display = 'none';
 }
 
-const buildTable = (searchParams, items) => {
+const buildTable = (searchParams, items, totalItems) => {
     const table = components.getTagTable();
     table.classList.add('table-sm');
 
     const caption = components.getTagCaption('Программа контроля за проблемными поездками курьеров');
-    const thead = buildHeader(searchParams, items);
+    const thead = buildHeader(searchParams, items, totalItems);
     const tbody = buildBody(items);
 
     table.append(caption, thead, tbody);
     return table;
 }
 
-const buildHeader = (searchParams, items) => {
+const buildHeader = (searchParams, items, totalItems) => {
     const thead = components.getTagTHead();
     thead.classList.add('sticky-top');
     const tr = components.getTagTR();
 
     tr.append(
-        createTimeFilterHeader(searchParams),
+        createTimeFilterHeader(searchParams, totalItems),
         components.getTagTH('ФИО курьера'),
         components.getTagTH('№ заказа'),
         components.getTagTH('Комментарий курьера'),
@@ -74,7 +72,7 @@ const buildHeader = (searchParams, items) => {
     return thead;
 }
 
-const createTimeFilterHeader = (searchParams) => {
+const createTimeFilterHeader = (searchParams, totalItems) => {
     const th = components.getTagTH();
     th.classList.add('dropend', 'time-defects');
 
@@ -87,10 +85,10 @@ const createTimeFilterHeader = (searchParams) => {
         week: 'За неделю'
     }[searchParams.period];
 
-    if (searchParams.totalItems) {
+    if (totalItems) {
         const span = components.getTagSpan();
         span.classList.add('badge', 'text-bg-secondary');
-        span.textContent = searchParams.totalItems;
+        span.textContent = totalItems;
         btn.append(span);
     }
     btn.classList.add('btn-time');
@@ -127,8 +125,8 @@ const createManagerFilterHeader = (items, searchParams) => {
     th.classList.add('dropend', 'manager-defects');
 
     const btn = components.getTagButton_dropdown('Решение менеджера');
-    const inWork = items.filter(el => !el.graphistComment).length;
-    const delays = items.filter(el => el.graphistComment === 'Просрочка').length;
+    const inWork = items?.filter(el => !el.graphistComment).length;
+    const delays = items?.filter(el => el.graphistComment === 'Просрочка').length;
 
     if (inWork) {
         const span = components.getTagSpan();
@@ -173,8 +171,8 @@ const createDirectorFilterHeader = (items, searchParams) => {
     th.classList.add('dropend', 'unitDirector-defects');
 
     const btn = components.getTagButton_dropdown('Решение управляющего');
-    const inWork = items.filter(el => !el.directorComment).length;
-    const delays = items.filter(el => el.directorComment === 'Просрочка').length;
+    const inWork = items?.filter(el => !el.directorComment).length;
+    const delays = items?.filter(el => el.directorComment === 'Просрочка').length;
 
     if (inWork) {
         const span = components.getTagSpan();
@@ -218,10 +216,8 @@ const buildBody = (arrayData) => {
     const tbody = components.getTagTBody();
     tbody.classList.add('tBody');
 
-    arrayData.forEach(order => {
+    arrayData?.forEach(order => {
         const tr = components.getTagTR();
-        // const graphistCommentCell = createTextAreaCell(order.orderId, order.graphistComment, 'badTrips-graphistComment')
-        // const directorCommentCell = createTextAreaCell(order.orderId, order.directorComment, 'badTrips-directorComment', localStorage.getItem('role') === 'менеджер смены')
 
         const saveBtnCell = components.getTagTD();
         const saveBtn = components.getTagButton('Сохранить');
