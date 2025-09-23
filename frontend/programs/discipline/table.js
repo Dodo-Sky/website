@@ -312,11 +312,6 @@ export const renderTable = async (searchParams, data) => {
         }
         directorTd.append(directorTextarea);
 
-        if (row.typeViolation === 'Открытие до начала смены') {
-            managerTextarea.placeholder = 'Почему открыли раньше графика?'
-            directorTextarea.placeholder = 'Принятое решение';
-        }
-
         let role = localStorage.getItem('role');
 
         if (role === 'менеджер смены') {
