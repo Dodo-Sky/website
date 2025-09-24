@@ -263,9 +263,9 @@ export const renderTable = async (searchParams, data) => {
             Описание: ${row.description}<br> <br>
         
             <b>Временные данные</b><br>
-            Начало смены по графику: ${row.rowdShiftStartAtLocal ? formatDate(row.rowdShiftStartAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'}<br>
+            Начало смены по графику: ${row.scheduledShiftStartAtLocal ? formatDate(row.scheduledShiftStartAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'}<br>
             Начало смены - факт: ${clockInAtLocal}<br>
-            Окончание смены по графику: ${row.rowdShiftEndAtLocal ? formatDate(row.rowdShiftEndAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'} <br>
+            Окончание смены по графику: ${row.scheduledShiftEndAtLocal ? formatDate(row.scheduledShiftEndAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'} <br>
             Окончание смены - факт: ${clockOutAtLocal} <br>
         `;
         fade.append(divDialog);
