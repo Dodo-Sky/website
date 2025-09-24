@@ -25,9 +25,9 @@ const appendHistorySection = (modalBody, title, dates) => {
     modalBody.innerHTML += `<b>${title}</b><br>`;
     for (const { oldDate, newDate } of dates) {
         if (!oldDate) {
-            modalBody.innerHTML += `Добавлено: ${formatDate(newDate, "DD.MM.YYYY, HH:mm:ss")}<br>`;
+            modalBody.innerHTML += `Добавлено: ${formatDate(newDate, "DD.MM.YYYY, HH:mm")}<br>`;
         } else {
-            modalBody.innerHTML += `${formatDate(oldDate, "DD.MM.YYYY, HH:mm:ss")} → ${formatDate(newDate, "DD.MM.YYYY, HH:mm:ss")}<br>`;
+            modalBody.innerHTML += `${formatDate(oldDate, "DD.MM.YYYY, HH:mm")} → ${formatDate(newDate, "DD.MM.YYYY, HH:mm")}<br>`;
         }
     }
 }
@@ -228,8 +228,8 @@ export const renderTable = async (searchParams, data) => {
 
         const timeTd = components.getTagTD();
         timeTd.textContent = row.scheduledShiftStartAtLocal
-            ? formatDate(row.scheduledShiftStartAtLocal, 'DD.MM.YYYY HH:mm:ss')
-            : formatDate(row.clockInAtLocal, 'DD.MM.YYYY HH:mm:ss')
+            ? formatDate(row.scheduledShiftStartAtLocal, 'DD.MM.YYYY HH:mm')
+            : formatDate(row.clockInAtLocal, 'DD.MM.YYYY HH:mm')
 
         const staffTd = components.getTagTD();
         staffTd.textContent = row.fio;
@@ -250,22 +250,22 @@ export const renderTable = async (searchParams, data) => {
         let closeBtn = components.getTagButton_close();
         let modalBody = components.getTagDiv('modal-body');
         let clockInAtLocal = row.clockInAtLocal
-            ? formatDate(row.clockInAtLocal, "DD.MM.YYYY, HH:mm:ss")
+            ? formatDate(row.clockInAtLocal, "DD.MM.YYYY, HH:mm")
             : 'Нет данных';
 
         let clockOutAtLocal = row.clockOutAtLocal
-            ? formatDate(row.clockOutAtLocal, "DD.MM.YYYY, HH:mm:ss")
+            ? formatDate(row.clockOutAtLocal, "DD.MM.YYYY, HH:mm")
             : 'Нет данных';
 
         modalBody.innerHTML = `
             <b>Общие данные</b><br>
             ФИО сотрудника: ${row.fio}<br>
             Описание: ${row.description}<br> <br>
-        
+
             <b>Временные данные</b><br>
-            Начало смены по графику: ${row.scheduledShiftStartAtLocal ? formatDate(row.scheduledShiftStartAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'}<br>
+            Начало смены по графику: ${row.scheduledShiftStartAtLocal ? formatDate(row.scheduledShiftStartAtLocal, "DD.MM.YYYY, HH:mm") : 'нет данных'}<br>
             Начало смены - факт: ${clockInAtLocal}<br>
-            Окончание смены по графику: ${row.scheduledShiftEndAtLocal ? formatDate(row.scheduledShiftEndAtLocal, "DD.MM.YYYY, HH:mm:ss") : 'нет данных'} <br>
+            Окончание смены по графику: ${row.scheduledShiftEndAtLocal ? formatDate(row.scheduledShiftEndAtLocal, "DD.MM.YYYY, HH:mm") : 'нет данных'} <br>
             Окончание смены - факт: ${clockOutAtLocal} <br>
         `;
         fade.append(divDialog);
@@ -348,6 +348,8 @@ export const renderTable = async (searchParams, data) => {
             const checked = event.target.checked;
             controlBtn.disabled = managerTextarea.value === row.managerDecision && directorTextarea.value === row.unitDirectorControl && checked === row.reason_absenteeism;
         })
+
+
 
         controlBtn.addEventListener("click", async () => {
             const request = {
