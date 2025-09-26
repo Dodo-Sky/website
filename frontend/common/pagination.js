@@ -1,6 +1,4 @@
-import * as components from "../../components";
-import { getDiscipline } from "./api";
-import { renderTable } from "./table";
+import * as components from "../components";
 
 const createPageItem = (label, disabled, active, onClick) => {
     const li = components.getTagLi("page-item");
@@ -21,23 +19,8 @@ const createPageItem = (label, disabled, active, onClick) => {
     return li;
 }
 
-const onPageChange = async (searchParams) => {
-    const spinner = document.getElementById("discipline-spinner");
-    const tableContent = document.getElementById("discipline-table-content");
-
-    tableContent.innerHTML = "";
-    spinner.style.display = 'flex';
-
-    const response = await getDiscipline(searchParams);
-
-    await renderTable(searchParams, response)
-    renderPagination({ searchParams, totalPages: response.totalPages })
-
-    spinner.style.display = 'none';
-}
-
-export const renderPagination = ({ searchParams, totalPages }) => {
-    const paginationContent = document.getElementById('discipline-pagination');
+export const renderPagination = ({ paginationContentId, searchParams, totalPages, onPageChange }) => {
+    const paginationContent = document.getElementById(paginationContentId);
 
     paginationContent.innerHTML = ""
 

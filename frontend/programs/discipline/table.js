@@ -1,8 +1,8 @@
+import {renderPagination} from "../../common/pagination";
 import * as components from "../../components";
 import {getDiscipline, getDisciplineInfo} from "./api";
 import {getUserRole} from "../../auth/login";
 import {getShiftHistoryByShiftId, postDataServer} from "../../apiServer";
-import {renderPagination} from "./pagination";
 
 const isDisabledReasonAbsenteeism = (row) => {
     const role = getUserRole();
@@ -382,7 +382,7 @@ export const renderTable = async (searchParams, data) => {
             const response = await getDiscipline(searchParams);
 
             await renderTable(searchParams, response)
-            renderPagination({ searchParams, totalPages: response.totalPages })
+            renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages })
 
             spinner.style.display = 'none';
         })
@@ -404,7 +404,7 @@ export const renderTable = async (searchParams, data) => {
             const response = await getDiscipline(searchParams);
 
             await renderTable(searchParams, response)
-            renderPagination({ searchParams, totalPages: response.totalPages })
+            renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages })
 
             spinner.style.display = 'none';
         })
@@ -426,7 +426,7 @@ export const renderTable = async (searchParams, data) => {
             const response = await getDiscipline(searchParams);
 
             await renderTable(searchParams, response)
-            renderPagination({ searchParams, totalPages: response.totalPages })
+            renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages })
 
             spinner.style.display = 'none';
         })

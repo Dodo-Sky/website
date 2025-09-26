@@ -113,10 +113,16 @@ content.addEventListener('click', async function (e) {
   }
 
   if (e.target?.dataset?.id === 'Проблемные поездки') {
-    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
     let breadcrumbs = breadcrumb.lastChild.textContent;
     const module = await import('../programs/badTrips/index.js');
-    module.render(nameProgramm, breadcrumbs);
+    module.render();
+
+    breadcrumb.innerHTML = ""
+    breadcrumb.append(
+        components.getTagLI_breadcrumb('Главная'),
+        components.getTagLI_breadcrumb(breadcrumbs),
+        components.getTagLI_breadcrumbActive("Проблемные поездки")
+    );
   }
 
   if (e.target?.dataset?.id === 'Соблюдение дисциплины') {

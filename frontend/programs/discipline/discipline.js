@@ -1,30 +1,54 @@
+import { renderPagination } from "../../common/pagination";
+import {renderUnitSelector} from "../../common/updateUnitSelector";
 import * as components from "../../components";
 import { postDataServer } from "../../apiServer";
 import { getDiscipline } from "./api";
-import { renderPagination } from "./pagination";
 import { renderTable } from "./table";
 
-const renderUnitSelector = (units) => {
-    const unitSelector = document.getElementById("discipline-unit-selector");
-    const unitsCol = components.getTagDiv('col-auto');
-    const unitSelect = components.getTagSelect('discipline-unit-select');
+const onPageChange = async (searchParams) => {
+    const spinner = document.getElementById("discipline-spinner");
+    const tableContent = document.getElementById("discipline-table-content");
 
-    units.forEach((unit) => {
-        const option = components.getTagOption(unit.name, unit.id);
-        unitSelect.append(option);
-    });
+    tableContent.innerHTML = "";
+    spinner.style.display = 'flex';
 
-    unitsCol.append(unitSelect);
-    unitSelector.append(unitsCol);
+    const response = await getDiscipline(searchParams);
 
-    const update = components.getTagDiv('col-auto');
-    const btnUpdate = components.getTagButton('Обновить');
-    btnUpdate.setAttribute('id', 'update');
-    update.append(btnUpdate);
-    unitSelector.append(update);
+    await renderTable(searchParams, response)
+    renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages, onPageChange })
 
-    return { unitSelect, btnUpdate }
+    spinner.style.display = 'none';
 }
+
+const changeUnitSelector = async (e, searchParams, tableContent, spinner) => {
+    searchParams.unitId = e.target.value;
+    searchParams.period = "all";
+    searchParams.managerDecision = "all";
+    searchParams.directorDecision = "all";
+    searchParams.page = 1;
+
+    tableContent.innerHTML = '';
+    spinner.style.display = 'flex';
+
+    const response = await getDiscipline(searchParams);
+
+    await renderTable(searchParams, response);
+    renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages, onPageChange });
+
+    spinner.style.display = 'none';
+};
+
+const btnUpdateLister = async (searchParams, tableContent, spinner) => {
+    tableContent.innerHTML = '';
+    spinner.style.display = 'flex';
+
+    const response = await getDiscipline(searchParams);
+
+    await renderTable(searchParams, response);
+    renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages, onPageChange });
+
+    spinner.style.display = 'none';
+};
 
 export const render = async () => {
     const searchParams = {
@@ -49,42 +73,18 @@ export const render = async () => {
     const units = await postDataServer('get_units', { payload: departmentName });
     const filteredUnits = units.filter(unit => unit.type === "Пиццерия" || unit.type === "ПРЦ");
     searchParams.unitId = filteredUnits[0].id;
-    const { unitSelect, btnUpdate } = renderUnitSelector(filteredUnits);
+
+    renderUnitSelector({
+        units: filteredUnits,
+        programName: "discipline",
+        selectListener: async (e) => await changeUnitSelector(e, searchParams, tableContent, spinner),
+        btnListener: async () => await btnUpdateLister(searchParams, tableContent, spinner),
+    });
 
     const response = await getDiscipline(searchParams);
 
     await renderTable(searchParams, response);
-    renderPagination({ searchParams, totalPages: response.totalPages });
+    renderPagination({ paginationContentId: 'discipline-pagination', searchParams, totalPages: response.totalPages, onPageChange });
 
     spinner.style.display = 'none';
-
-    unitSelect.addEventListener('change', async (e) => {
-        searchParams.unitId = e.target.value;
-        searchParams.period = "all";
-        searchParams.managerDecision = "all";
-        searchParams.directorDecision = "all";
-        searchParams.page = 1;
-
-        tableContent.innerHTML = '';
-        spinner.style.display = 'flex';
-
-        const response = await getDiscipline(searchParams);
-
-        await renderTable(searchParams, response);
-        renderPagination({ searchParams, totalPages: response.totalPages });
-
-        spinner.style.display = 'none';
-    });
-
-    btnUpdate.addEventListener('click', async () => {
-        tableContent.innerHTML = '';
-        spinner.style.display = 'flex';
-
-        const response = await getDiscipline(searchParams);
-
-        await renderTable(searchParams, response);
-        renderPagination({ searchParams, totalPages: response.totalPages });
-
-        spinner.style.display = 'none';
-    })
 }

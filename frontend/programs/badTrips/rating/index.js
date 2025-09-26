@@ -6,42 +6,42 @@ function parseDate(date) {
   return `${day}.${month}.${year}`;
 }
 
-export const renderRating = async () => {
-  const departmentName = localStorage.getItem('departmentName');
-  const selectUnit = document.querySelector('.selectUnit');
-  const content = document.querySelector('#bad-trips-tabs-content #rating-tab');
+export const renderRating = async (searchParams) => {
+  const spinner = document.querySelector('#bad-trips-tabs-content #rating-tab #bad-trips-rating-spinner');
+  const content = document.querySelector('#bad-trips-tabs-content #rating-tab #rating-content');
   content.innerHTML = '';
 
   const { inputFrom, inputTo, btnApply } = components.getPeriodSelector(content);
-  const unitName = selectUnit.value;
 
   const [initData, { minDate, maxDate }] = await Promise.all([
-    fetchRating(departmentName, unitName, inputFrom.value, inputTo.value),
-    fetchMinMaxDate(unitName),
+    fetchRating(searchParams.unitId, inputFrom.value, inputTo.value),
+    fetchMinMaxDate(searchParams.unitId),
   ]);
 
   renderTable(content, initData, minDate, maxDate);
-  attachPeriodHandler(btnApply, departmentName, selectUnit, inputFrom, inputTo, minDate, maxDate);
+  attachPeriodHandler(btnApply, searchParams.unitId, inputFrom, inputTo, minDate, maxDate);
+
+  spinner.style.display = 'none';
 }
 
-const fetchRating = async (departmentName, unitName, dateFrom, dateTo) => {
-  const request = { departmentName, unitName, dateFrom, dateTo };
+const fetchRating = async (unitId, dateFrom, dateTo) => {
+  const request = { unitId, dateFrom, dateTo };
   return await postDataServer('couriersRaiting', request);
 }
 
-const fetchMinMaxDate = async (unitName) => {
-  const res = await postDataServer('minMaxDate', { unitName });
+const fetchMinMaxDate = async (unitId) => {
+  const res = await postDataServer('minMaxDate', { unitId });
   return res[0];
 }
 
-const attachPeriodHandler = (btn, departmentName, selectUnit, inputFrom, inputTo, minDate, maxDate) => {
+const attachPeriodHandler = (btn, unitId, inputFrom, inputTo, minDate, maxDate) => {
   btn.addEventListener('click', async () => {
     if (inputFrom.value < minDate) {
       alert(`Минимальная дата не ранее ${parseDate(minDate)}`);
       return;
     }
     document.querySelector('#rating-table').remove();
-    const data = await fetchRating(departmentName, selectUnit.value, inputFrom.value, inputTo.value);
+    const data = await fetchRating(unitId, inputFrom.value, inputTo.value);
     renderTable(document.querySelector('#bad-trips-tabs-content #rating-tab'), data, minDate, maxDate);
   });
 }
@@ -106,14 +106,12 @@ const buildRatingBody = (data) => {
   tbody.classList.add('tBody');
 
   data.forEach(courier => {
-    console.log(courier);
     const tr = components.getTagTR();
 
     const tdFio = components.getTagTD(courier.fio);
     const tdRating = components.getTagTD(courier.averageRaiting);
-    if (courier.averageRaiting > 160 && courier.allTrip > 15) tdRating.classList.add ('bg-success-subtle');
-    if (courier.averageRaiting > 100 && courier.averageRaiting < 120 && courier.allTrip > 15) tdRating.classList.add ('bg-warning-subtle');
-    if (courier.averageRaiting < 100 && courier.allTrip > 15) tdRating.classList.add ('bg-danger-subtle');
+
+    applyRatingStyles(tdRating, courier.averageRaiting, courier.allTrip)
 
     const certificate_all = components.getTagTD(courier.certificate_all);
     const tdAll = components.getTagTD(courier.allTrip);
@@ -132,7 +130,7 @@ const buildRatingBody = (data) => {
 }
 
 const applyRatingStyles = (td, rating, trips) => {
-  if (trips < 10) return;
+  if (trips <= 15) return;
 
   if (rating > 160) {
     td.classList.add('bg-success-subtle');
