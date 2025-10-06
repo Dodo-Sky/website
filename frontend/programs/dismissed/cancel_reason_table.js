@@ -186,7 +186,5 @@ export const renderCancelReasonTable = async () => {
     await renderTable(response)
     renderPagination({ paginationContentId: "dismissed-cancel-pagination", searchParams, totalPages: response.totalPages, onPageChange })
 
-    console.log("response", response)
-
     spinner.style.display = "none"
 }
