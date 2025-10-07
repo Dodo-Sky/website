@@ -1,101 +1,209 @@
+import { getServerApi, getDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
-import { renderCancelReasonTable } from './cancel_reason_table.js';
-import { renderInterviewTable } from './interview_table.js';
-import { renderProgramTable } from './program_table.js';
-;
+import { render_interviewTable } from './interviewTable.js';
+import { renderDataToPizzeria } from './renderTable_ dismissed.js';
+import { render_cancelContact } from './cancelContact.js';
 
-const content = document.getElementById('content');
+const content = document.querySelector('#content');
 
-const changeActiveTab = (className) => {
-  document.querySelectorAll('.tab-pane').forEach((tabPane) => {
-    tabPane.classList.remove('active');
-    tabPane.classList.remove('show');
-    tabPane.classList.add('d-none');
-  })
+export async function render(name, breadcrumbs) {
+  const breadcrumb = document.querySelector('.breadcrumb');
+  breadcrumb.innerHTML = '';
+  let navMainEl = components.getTagLI_breadcrumb('Главная');
+  let navManaergEl = components.getTagLI_breadcrumb(breadcrumbs);
+  let navControlEl = components.getTagLI_breadcrumbActive(name);
+  breadcrumb.append(navMainEl, navManaergEl, navControlEl);
 
-  const tab = document.querySelector(className);
-  tab.classList.add('active');
-  tab.classList.add('show');
-  tab.classList.remove('d-none');
-}
+  content.innerHTML = `
+    <div class="spinner-border" role="status">
+    <span class="visually-hidden">Загрузка...</span>
+    </div>`;
+  const dataFromServer = await getServerApi('dismissed');
+  let spiner = document.querySelector('.spinner-border');
+  spiner.style.display = 'none';
 
-const generateNav = () => {
-  const navEl = components.getTagUL_nav();
-  navEl.classList.add('nav-tabs');
+  const navbar = components.getTagDiv('navbar');
+  const dismissed_table = components.getTagDiv('dismissed-table');
 
-  const programEl = components.getTagLI_nav('Программа');
-  programEl.id = "program-nav"
-  programEl.classList.add('programNav');
-  programEl.classList.add('active');
+  const title = components.getTagH(3, name);
+  title.classList.add('text-center');
 
-  const interviewEl = components.getTagLI_nav('Выходное интервью');
-  interviewEl.id = "interview-nav"
-  interviewEl.classList.add('interviewNav');
+  content.append(title, navbar, dismissed_table);
 
-  const cancelEl = components.getTagLI_nav('Отмена решения');
-  cancelEl.id = "cancel-nav"
-  cancelEl.classList.add('cancelNav');
-
-  programEl.addEventListener('click', async () => {
-    changeActiveTab('#program-tab');
-    interviewEl.classList.remove('active');
-    cancelEl.classList.remove('active');
-    programEl.classList.add('active');
-    await renderProgramTable();
+  navbar.addEventListener('click', (e) => {
+    if (e.target.textContent === 'Выходное интервью') {
+      render_interviewTable(dataFromServer);
+    }
+    if (e.target.textContent === 'Отмена решения') {
+      render_cancelContact(getDataToContact(dataFromServer));
+    }
   });
 
-  interviewEl.addEventListener('click', async () => {
-    changeActiveTab('#interview-tab');
-    programEl.classList.remove('active');
-    cancelEl.classList.remove('active');
-    interviewEl.classList.add('active');
-    await renderInterviewTable();
-  });
-
-  cancelEl.addEventListener('click', async () => {
-    changeActiveTab('#cancel-tab');
-    programEl.classList.remove('active');
-    interviewEl.classList.remove('active');
-    cancelEl.classList.add('active');
-    await renderCancelReasonTable();
-  });
-
-  navEl.append(programEl, interviewEl, cancelEl);
-
-  return navEl;
+  getNavbar(dataFromServer, navbar);
 }
 
-const generateTabs = () => {
-  const tabsEl = components.getTagDiv('tabs');
-  tabsEl.classList.add('tabs');
+function getNavbar(dataFromServer, navbar) {
+  const navEl = components.getTagNav();
+  const ulEL_nav = components.getTagUL_nav();
+  ulEL_nav.classList.add('nav-tabs');
+  const navItem = components.getTagLI_navItem();
+  ulEL_nav.append(navItem);
 
-  const programTabContent = components.getTagDiv(['tab-pane', 'fade', 'show', 'active'], "program-tab");
-  const unitSelectorContent = components.getTagDiv(["mt-2", "row", "dismissed-unit-selector"], "dismissed-unit-selector");
-  const programContent = components.getTagDiv("program-content", "program-content");
-  const programSpinner = components.getSpinner("program-spinner");
-  programTabContent.append(unitSelectorContent, programSpinner, programContent);
+  const selectEl = components.getTagSelect();
+  selectEl.classList.add('nav-link');
+  selectEl.classList.add('nav-Navbar');
+  selectEl.classList.add('active');
+  let unitsName = [...new Set(dataFromServer.map((el) => el.unitName))];
+  unitsName = unitsName.filter((el) => el !== 'Офис').sort();
+  unitsName.forEach((unit) => {
+    const option = components.getTagOption(unit, unit);
+    selectEl.append(option);
+  });
+  navItem.append(selectEl);
 
-  const interviewTabContent = components.getTagDiv(['tab-pane', 'fade', 'd-none'], "interview-tab");
-  const interviewContent = components.getTagDiv("interview-content", "interview-content");
-  const interviewSpinner = components.getSpinner("interview-spinner");
-  interviewTabContent.append(interviewSpinner, interviewContent);
+  const liEl_prz = components.getTagLI_nav('Выходное интервью');
+  liEl_prz.classList.add('nav-Navbar');
+  const liEl_ofis = components.getTagLI_nav('Отмена решения');
+  liEl_ofis.classList.add('nav-Navbar');
+  ulEL_nav.append(navItem, liEl_prz, liEl_ofis);
+  navEl.append(ulEL_nav);
+  navbar.append(navEl);
 
-  const cancelTabContent = components.getTagDiv(['tab-pane', 'fade', 'd-none'], "cancel-tab");
-  const cancelContent = components.getTagDiv("cancel-content", "cancel-content");
-  const cancelSpinner = components.getSpinner("cancel-spinner");
-  cancelTabContent.append(cancelSpinner, cancelContent);
-
-  tabsEl.append(programTabContent, interviewTabContent, cancelTabContent);
-
-  return tabsEl;
+  // активация кнопок
+  let nav_Navbar = document.querySelectorAll('.nav-Navbar');
+  nav_Navbar.forEach((element) => {
+    element.addEventListener('click', function (e) {
+      nav_Navbar.forEach((el) => {
+        el.classList.remove('active');
+      });
+      if (e.target.className.includes('nav-Navbar')) {
+        e.target.classList.add('active');
+      }
+    });
+  });
+  filterData(dataFromServer, navbar);
 }
 
-export async function render() {
-  content.innerHTML = ""
+function filterData(dataFromServer, navbar) {
+  let dataUnit;
+  let dataFromServerToContact = getDataToContact(dataFromServer);
+  let selectEl = navbar.querySelector('.form-select');
 
-  const title = components.getTagH(3, "Обзвон уволенных", ["text-center", "sticky-top"]);
+  dataUnit = dataFromServerToContact.filter((el) => el.unitName === 'Тюмень-1');
+  renderDataToPizzeria(dataUnit, 'все время');
 
-  content.append(title, generateNav(), generateTabs());
+  selectEl.addEventListener('change', function (e) {
+    dataUnit = dataFromServerToContact.filter((el) => el.unitName === e.target.value);
+    editDataNoChange(dataUnit, 'все время');
+  });
 
-  await renderProgramTable();
+  // сортировка по времени
+  const tableContent = document.querySelector('.dismissed-table');
+  let filterData;
+
+  tableContent.addEventListener('click', function (e) {
+
+    // сортировка по должности
+    let pozitionArr = ['Все', ...new Set(dataUnit.map((el) => el.positionName))]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+
+    pozitionArr.forEach((pozition) => {
+      if (e.target.textContent === pozition) {
+        filterData = dataUnit.filter((el) => el.positionName === pozition);
+        editDataNoChange(filterData, 'за все время');
+      }
+      if (e.target.textContent === 'Все') {
+        editDataNoChange(dataUnit, 'за все время');
+      }
+    });
+
+    // сортировка по дате
+    if (e.target.textContent === 'За прошедшие сутки') {
+      filterData = dataUnit.filter((el) => {
+        let now = new Date();
+        return new Date(el.dateOfCall) > new Date(now.setDate(now.getDate() - 1));
+      });
+      editDataNoChange(filterData, 'за сутки');
+    }
+    if (e.target.textContent === 'За прошедшие 3 дня') {
+      filterData = dataUnit.filter((el) => {
+        let now = new Date();
+        return new Date(el.dateOfCall) > new Date(now.setDate(now.getDate() - 3));
+      });
+      editDataNoChange(filterData, 'за 3 дня');
+    }
+    if (e.target.textContent === 'За последнюю неделю') {
+      filterData = dataUnit.filter((el) => {
+        let now = new Date();
+        return new Date(el.dateOfCall) > new Date(now.setDate(now.getDate() - 7));
+      });
+      editDataNoChange(filterData, 'за неделю');
+    }
+    if (
+      e.target.textContent === 'Показать за все время' ||
+      e.target.textContent === 'Показать все'
+    ) {
+      editDataNoChange(dataUnit, 'все время');
+    }
+
+    // сортировка по менеджеру и управляющему
+    if (e.target.textContent === 'Только просроченные управляющим') {
+      filterData = dataUnit.filter((el) => el.result === 'Просрочка');
+      editDataNoChange(filterData, 'все время');
+    }
+    if (e.target.textContent === 'В работе управляющего (пустые)') {
+      filterData = dataUnit.filter((el) => !el.result);
+      editDataNoChange(filterData, 'все время');
+    }
+  });
+}
+
+//Проверка данных на отсутствие несохраненных данных
+function editDataNoChange(data, time) {
+  const btns = document.querySelector('.tBody').querySelectorAll('.arrayData-btn-save');
+  let isCnanges = false;
+  btns.forEach((element) => {
+    if (!element.disabled) isCnanges = true;
+  });
+  if (isCnanges) {
+    alert('Сохраните данные');
+  } else {
+    renderDataToPizzeria(data, time);
+  }
+}
+
+function getDataToContact(dismissed) {
+  const result = [];
+  for (const staff of dismissed) {
+    if (!staff.contact) continue;
+    staff.contact.forEach((contact) => {
+      result.push({
+        staffId: staff.id,
+        firstName: staff.firstName,
+        lastName: staff.lastName,
+        patronymicName: staff.patronymicName,
+        phoneNumber: staff.phoneNumber,
+        unitName: staff.unitName,
+        positionName: staff.positionName,
+        status: staff.status,
+        hiredOn: staff.hiredOn,
+        dismissedOn: staff.dismissedOn,
+        dismissalComment: staff.dismissalComment,
+        dismissalReason: staff.dismissalReason,
+        commentHR: staff.commentHR,
+        dateBack: staff.dateBack,
+        furtherCall: staff.furtherCall,
+        dateOfCall: contact.dateOfCall,
+        resolutionManager: contact.resolutionManager,
+        countCall: contact.countCall,
+        violation: contact.violation,
+        message: contact.message,
+        result: contact.result,
+        idContact: contact.idContact,
+        cancelResolutionHR: contact.cancelResolutionHR,
+      });
+    });
+  }
+  return result;
 }

@@ -332,16 +332,9 @@ function getTagCaption(textContent) {
   return element;
 }
 
-function getTagTHead(className = "") {
+function getTagTHead() {
   const element = document.createElement('thead');
   element.classList.add('table-secondary');
-
-  if (Array.isArray(className)) {
-    className.forEach(cn => element.classList.add(cn));
-  } else if (className.length) {
-    element.classList.add(className);
-  }
-
   return element;
 }
 
