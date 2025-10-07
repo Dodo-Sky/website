@@ -199,5 +199,7 @@ export const renderInterviewTable = async () => {
     await renderTable(response)
     renderPagination({ paginationContentId: "dismissed-interview-pagination", searchParams, totalPages: response.totalPages, onPageChange })
 
+    console.log("response", response)
+
     spinner.style.display = "none"
 }

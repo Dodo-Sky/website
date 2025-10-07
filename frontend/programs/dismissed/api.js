@@ -20,10 +20,6 @@ export const getStaffDismissedInworkResult = async (params) => {
     return await getDataServer(`staff-dismissed-inwork-result?unitId=${params.unitId}`);
 }
 
-export const getStaffDismissedDelayResult = async (params) => {
-    return await getDataServer(`staff-dismissed-delay-result?unitId=${params.unitId}`);
-}
-
 export const getStaffDismissedSuccessReturns = async (params) => {
     return await getDataServer(`staff-dismissed-success-returns?unitId=${params.unitId}`);
 }

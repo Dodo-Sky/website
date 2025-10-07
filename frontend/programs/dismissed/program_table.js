@@ -5,7 +5,6 @@ import * as components from "../../components";
 import {
     getStaffContacts,
     getStaffDismissed,
-    getStaffDismissedDelayResult,
     getStaffDismissedInworkResult,
     getStaffDismissedPositions,
     getStaffDismissedSuccessReturns,
@@ -25,7 +24,8 @@ const searchParams = {
     position: "all", // all | Название должности
     result: "all", // all | inwork | delay
     page: 1,
-    size: 30,
+    // size: 30,
+    size: 100,
 }
 
 const changeUnit = async (e) => {
@@ -77,8 +77,7 @@ const generateTHead = async (response) => {
     const positions = await getStaffDismissedPositions(searchParams);
     const inworkResult = await getStaffDismissedInworkResult(searchParams);
     const successReturns = await getStaffDismissedSuccessReturns(searchParams);
-    const delayResult = await getStaffDismissedDelayResult(searchParams);
-    
+
     const thead = components.getTagTHead('sticky-top');
     const theadRow = components.getTagTR();
 
@@ -114,21 +113,12 @@ const generateTHead = async (response) => {
             li.value = val;
 
             li.addEventListener('click', async () => {
-                const spinner = document.querySelector('#program-spinner');
-                
-                spinner.style.display = 'flex';
-
                 searchParams.dateOfCall = val;
                 searchParams.page = 1;
                 searchParams.position = "all"
                 searchParams.result = "all"
 
-                const response = await getStaffDismissed(searchParams);
-
-                await renderTable(response)
-                renderPagination({ paginationContentId: "dismissed-program-pagination", searchParams, totalPages: response.totalPages, onPageChange })
-
-                spinner.style.display = 'none';
+                await renderProgramTable();
             })
 
             timeUlDropdown.append(li);
@@ -146,21 +136,12 @@ const generateTHead = async (response) => {
         li.value = p;
 
         li.addEventListener('click', async () => {
-            const spinner = document.querySelector('#program-spinner');
-            
-            spinner.style.display = 'flex';
-
             searchParams.position = p === "Все" ? "all" : p;
             searchParams.page = 1;
             searchParams.dateOfCall = "all";
             searchParams.result = "all"
 
-            const response = await getStaffDismissed(searchParams);
-
-            await renderTable(response)
-            renderPagination({ paginationContentId: "dismissed-program-pagination", searchParams, totalPages: response.totalPages, onPageChange })
-
-            spinner.style.display = 'none';
+            await renderProgramTable();
         })
 
         positionUlDropdown.append(li);
@@ -180,21 +161,12 @@ const generateTHead = async (response) => {
         li.value = val;
 
         li.addEventListener('click', async () => {
-            const spinner = document.querySelector('#program-spinner');
-            
-            spinner.style.display = 'flex';
-
             searchParams.result = val
             searchParams.page = 1;
             searchParams.position = "all";
             searchParams.dateOfCall = "all";
 
-            const response = await getStaffDismissed(searchParams);
-
-            await renderTable(response)
-            renderPagination({ paginationContentId: "dismissed-program-pagination", searchParams, totalPages: response.totalPages, onPageChange })
-
-            spinner.style.display = 'none';
+            await renderProgramTable();
         })
 
         resultUlDropdown.append(li);
@@ -206,12 +178,7 @@ const generateTHead = async (response) => {
         spanWork.classList.add('text-bg-secondary');
         spanWork.textContent = inworkResult.count;
         resultBtnDropdown.append(spanWork);
-    }
- 
-    if (delayResult.count > 0) {
-        const resultBadge = components.getTagSpan_badge(delayResult.count);
-        resultBtnDropdown.append(resultBadge);
-    }
+      }
 
     resultCell.append(resultBtnDropdown, resultUlDropdown);
 
@@ -226,7 +193,6 @@ const generateTHead = async (response) => {
         countWrap.style.position = 'relative';
         countWrap.style.width = '10px';
         const spanEl = components.getTagSpan_badge(successReturns.success_returns);
-        spanEl.classList.remove('bg-danger');
         spanEl.classList.add('bg-success');
         spanEl.textContent = successReturns.success_returns;
         countWrap.append(spanEl);
@@ -337,7 +303,7 @@ const generateModal = (item) => {
 const generateTBody = (response) => {
     const tbody = components.getTagTBody();
     
-    response.items?.forEach((item) => {
+    response.items.forEach((item) => {
         const tr = components.getTagTR();
 
         const countCallTd = components.getTagTD();
@@ -364,9 +330,6 @@ const generateTBody = (response) => {
         if (item.cancel_resolution_hr) {
             resultTextarea.classList.add('bg-warning-subtle');
         }
-        if (item.result === 'Просрочка') {
-            resultTextarea.classList.add('bg-danger-subtle');
-        }
         result.append(resultTextarea)
 
         const dateBack = components.getTagTD()
@@ -383,10 +346,7 @@ const generateTBody = (response) => {
         const furtherCallTrueOpt = components.getTagOption('Да', true)
         furtherCallTrueOpt.selected = item.further_call === true
         const furtherCallFalseOpt = components.getTagOption('Нет', false)
-        if (item.further_call === null || item.further_call === false) {
-            furtherCallSelect.classList.add('bg-danger-subtle');
-            furtherCallFalseOpt.selected = true
-        }
+        furtherCallFalseOpt.selected = item.further_call === null || item.further_call === false
         furtherCallSelect.append(furtherCallTrueOpt, furtherCallFalseOpt)
         furtherCall.append(furtherCallSelect)
 
