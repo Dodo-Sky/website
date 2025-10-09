@@ -1,4 +1,4 @@
-import { getServerApi, postDataServer } from '../../apiServer.js';
+import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
 import { renderTable } from './renderTable_idTelegramm.js';
 

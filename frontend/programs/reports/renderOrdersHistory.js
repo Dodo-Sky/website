@@ -1,6 +1,6 @@
 import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
-import { formatWeek, renderChart } from "./utils";
+import { formatWeek, renderHistoryChartByWeek } from "./utils";
 
 const metricNames = {
     noProblem: 'Поездки без отметки курьера',
@@ -29,10 +29,10 @@ export const renderOrdersHistory = async (container, departmentName) => {
     )];
 
     selectEl.value = 'noProblem';
-    renderChart(chart, 'noProblem', allWeeks, history);
+    renderHistoryChartByWeek(chart, 'noProblem', allWeeks, history);
 
     selectEl.addEventListener('change', (e) => {
         const selectedMetric = e.target.value;
-        renderChart(chart, selectedMetric, allWeeks, history);
+        renderHistoryChartByWeek(chart, selectedMetric, allWeeks, history);
     });
 };
