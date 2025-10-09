@@ -1,6 +1,6 @@
 import { postDataServer } from '../../apiServer.js';
 import * as components from '../../components.js';
-import { formatWeek, renderChart } from "./utils";
+import { formatWeek, renderHistoryChartByWeek } from "./utils";
 
 const metricNames = {
     extensionShifts: 'Продление смен',
@@ -32,10 +32,10 @@ export const renderDisciplineHistory = async (container, departmentName) => {
     )];
 
     selectEl.value = 'extensionShifts';
-    renderChart(chart, 'extensionShifts', allWeeks, history);
+    renderHistoryChartByWeek(chart, 'extensionShifts', allWeeks, history);
 
     selectEl.addEventListener('change', (e) => {
         const selectedMetric = e.target.value;
-        renderChart(chart, selectedMetric, allWeeks, history);
+        renderHistoryChartByWeek(chart, selectedMetric, allWeeks, history);
     });
 };
