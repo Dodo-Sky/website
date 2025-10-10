@@ -1,14 +1,15 @@
 import * as components from '../../components.js';
-import { getCourierStaffing } from "./api.js";
+import { getCourierStaffingAsc } from "./api.js";
 import { renderStaffingChart } from "./utils.js";
 
 const metricNames = {
     "staffing_level_percent": 'Укомплектованность (%)',
-    "median_orders_count": 'Среднее кол-во заказов',
+    "median_orders_count": 'Усредненное кол-во заказов',
     "total_delivery_per_month": 'Всего на доставку  в месяц',
     "couriers_required": 'Требуется курьеров',
     "couriers_actual": 'Курьеры факт',
     "need_surplus": 'Потребность / Излишки',
+    "stop_no_couriers": 'Стоп - нет курьеров',
 };
 
 export const renderCourierStaffingChart = async (container, year) => {
@@ -23,7 +24,7 @@ export const renderCourierStaffingChart = async (container, year) => {
 
     container.append(selectEl, chart);
 
-    const staffing = await getCourierStaffing({ year });
+    const staffing = await getCourierStaffingAsc({ year });
 
     selectEl.value = 'staffing_level_percent';
     renderStaffingChart(chart, 'staffing_level_percent', staffing);
