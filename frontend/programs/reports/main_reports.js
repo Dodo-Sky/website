@@ -124,6 +124,8 @@ const tabs = {
 
       const years = await getCourierStaffingYears();
 
+      years.push({ year: '2024' });
+
       if (years.length > 1) {
         const yearsSelect = components.getTagSelect("courier-staffing-year-select");
         yearsSelect.classList.add('mt-2');

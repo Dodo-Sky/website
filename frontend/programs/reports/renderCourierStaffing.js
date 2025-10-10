@@ -1,10 +1,10 @@
 import * as components from "../../components.js";
 
-import { getCourierStaffing } from "./api.js";
-import { getRussianMonth } from "./utils.js";
+import { getCourierStaffingDesc } from "./api.js";
+import { formatStopDuration, getRussianMonth } from "./utils.js";
 
 export const renderCourierStaffing = async (year) => {
-    const staffing = await getCourierStaffing({ year });
+    const staffing = await getCourierStaffingDesc({ year });
 
     const table = components.getTagTable();
     table.classList.add('table-sm');
@@ -30,7 +30,7 @@ const buildHeader = () => {
         components.getTagTH('Пиццерия'),
         components.getTagTH('Месяц'),
         components.getTagTH('Укомплектованность (%)'),
-        components.getTagTH('Среднее кол-во заказов'),
+        components.getTagTH('Усредненное кол-во заказов'),
         components.getTagTH('Всего на доставку  в месяц'),
         components.getTagTH('Требуется курьеров'),
         components.getTagTH('Курьеры факт'),
@@ -48,29 +48,29 @@ const buildBody = (staffing) => {
 
     staffing.forEach(item => {
         const tr = components.getTagTR();
-        let stop = ""
+        // let stop = ""
 
-        if (item.stop_no_couriers) {
-            if (item.stop_no_couriers.years) {
-                stop = `${item.stop_no_couriers.years} лет `
-            }
+        // if (item.stop_no_couriers) {
+        //     if (item.stop_no_couriers.years) {
+        //         stop += `${item.stop_no_couriers.years} лет `
+        //     }
 
-            if (item.stop_no_couriers.mons) {
-                stop = `${item.stop_no_couriers.months} мес. `
-            }
+        //     if (item.stop_no_couriers.mons) {
+        //         stop += `${item.stop_no_couriers.months} мес. `
+        //     }
 
-            if (item.stop_no_couriers.days) {
-                stop = `${item.stop_no_couriers.days} д. `
-            }
+        //     if (item.stop_no_couriers.days) {
+        //         stop += `${item.stop_no_couriers.days} д. `
+        //     }
 
-            if (item.stop_no_couriers.hours) {
-                stop = `${item.stop_no_couriers.hours} ч. `
-            }
+        //     if (item.stop_no_couriers.hours) {
+        //         stop += `${item.stop_no_couriers.hours} ч. `
+        //     }
 
-            if (item.stop_no_couriers.minutes) {
-                stop = `${item.stop_no_couriers.minutes} мин. `
-            }
-        }
+        //     if (item.stop_no_couriers.minutes) {
+        //         stop += `${item.stop_no_couriers.minutes} мин. `
+        //     }
+        // }
 
         const unitName = components.getTagTD(item.unit_name)
         const month = components.getTagTD(getRussianMonth(item.month))
@@ -80,7 +80,7 @@ const buildBody = (staffing) => {
         const couriersRequired = components.getTagTD(item.couriers_required)
         const couriersActual = components.getTagTD(item.couriers_actual)
         const needSurplus = components.getTagTD(item.need_surplus)
-        const stopNoCouriers = components.getTagTD(stop)
+        const stopNoCouriers = components.getTagTD(formatStopDuration(item.stop_no_couriers))
 
         tr.append(
             unitName,

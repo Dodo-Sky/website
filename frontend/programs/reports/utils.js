@@ -1,37 +1,6 @@
-let chartInstance = null;
+import { defaultChartOptions } from "./chartConfigs.js";
 
-const options = {
-    chart: {
-        type: 'line',
-        height: 400,
-        zoom: {
-            enabled: false
-        },
-        toolbar: {
-            show: false
-        }
-    },
-    series: [],
-    stroke: {
-        curve: 'smooth'
-    },
-    xaxis: {
-        categories: [],
-        labels: {
-            rotate: -45
-        }
-    },
-    tooltip: {
-        shared: true,
-        intersect: false,
-        x: {
-            show: true
-        }
-    },
-    legend: {
-        position: 'top'
-    }
-};
+let chartInstance = null;
 
 const months = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -40,6 +9,65 @@ const months = [
 
 export const getRussianMonth = (monthIndex) => {
     return months[monthIndex - 1];
+};
+
+export const convertStopToMinutes = (stopData) => {
+    if (!stopData) return 0;
+    
+    let totalMinutes = 0;
+    
+    if (stopData.years) {
+        totalMinutes += stopData.years * 365 * 24 * 60;
+    }
+    if (stopData.months) {
+        totalMinutes += stopData.months * 30 * 24 * 60;
+    }
+    if (stopData.days) {
+        totalMinutes += stopData.days * 24 * 60;
+    }
+    if (stopData.hours) {
+        totalMinutes += stopData.hours * 60;
+    }
+    if (stopData.minutes) {
+        totalMinutes += stopData.minutes;
+    }
+    if (stopData.seconds) {
+        totalMinutes += stopData.seconds / 60;
+    }
+    
+    return Math.round(totalMinutes);
+};
+
+export const formatStopDuration = (stopData) => {
+    let stop = ""
+   
+    if (stopData) {
+        if (stopData.years) {
+            stop += `${stopData.years} лет `
+        }
+
+        if (stopData.mons) {
+            stop += `${stopData.months} мес. `
+        }
+
+        if (stopData.days) {
+            stop += `${stopData.days} д. `
+        }
+
+        if (stopData.hours) {
+            stop += `${stopData.hours} ч. `
+        }
+
+        if (stopData.minutes) {
+            stop += `${stopData.minutes} мин. `
+        }
+
+        if (stopData.seconds) {
+            stop += `${stopData.seconds} сек. `
+        }
+    }
+
+    return stop;
 };
 
 export const formatWeek = (startStr, endStr) => {
@@ -52,7 +80,7 @@ export const formatWeek = (startStr, endStr) => {
     return `${s} – ${e}`;
 }
 
-export const buildSeries = (metricKey, allWeeks, history) => {
+const buildSeries = (metricKey, allWeeks, history) => {
     const grouped = {};
 
     history.forEach(row => {
@@ -74,26 +102,37 @@ export const renderHistoryChartByWeek = (chartContainer, metricKey, allWeeks, hi
     }
 
     const series = buildSeries(metricKey, allWeeks, history);
-    options.series = series;
-    options.xaxis.categories = allWeeks;
-    options.colors = series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`)
+    const options = {
+        ...defaultChartOptions,
+        series,
+        xaxis: {
+            categories: allWeeks,
+        },
+        colors: series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`)
+    }
 
     chartInstance = new ApexCharts(chartContainer, options);
     chartInstance.render();
 };
 
-export const buildStaffingSeries = (metricKey, allMonths, staffing) => {
+const buildStaffingSeries = (metricKey, allMonths, staffing) => {
     const grouped = {};
 
     staffing.forEach(item => {
         const month = getRussianMonth(item.month);
         if (!grouped[item.unit_name]) grouped[item.unit_name] = {};
-        grouped[item.unit_name][month] = item[metricKey];
+        
+        if (metricKey === 'stop_no_couriers') {
+            grouped[item.unit_name][month] = convertStopToMinutes(item[metricKey]);
+        } else {
+            grouped[item.unit_name][month] = item[metricKey];
+        }
     });
 
     return Object.entries(grouped).map(([unitName, valuesByMonth]) => ({
         name: unitName,
-        data: allMonths.map(month => valuesByMonth[month] !== null ? parseFloat(valuesByMonth[month]) : null)
+        data: allMonths.map(month => valuesByMonth[month] !== null ? parseFloat(valuesByMonth[month]) : null),
+        hidden: unitName !== "Итого / среднее",
     }));
 }
 
@@ -105,9 +144,44 @@ export const renderStaffingChart = (chartContainer, metricKey, staffing) => {
     
     const allMonths = [...new Set(staffing.map(item => getRussianMonth(item.month)))];
     const series = buildStaffingSeries(metricKey, allMonths, staffing);
-    options.series = series;
-    options.xaxis.categories = allMonths;
-    options.colors = series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`)
+
+    const options = {
+        ...defaultChartOptions,
+        series,
+        xaxis: {
+            categories: allMonths,
+        },
+        colors: series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`),
+        tooltip: {
+            ...defaultChartOptions.tooltip,
+            custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+                const month = w.globals.labels[dataPointIndex];
+                let tooltipContent = `
+                    <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">${getRussianMonth(month)}</div>
+                `;
+
+                for (let i = 0; i < series.length; i++) {
+                    const value = series[i][dataPointIndex];
+                    if (value !== null && value !== undefined) {
+                        const unitName = w.globals.seriesNames[i];
+                        const originalData = staffing.find(item => item.month === month && item.unit_name === unitName);
+                        const formattedDuration = originalData ? formatStopDuration(originalData.stop_no_couriers) : value;
+                        
+                        tooltipContent += `
+                            <div class="apexcharts-tooltip-series-group" style="order: ${i + 1}; display: flex;">
+                                <div class="apexcharts-tooltip-y-group">
+                                    <span class="apexcharts-tooltip-text-y-label">${unitName}:</span>
+                                    <span class="apexcharts-tooltip-text-y-value">${metricKey === 'stop_no_couriers' ? formattedDuration : value}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                return tooltipContent;
+            }
+        }
+    }
 
     chartInstance = new ApexCharts(chartContainer, options);
     chartInstance.render();
