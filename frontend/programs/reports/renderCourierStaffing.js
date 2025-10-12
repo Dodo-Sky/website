@@ -3,6 +3,21 @@ import * as components from "../../components.js";
 import { getCourierStaffingDesc } from "./api.js";
 import { formatStopDuration, getRussianMonth } from "./utils.js";
 
+const formatWithSpace = (num) => {
+    if (typeof num !== "number") {
+        num = Number(num);
+    }
+    
+    if (isNaN(num)) return '';
+    
+    if (num >= 1000) {
+        // Разделяем на группы по 3 знака, разделитель — пробел
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    return num.toString();
+}
+
 export const renderCourierStaffing = async (year) => {
     const staffing = await getCourierStaffingDesc({ year });
 
@@ -29,7 +44,7 @@ const buildHeader = () => {
     tr.append(
         components.getTagTH('Пиццерия'),
         components.getTagTH('Месяц'),
-        components.getTagTH('Укомплектованность (%)'),
+        components.getTagTH('Укомплектованность'),
         components.getTagTH('Усредненное кол-во заказов'),
         components.getTagTH('Всего на доставку  в месяц'),
         components.getTagTH('Требуется курьеров'),
@@ -48,35 +63,11 @@ const buildBody = (staffing) => {
 
     staffing.forEach(item => {
         const tr = components.getTagTR();
-        // let stop = ""
-
-        // if (item.stop_no_couriers) {
-        //     if (item.stop_no_couriers.years) {
-        //         stop += `${item.stop_no_couriers.years} лет `
-        //     }
-
-        //     if (item.stop_no_couriers.mons) {
-        //         stop += `${item.stop_no_couriers.months} мес. `
-        //     }
-
-        //     if (item.stop_no_couriers.days) {
-        //         stop += `${item.stop_no_couriers.days} д. `
-        //     }
-
-        //     if (item.stop_no_couriers.hours) {
-        //         stop += `${item.stop_no_couriers.hours} ч. `
-        //     }
-
-        //     if (item.stop_no_couriers.minutes) {
-        //         stop += `${item.stop_no_couriers.minutes} мин. `
-        //     }
-        // }
-
         const unitName = components.getTagTD(item.unit_name)
         const month = components.getTagTD(getRussianMonth(item.month))
-        const staffingLevelPercent = components.getTagTD(item.staffing_level_percent)
+        const staffingLevelPercent = components.getTagTD(item.staffing_level_percent + "%")
         const medianOrdersCount = components.getTagTD(item.median_orders_count)
-        const totalDeliveryPerMonth = components.getTagTD(item.total_delivery_per_month)
+        const totalDeliveryPerMonth = components.getTagTD(formatWithSpace(item.total_delivery_per_month))
         const couriersRequired = components.getTagTD(item.couriers_required)
         const couriersActual = components.getTagTD(item.couriers_actual)
         const needSurplus = components.getTagTD(item.need_surplus)
