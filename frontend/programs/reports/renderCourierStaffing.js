@@ -1,7 +1,7 @@
 import * as components from "../../components.js";
 
-import { getCourierStaffingDesc } from "./api.js";
-import { formatStopDuration, getRussianMonth } from "./utils.js";
+import { getCourierStaffingDesc, getCourierStaffingLevelTop, getCourierStaffingStopTop } from "./api.js";
+import { convertStopToMinutes, formatStopDuration, getRussianMonth } from "./utils.js";
 
 const formatWithSpace = (num) => {
     if (typeof num !== "number") {
@@ -20,6 +20,8 @@ const formatWithSpace = (num) => {
 
 export const renderCourierStaffing = async (year) => {
     const staffing = await getCourierStaffingDesc({ year });
+    const staffingLevelTop = await getCourierStaffingLevelTop({ year });
+    const staffingStopTop = await getCourierStaffingStopTop({ year });
 
     const table = components.getTagTable();
     table.classList.add('table-sm');
@@ -29,7 +31,7 @@ export const renderCourierStaffing = async (year) => {
         'Укомплектованность курьеров',
     );
     const thead = buildHeader();
-    const tbody = buildBody(staffing);
+    const tbody = buildBody(staffing, staffingLevelTop, staffingStopTop);
 
     table.append(caption, thead, tbody);
 
@@ -41,12 +43,14 @@ const buildHeader = () => {
     thead.classList.add('sticky-top');
     const tr = components.getTagTR();
 
+    const tooltipText = "По текущему месяцу указывается план количества заказов на доставку. По прошедшим месяцам указывается фактическое количество заказов на доставку. План заказов рассчитывается на основе прошлогодних данных месяца (с учетом поправочного коэффициента разницы продаж между месяцами)."
+    
     tr.append(
         components.getTagTH('Пиццерия'),
         components.getTagTH('Месяц'),
         components.getTagTH('Укомплектованность'),
         components.getTagTH('Усредненное кол-во заказов'),
-        components.getTagTH('План / факт (итого заказов в месяц)'),
+        components.getTagTH('План / факт (итого заказов в месяц)', tooltipText),
         components.getTagTH('Требуется курьеров'),
         components.getTagTH('Курьеры факт'),
         components.getTagTH('Потребность / Излишки'),
@@ -57,11 +61,14 @@ const buildHeader = () => {
     return thead;
 };
 
-const buildBody = (staffing) => {
+const buildBody = (staffing, staffingLevelTop, staffingStopTop) => {
     const tbody = components.getTagTBody();
     tbody.classList.add('tBody');
 
     staffing.forEach(item => {
+        const levelTop = staffingLevelTop[item.month]
+        const stopTop = staffingStopTop[item.month]
+
         const tr = components.getTagTR();
         const unitName = components.getTagTD(item.unit_name)
         const month = components.getTagTD(getRussianMonth(item.month))
@@ -72,6 +79,41 @@ const buildBody = (staffing) => {
         const couriersActual = components.getTagTD(item.couriers_actual)
         const needSurplus = components.getTagTD(item.need_surplus)
         const stopNoCouriers = components.getTagTD(formatStopDuration(item.stop_no_couriers))
+
+        if (item.unit_name === levelTop[0].unitName) {
+            staffingLevelPercent.classList.add('bg-success-subtle')
+        } else if (item.unit_name === levelTop[levelTop.length - 1].unitName) {
+            staffingLevelPercent.classList.add('bg-danger-subtle')
+        } else if (levelTop.some(t => t.unitName === item.unit_name)) {
+            const current = levelTop.find(t => t.unitName === item.unit_name)
+
+            if (current.value === levelTop[0].value) {
+                staffingLevelPercent.classList.add('bg-success-subtle')
+            } else if (current.value === levelTop[levelTop.length - 1].value) {
+                staffingLevelPercent.classList.add('bg-danger-subtle')
+            } else {
+                staffingLevelPercent.classList.add('bg-warning-subtle')
+            }
+        }
+
+        const first = stopTop[0]
+        const last = stopTop[stopTop.length - 1]
+
+        if (item.unit_name === first.unitName) {
+            stopNoCouriers.classList.add('bg-success-subtle')
+        } else if (item.unit_name === last.unitName) {
+            stopNoCouriers.classList.add('bg-danger-subtle')
+        } else if (stopTop.some(t => t.unitName === item.unit_name)) {
+            const current = stopTop.find(t => t.unitName === item.unit_name)
+
+            if (convertStopToMinutes(current.value) === convertStopToMinutes(first.value)) {
+                stopNoCouriers.classList.add('bg-success-subtle')
+            } else if (convertStopToMinutes(current.value) === convertStopToMinutes(last.value)) {
+                stopNoCouriers.classList.add('bg-danger-subtle')
+            } else {
+                stopNoCouriers.classList.add('bg-warning-subtle')
+            }
+        }
 
         tr.append(
             unitName,
@@ -87,15 +129,15 @@ const buildBody = (staffing) => {
 
         if (item.unit_name === "Итого / среднее") {
             tr.classList.add('fw-bold')
-            unitName.classList.add('bg-warning-subtle')
-            month.classList.add('bg-warning-subtle')
-            staffingLevelPercent.classList.add('bg-warning-subtle')
-            medianOrdersCount.classList.add('bg-warning-subtle')
-            totalDeliveryPerMonth.classList.add('bg-warning-subtle')
-            couriersRequired.classList.add('bg-warning-subtle')
-            couriersActual.classList.add('bg-warning-subtle')
-            needSurplus.classList.add('bg-warning-subtle')
-            stopNoCouriers.classList.add('bg-warning-subtle')
+            unitName.classList.add('bg-info-subtle')
+            month.classList.add('bg-info-subtle')
+            staffingLevelPercent.classList.add('bg-info-subtle')
+            medianOrdersCount.classList.add('bg-info-subtle')
+            totalDeliveryPerMonth.classList.add('bg-info-subtle')
+            couriersRequired.classList.add('bg-info-subtle')
+            couriersActual.classList.add('bg-info-subtle')
+            needSurplus.classList.add('bg-info-subtle')
+            stopNoCouriers.classList.add('bg-info-subtle')
         }
 
         tbody.append(tr);

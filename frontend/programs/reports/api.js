@@ -11,3 +11,11 @@ export const getCourierStaffingDesc = async (params) => {
 export const getCourierStaffingAsc = async (params) => {
     return await getDataServer(`courier-staffing-asc?year=${params.year}`);
 }
+
+export const getCourierStaffingLevelTop = async (params) => {
+    return await getDataServer(`courier-staffing-level-top?year=${params.year}`);
+}
+
+export const getCourierStaffingStopTop = async (params) => {
+    return await getDataServer(`courier-staffing-stop-top?year=${params.year}`);
+}
