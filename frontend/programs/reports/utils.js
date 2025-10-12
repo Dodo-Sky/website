@@ -91,7 +91,8 @@ const buildSeries = (metricKey, allWeeks, history) => {
 
     return Object.entries(grouped).map(([unitName, valuesByWeek]) => ({
         name: unitName,
-        data: allWeeks.map(week => valuesByWeek[week] !== null ? parseFloat(valuesByWeek[week]) : null)
+        data: allWeeks.map(week => valuesByWeek[week] !== null ? parseFloat(valuesByWeek[week]) : null),
+        hidden: unitName !== "ИТОГО",
     }));
 };
 
@@ -154,7 +155,7 @@ export const renderStaffingChart = (chartContainer, metricKey, staffing) => {
         colors: series.map((_, i) => `hsl(${(i * 360) / series.length}, 70%, 50%)`),
         tooltip: {
             ...defaultChartOptions.tooltip,
-            custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+            custom: ({ series, dataPointIndex, w }) => {
                 const month = w.globals.labels[dataPointIndex];
                 let tooltipContent = `
                     <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">${getRussianMonth(month)}</div>
