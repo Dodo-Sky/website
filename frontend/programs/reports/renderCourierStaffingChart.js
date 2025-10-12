@@ -5,7 +5,7 @@ import { renderStaffingChart } from "./utils.js";
 const metricNames = {
     "staffing_level_percent": 'Укомплектованность (%)',
     "median_orders_count": 'Усредненное кол-во заказов',
-    "total_delivery_per_month": 'Всего на доставку  в месяц',
+    "total_delivery_per_month": 'План / факт (итого заказов в месяц)',
     "couriers_required": 'Требуется курьеров',
     "couriers_actual": 'Курьеры факт',
     "need_surplus": 'Потребность / Излишки',
