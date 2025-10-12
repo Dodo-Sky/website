@@ -46,7 +46,7 @@ const buildHeader = () => {
         components.getTagTH('Месяц'),
         components.getTagTH('Укомплектованность'),
         components.getTagTH('Усредненное кол-во заказов'),
-        components.getTagTH('Всего на доставку  в месяц'),
+        components.getTagTH('План / факт (итого заказов в месяц)'),
         components.getTagTH('Требуется курьеров'),
         components.getTagTH('Курьеры факт'),
         components.getTagTH('Потребность / Излишки'),
