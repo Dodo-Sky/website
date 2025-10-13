@@ -96,19 +96,14 @@ const buildBody = (staffing, staffingLevelTop, staffingStopTop) => {
             }
         }
 
-        const first = stopTop[0]
         const last = stopTop[stopTop.length - 1]
 
-        if (item.unit_name === first.unitName) {
-            stopNoCouriers.classList.add('bg-success-subtle')
-        } else if (item.unit_name === last.unitName) {
+        if (item.unit_name === last.unitName) {
             stopNoCouriers.classList.add('bg-danger-subtle')
         } else if (stopTop.some(t => t.unitName === item.unit_name)) {
             const current = stopTop.find(t => t.unitName === item.unit_name)
 
-            if (convertStopToMinutes(current.value) === convertStopToMinutes(first.value)) {
-                stopNoCouriers.classList.add('bg-success-subtle')
-            } else if (convertStopToMinutes(current.value) === convertStopToMinutes(last.value)) {
+            if (convertStopToMinutes(current.value) === convertStopToMinutes(last.value)) {
                 stopNoCouriers.classList.add('bg-danger-subtle')
             } else {
                 stopNoCouriers.classList.add('bg-warning-subtle')
