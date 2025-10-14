@@ -1,4 +1,4 @@
-import { postDataServer } from "../../apiServer";
+import { getDataServer } from "../../apiServer";
 import { renderPagination } from "../../common/pagination";
 import { renderUnitSelector } from "../../common/updateUnitSelector";
 import * as components from "../../components";
@@ -402,6 +402,7 @@ const generateTBody = (response) => {
 
             if (currentValue !== resolutionManagerValue) {
                 saveBtn.disabled = false;
+                saveBtn.classList.add("unsaved_changes");
                 return
             }
 
@@ -410,7 +411,14 @@ const generateTBody = (response) => {
             const furtherCallValue = item.further_call === true
             const furtherCallSelectValue = furtherCallSelect.value === 'true'
 
-            saveBtn.disabled = resultTextarea.value === resultValue && dateBackInput.value === dateBackValue && furtherCallSelectValue === furtherCallValue
+            const isDisabled = resultTextarea.value === resultValue && dateBackInput.value === dateBackValue && furtherCallSelectValue === furtherCallValue
+            saveBtn.disabled = isDisabled
+
+            if (isDisabled) {
+                saveBtn.classList.remove("unsaved_changes");
+            } else {
+                saveBtn.classList.add("unsaved_changes");
+            }
         })
 
         resultTextarea.addEventListener("input", (e) => {
@@ -419,6 +427,7 @@ const generateTBody = (response) => {
 
             if (currentValue !== resultValue) {
                 saveBtn.disabled = false;
+                saveBtn.classList.add("unsaved_changes");
                 return
             }
         
@@ -428,7 +437,14 @@ const generateTBody = (response) => {
             const furtherCallValue = item.further_call === true
             const furtherCallSelectValue = furtherCallSelect.value === 'true'
        
-            saveBtn.disabled = dateBackInput.value === dateBackValue && furtherCallSelectValue === furtherCallValue && resolutionManagerSelectValue === resolutionManagerValue
+            const isDisabled = dateBackInput.value === dateBackValue && furtherCallSelectValue === furtherCallValue && resolutionManagerSelectValue === resolutionManagerValue
+            saveBtn.disabled = isDisabled
+
+            if (isDisabled) {
+                saveBtn.classList.remove("unsaved_changes");
+            } else {
+                saveBtn.classList.add("unsaved_changes");
+            }
         })
 
         dateBackInput.addEventListener("input", (e) => {
@@ -437,6 +453,7 @@ const generateTBody = (response) => {
 
             if (currentValue !== dateBackValue) {
                 saveBtn.disabled = false;
+                saveBtn.classList.add("unsaved_changes");
                 return
             }
 
@@ -446,7 +463,14 @@ const generateTBody = (response) => {
             const furtherCallValue = item.further_call === true
             const furtherCallSelectValue = furtherCallSelect.value === 'true'
        
-            saveBtn.disabled = resultTextarea.value === resultValue && furtherCallSelectValue === furtherCallValue && resolutionManagerSelectValue === resolutionManagerValue
+            const isDisabled = resultTextarea.value === resultValue && furtherCallSelectValue === furtherCallValue && resolutionManagerSelectValue === resolutionManagerValue
+            saveBtn.disabled = isDisabled
+
+            if (isDisabled) {
+                saveBtn.classList.remove("unsaved_changes");
+            } else {
+                saveBtn.classList.add("unsaved_changes");
+            }
         })
 
         furtherCallSelect.addEventListener("change", (e) => {
@@ -455,6 +479,7 @@ const generateTBody = (response) => {
 
             if (currentValue !== furtherCallValue) {
                 saveBtn.disabled = false;
+                saveBtn.classList.add("unsaved_changes");
                 return
             }
 
@@ -463,19 +488,27 @@ const generateTBody = (response) => {
             const resolutionManagerValue = item.resolution_manager === null || item.resolution_manager === true
             const resolutionManagerSelectValue = resolutionManagerSelect.value === 'true'
 
-            saveBtn.disabled = dateBackInput.value === dateBackValue && resultTextarea.value === resultValue && resolutionManagerSelectValue === resolutionManagerValue
+            const isDisabled = dateBackInput.value === dateBackValue && resultTextarea.value === resultValue && resolutionManagerSelectValue === resolutionManagerValue
+            saveBtn.disabled = isDisabled
+
+            if (isDisabled) {
+                saveBtn.classList.remove("unsaved_changes");
+            } else {
+                saveBtn.classList.add("unsaved_changes");
+            }
         })
 
         saveBtn.addEventListener("click", async () => {
             await updateStaffDismissed(item.id_contact, {
                 resolution_manager: resolutionManagerSelect.value === "true",
                 result: resultTextarea.value,
-                date_back: dateBackInput.value,
+                date_back: dateBackInput.value.length ? dateBackInput.value : null,
                 further_call: furtherCallSelect.value === "true",
                 dismissed_id: item.dismissed_id
             })
 
             saveBtn.disabled = true
+            saveBtn.classList.remove("unsaved_changes");
         })
 
         tr.append(
@@ -525,12 +558,12 @@ export const renderProgramTable = async () => {
     content.append(tableContent, paginationContent)
 
     const departmentName = localStorage.getItem('departmentName');
-    const units = await postDataServer('get_units', { payload: departmentName });
-    const filteredUnits = units.filter(unit => unit.type === "Пиццерия" || unit.type === "ПРЦ");
-    searchParams.unitId = filteredUnits[0].id;
+    const units = await getDataServer(`staff-dismissed-units?departmentName=${departmentName}`);
+
+    searchParams.unitId = units[0].id;
 
     renderUnitSelector({
-        units: filteredUnits,
+        units,
         programName: "dismissed",
         selectListener: async (e) => await changeUnit(e),
         withUpdate: false

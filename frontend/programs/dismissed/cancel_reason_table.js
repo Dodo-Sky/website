@@ -66,10 +66,18 @@ const generateTBody = (response) => {
 
             if (value === "null" && cancelResolutionHRValueIsNull) {
                 saveBtn.disabled = true;
+                saveBtn.classList.remove("unsaved_changes");
                 return
             }
 
-            saveBtn.disabled = currentValue === item.cancel_resolution_hr
+            const isDisabled = currentValue === item.cancel_resolution_hr
+            saveBtn.disabled = isDisabled
+
+            if (isDisabled) {
+                saveBtn.classList.remove("unsaved_changes");
+            } else {
+                saveBtn.classList.add("unsaved_changes");
+            }
         })
 
         saveBtn.addEventListener("click", async () => {
@@ -80,9 +88,11 @@ const generateTBody = (response) => {
             })
 
             saveBtn.disabled = true
+            saveBtn.classList.remove("unsaved_changes");
         })
 
         tr.append(
+            components.getTagTD(formatDate(item.date_of_call, "DD.MM.YYYY")),
             components.getTagTD(formatDate(item.dismissedOn, "DD.MM.YYYY")),
             components.getTagTD(`${item.lastName} ${item.firstName} ${item.patronymicName}`),
             components.getTagTD(item.unitName),
@@ -103,6 +113,7 @@ const generateTHead = async () => {
     const thead = components.getTagTHead('sticky-top');
     const theadRow = components.getTagTR();
 
+    const thCallCell = components.getTagTH("Дата звонка");
     const thTimeCell = components.getTagTH("Дата увольнения");
     const fioCell = components.getTagTH("ФИО сотрудника");
     const unitCell = components.getTagTH("Пиццерия");
@@ -130,6 +141,7 @@ const generateTHead = async () => {
     const controlCell = components.getTagTH("Управление");
 
     theadRow.append(
+        thCallCell,
         thTimeCell,
         fioCell,
         unitCell,
