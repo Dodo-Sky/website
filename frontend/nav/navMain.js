@@ -1,9 +1,9 @@
 import {
   clearAuthData,
   getLoginForm,
+  getUserFioAndUnitName,
   getUserRole,
   isLoggedIn,
-  getUserFioAndUnitName,
 } from '../auth/login.js';
 import * as components from '../components.js';
 import { SUPPORT_URL } from "../config";
@@ -103,13 +103,13 @@ content.addEventListener('click', async function (e) {
       const module = await import('../programs/defects/main_defects.js');
       module.render(nameProgramm, breadcrumbs);
     }
+  }
 
-    if (e.target?.dataset?.id === 'Обзвон уволенных') {
-      const nameProgramm = e.target.previousSibling.previousSibling.textContent;
-      let breadcrumbs = breadcrumb.lastChild.textContent;
-      const module = await import('../programs/dismissed/main_dismissed.js');
-      module.render(nameProgramm, breadcrumbs);
-    }
+  if (e.target?.dataset?.id === 'Обзвон уволенных') {
+    const nameProgramm = e.target.previousSibling.previousSibling.textContent;
+    let breadcrumbs = breadcrumb.lastChild.textContent;
+    const module = await import('../programs/dismissed/main_dismissed.js');
+    module.render(nameProgramm, breadcrumbs);
   }
 
   if (e.target?.dataset?.id === 'Проблемные поездки') {
