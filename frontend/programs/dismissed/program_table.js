@@ -318,7 +318,7 @@ const generateModal = (item) => {
                 Готовы вернуться? Обсудим все преимущества!<br>
             `;
 
-            const letter = item.positionName === 'Авто, личное ТС' ? letterForCourier : letterForOther;
+            const letter = item.positionName === 'Авто, личное ТС' || item.positionName === 'Автомобильный' ? letterForCourier : letterForOther;
             modalBody.innerHTML = modalContent + commentHR + letter;
             fade.dataset.loaded = 'true';
         } catch (e) {
