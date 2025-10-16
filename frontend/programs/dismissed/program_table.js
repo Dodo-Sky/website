@@ -351,7 +351,7 @@ const generateTBody = (response) => {
         countCallTd.append(btnCount, modal);
         const resolutionManager = components.getTagTD();
         const resolutionManagerSelect = components.getTagSelect()
-        resolutionManagerSelect.disabled = role === 'Гость' || item.cancel_resolution_hr === true
+        resolutionManagerSelect.disabled = role === 'Гость' || (item.cancel_resolution_hr === true && role !== 'менеджер офиса')
         const resolutionTrueOpt = components.getTagOption('Да', true)
         resolutionTrueOpt.selected = item.resolution_manager === null || item.resolution_manager === true
         const resolutionFalseOpt = components.getTagOption('Нет', false)
