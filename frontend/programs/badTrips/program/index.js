@@ -1,9 +1,9 @@
-import * as components from '../../../components.js';
-import { getProblemOrders } from "./api";
+import { postDataServer } from "../../../apiServer";
 import { renderPagination } from "../../../common/pagination";
-import {postDataServer} from "../../../apiServer";
+import * as components from '../../../components.js';
+import { getProblemOrders, getProblemOrdersCount } from "./api";
 
-const onPageChange = async (searchParams) => {
+const onPageChange = async (searchParams) => { 
     const spinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
     const container = document.querySelector('#bad-trips-tabs-content #program-tab #program-content');
     const paginationContent = components.getTagDiv("flex-column", 'bad-trips-program-pagination')
@@ -25,7 +25,7 @@ const onPageChange = async (searchParams) => {
 export const renderProgram = async (searchParams, res) => {
     let response = res ? res : await getProblemOrders(searchParams);
 
-    const tableEl = buildTable(searchParams, response.items, response.totalItems);
+    const tableEl = await buildTable(searchParams, response.items, response.totalItems);
     const spinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
     const container = document.querySelector('#bad-trips-tabs-content #program-tab #program-content');
     const paginationContent = components.getTagDiv("flex-column", 'bad-trips-program-pagination')
@@ -41,19 +41,20 @@ export const renderProgram = async (searchParams, res) => {
     spinner.style.display = 'none';
 }
 
-const buildTable = (searchParams, items, totalItems) => {
+const buildTable = async(searchParams, items, totalItems) => {
     const table = components.getTagTable();
     table.classList.add('table-sm');
 
     const caption = components.getTagCaption('Программа контроля за проблемными поездками курьеров');
-    const thead = buildHeader(searchParams, items, totalItems);
+    const thead = await buildHeader(searchParams, items, totalItems);
     const tbody = buildBody(items);
 
     table.append(caption, thead, tbody);
     return table;
 }
 
-const buildHeader = (searchParams, items, totalItems) => {
+const buildHeader = async (searchParams, items, totalItems) => {
+    const count = await getProblemOrdersCount(searchParams);
     const thead = components.getTagTHead();
     thead.classList.add('sticky-top');
     const tr = components.getTagTR();
@@ -63,8 +64,8 @@ const buildHeader = (searchParams, items, totalItems) => {
         components.getTagTH('ФИО курьера'),
         components.getTagTH('№ заказа'),
         components.getTagTH('Комментарий курьера'),
-        createManagerFilterHeader(items, searchParams),
-        createDirectorFilterHeader(items, searchParams),
+        createManagerFilterHeader(items, searchParams, count),
+        createDirectorFilterHeader(items, searchParams, count),
         components.getTagTH('Управление')
     );
 
@@ -120,23 +121,21 @@ const createTimeFilterHeader = (searchParams, totalItems) => {
     return th;
 }
 
-const createManagerFilterHeader = (items, searchParams) => {
+const createManagerFilterHeader = (items, searchParams, count) => {
     const th = components.getTagTH();
     th.classList.add('dropend', 'manager-defects');
 
     const btn = components.getTagButton_dropdown('Решение менеджера');
-    const inWork = items?.filter(el => !el.graphistComment).length;
-    const delays = items?.filter(el => el.graphistComment === 'Просрочка').length;
 
-    if (inWork) {
+    if (parseInt(count.graphistInWork)) {
         const span = components.getTagSpan();
         span.classList.add('badge', 'text-bg-secondary');
-        span.textContent = inWork;
+        span.textContent = count.graphistInWork;
         btn.append(span);
     }
-    if (delays) {
-        const span = components.getTagSpan_badge(delays);
-        span.textContent = delays;
+    if (parseInt(count.graphistDelay)) {
+        const span = components.getTagSpan_badge(count.graphistDelay);
+        span.textContent = count.graphistDelay;
         btn.append(span);
     }
 
@@ -166,23 +165,21 @@ const createManagerFilterHeader = (items, searchParams) => {
     return th;
 }
 
-const createDirectorFilterHeader = (items, searchParams) => {
+const createDirectorFilterHeader = (items, searchParams, count) => {
     const th = components.getTagTH();
     th.classList.add('dropend', 'unitDirector-defects');
 
     const btn = components.getTagButton_dropdown('Решение управляющего');
-    const inWork = items?.filter(el => !el.directorComment).length;
-    const delays = items?.filter(el => el.directorComment === 'Просрочка').length;
 
-    if (inWork) {
+    if (parseInt(count.directorInWork)) {
         const span = components.getTagSpan();
         span.classList.add('badge', 'text-bg-secondary');
-        span.textContent = inWork;
+        span.textContent = parseInt(count.directorInWork);
         btn.append(span);
     }
-    if (delays) {
-        const span = components.getTagSpan_badge(delays);
-        span.textContent = delays;
+    if (parseInt(count.directorDelay)) {
+        const span = components.getTagSpan_badge(parseInt(count.directorDelay));
+        span.textContent = parseInt(count.directorDelay);
         btn.append(span);
     }
 
@@ -240,7 +237,7 @@ const buildBody = (arrayData) => {
 
         directorTextarea.classList.add("badTrips-graphistComment");
 
-        if (order.graphistComment === "Просрочка") directorTextarea.classList.add('bg-danger-subtle')
+        if (order.directorComment === "Просрочка") directorTextarea.classList.add('bg-danger-subtle')
 
         directorTextarea.setAttribute('cols', '75');
         directorCommentCell.append(directorTextarea);
