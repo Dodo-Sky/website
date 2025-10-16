@@ -1,4 +1,3 @@
-import { renderPagination } from "../../common/pagination";
 import * as components from "../../components";
 
 import { getDelayCommentHrCount, getInterview, updateInterview } from "./api";
@@ -19,7 +18,7 @@ const formatDate = (dateString, format) => {
 const generateTBody = (response) => {
     const tbody = components.getTagTBody();
     
-    response.items.forEach((item) => {
+    response.forEach((item) => {
         const tr = components.getTagTR();
         
         const resolutionHR = components.getTagTD();
@@ -192,7 +191,7 @@ const onPageChange = async () => {
     const response = await getInterview(searchParams);
 
     await renderTable(response)
-    renderPagination({ paginationContentId: "dismissed-interview-pagination", searchParams, totalPages: response.totalPages, onPageChange })
+    // renderPagination({ paginationContentId: "dismissed-interview-pagination", searchParams, totalPages: response.totalPages, onPageChange })
 
     spinner.style.display = 'none';
     tableContent.style.display = 'block';
@@ -214,7 +213,7 @@ export const renderInterviewTable = async () => {
     const response = await getInterview(searchParams)
 
     await renderTable(response)
-    renderPagination({ paginationContentId: "dismissed-interview-pagination", searchParams, totalPages: response.totalPages, onPageChange })
+    // renderPagination({ paginationContentId: "dismissed-interview-pagination", searchParams, totalPages: response.totalPages, onPageChange })
 
     spinner.style.display = "none"
 }
