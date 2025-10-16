@@ -3,7 +3,7 @@ import { renderPagination } from "../../../common/pagination";
 import * as components from '../../../components.js';
 import { getProblemOrders, getProblemOrdersCount } from "./api";
 
-const onPageChange = async (searchParams) => {
+const onPageChange = async (searchParams) => { 
     const spinner = document.querySelector('#bad-trips-tabs-content #program-tab #bad-trips-program-spinner');
     const container = document.querySelector('#bad-trips-tabs-content #program-tab #program-content');
     const paginationContent = components.getTagDiv("flex-column", 'bad-trips-program-pagination')

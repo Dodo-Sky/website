@@ -2,7 +2,7 @@ import * as components from '../../components.js';
 import { renderCancelReasonTable } from './cancel_reason_table.js';
 import { renderInterviewTable } from './interview_table.js';
 import { renderProgramTable } from './program_table.js';
-;
+
 
 const content = document.getElementById('content');
 let currentNavId = "#program-nav";
