@@ -8,7 +8,7 @@ export const renderUnitSelector = ({ units, programName, selectListener, btnList
     units.forEach((unit) => {
         const option = components.getTagOption(unit.name, unit.id);
         unitSelect.append(option);
-    });
+    }); 
 
     unitsCol.append(unitSelect);
     unitSelector.append(unitsCol);

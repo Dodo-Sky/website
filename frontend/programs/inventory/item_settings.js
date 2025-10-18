@@ -1,7 +1,6 @@
-import { postDataServer } from "../../apiServer";
 import { renderUnitSelector } from "../../common/updateUnitSelector";
 import * as components from '../../components.js';
-import { getInventoryItemSettings, updateInventoryItemSettings } from "./api";
+import { getInventoryItemSettings, getUnits, updateInventoryItemSettings } from "./api";
 
 const searchParams = {
     unitId: '',
@@ -12,7 +11,7 @@ const generateTHead = () => {
     const tr = components.getTagTR();
     
     const nameTh = components.getTagTH('Наименование');
-    const notifyTh = components.getTagTH('Уведомление о низких остатках');
+    const notifyTh = components.getTagTH('Уведомляем о низких остатках?');
     const controlTh = components.getTagTH('Управление');
 
     tr.append(nameTh, notifyTh, controlTh);
@@ -99,7 +98,6 @@ const changeUnit = async (e) => {
     tableContent.style.display = 'block';
 }
 
-
 export const renderInventoryItemSettings = async () => {
     const content = document.querySelector('#inventory-item-settings-content');
     const spinner = document.querySelector('#inventory-item-settings-spinner');
@@ -114,12 +112,11 @@ export const renderInventoryItemSettings = async () => {
     content.append(tableContent)
 
     const departmentName = localStorage.getItem('departmentName');
-    const units = await postDataServer('get_units', { payload: departmentName });
-    const filteredUnits = units.filter(unit => unit.type === "Пиццерия" || unit.type === "ПРЦ");
-    searchParams.unitId = filteredUnits[0].id;
+    const units = await getUnits({ departmentName });
+    searchParams.unitId = units[0].id; 
 
     renderUnitSelector({
-        units: filteredUnits,
+        units,
         programName: "inventory-item",
         selectListener: async (e) => await changeUnit(e),
         withUpdate: false,

@@ -155,11 +155,11 @@ const generateTHead = () => {
     const thead = components.getTagTHead();
     const tr = components.getTagTR();
     
-    const unitNameTh = components.getTagTH('Заведение');
-    const startTimeTh = components.getTagTH('Время начала работы');
-    const endTimeTh = components.getTagTH('Время окончания работы');
-    const stockTh = components.getTagTH('Минимальный остаток сырья (% от среднедневной нормы расхода сырья)');
-    const telegramGroupTh = components.getTagTH('Телеграм отдела поставок');
+    const unitNameTh = components.getTagTH('Пиццерия');
+    const startTimeTh = components.getTagTH('Время начала работы', 'С этого времени бот начнет писать в соответвующие группы сообщения о низких остатках. Настройте время так чтобы отдел поставки успел с утра внести все накладные и актуальные данные по ревизиям');
+    const endTimeTh = components.getTagTH('Время окончания работы', 'По истечении этого времени бот перестанет уведомлять о низких остатках сырья');
+    const stockTh = components.getTagTH('Минимальный остаток сырья (% от среднедневной нормы расхода сырья)', 'Если фактический остаток сырья менее минимального остатка то будет сформировано соответствующее сообщение. Учитывается повышенный расход сырья в выходные дни');
+    const telegramGroupTh = components.getTagTH('ID телеграмм группы по сырью', 'Оставьте окно пустым и тогда не будет отправляться уведомление по данной пиццерии');
     const controlTh = components.getTagTH('Управление');
 
     tr.append(unitNameTh, startTimeTh, endTimeTh, stockTh, telegramGroupTh, controlTh);

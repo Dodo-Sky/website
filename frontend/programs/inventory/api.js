@@ -1,5 +1,9 @@
 import { getDataServer, putDataServer } from '../../apiServer';
 
+export const getUnits = async (params) => {
+    return await getDataServer(`inventory-units?departmentName=${params.departmentName}`);
+}
+
 export const getInventoryItemSettings = async (params) => {
     return await getDataServer(`inventory-item-settings?unitId=${params.unitId}`);
 }
