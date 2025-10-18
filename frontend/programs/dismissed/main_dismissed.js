@@ -21,7 +21,6 @@ const changeTab = (className) => {
 }
 
 const changeActiveTab = (navId, contentId) => {
-  console.log("changeActiveTab", navId, contentId, currentNavId);
   const unsavedChanges = document.querySelectorAll('.unsaved_changes');
 
   if (unsavedChanges.length) {
