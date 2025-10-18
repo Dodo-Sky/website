@@ -1,6 +1,7 @@
 import * as components from '../components.js';
-import { main_unitsSettings } from '../programs/unitsSettings/main-unitsSettings.js';
 import { settingsBadTrips } from '../programs/badTrips/settings.js';
+import { renderInventorySettings } from '../programs/inventory/settings.js';
+import { main_unitsSettings } from '../programs/unitsSettings/main-unitsSettings.js';
 
 const content = document.getElementById('content');
 
@@ -27,8 +28,11 @@ export function renderLeftNav() {
 
   const discipline = components.getTagLI_nav('Соблюдение дисциплины');
   discipline.classList.add('leftMenu');
+  
+  const inventory = components.getTagLI_nav('Уведомление о низких остатках');
+  inventory.classList.add('leftMenu');
 
-  nav.append(navUnits, badTrips, discipline);
+  nav.append(navUnits, badTrips, discipline, inventory);
   // nav.append(navUnits, navSettingPay, navSupply, badTrips);
   divEl_navLeft.append(nav);
 
@@ -89,6 +93,11 @@ function getActiveSettingsMenu() {
         contentSetting.innerHTML = '';
         const module = await import('../programs/discipline/settings_discipline.js');
         module.render();
+      }
+
+      if (e.target.textContent === 'Уведомление о низких остатках') {
+        contentSetting.innerHTML = '';
+        renderInventorySettings(contentSetting);
       }
     });
   });
