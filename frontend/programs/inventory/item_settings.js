@@ -131,7 +131,7 @@ export const renderInventoryItemSettings = async () => {
     content.append(tableContent)
 
     const units = await getUnits({ departmentName });
-    searchParams.unitId = units[0].id; 
+    searchParams.unitId = "all"; 
 
     renderUnitSelector({
         units: [{ id: 'all', name: 'Все' }, ...units],
