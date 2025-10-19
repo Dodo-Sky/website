@@ -1,7 +1,8 @@
 import { renderUnitSelector } from "../../common/updateUnitSelector";
 import * as components from '../../components.js';
-import { getInventoryItemSettings, getUnits, updateInventoryItemSettings } from "./api";
+import { getInventoryItemSettings, getInventoryItemSettingsCommon, getUnits, updateInventoryItemSettings, updateInventoryItemSettingsCommon } from "./api";
 
+const departmentName = localStorage.getItem('departmentName');
 const searchParams = {
     unitId: '',
 }
@@ -53,12 +54,21 @@ const generateTBody = (response) => {
         saveBtn.classList.add('arrayData-btn-save');
         saveBtn.disabled = true;
         saveBtn.addEventListener('click', async () => {
-            const request = {
-                is_notify: notifySelect.value === 'true',
-                unitId: searchParams.unitId
-            }
+            if (searchParams.unitId === 'all') {
+                const request = {
+                    is_notify: notifySelect.value === 'true',
+                    departmentName
+                }
 
-            await updateInventoryItemSettings(item.id_stock, request);
+                await updateInventoryItemSettingsCommon(item.id_stock, request);
+            } else {
+                const request = {
+                    is_notify: notifySelect.value === 'true',
+                    unitId: searchParams.unitId
+                }
+    
+                await updateInventoryItemSettings(item.id_stock, request);
+            }
 
             saveBtn.disabled = true;
             saveBtn.classList.remove('unsaved_changes');
@@ -83,6 +93,7 @@ const renderTable = (response) => {
 }
 
 const changeUnit = async (e) => {
+    const value = e.target.value;
     const spinner = document.querySelector('#inventory-item-settings-spinner');
     const tableContent = components.getTagDiv("inventory-item-settings-content");
 
@@ -90,6 +101,14 @@ const changeUnit = async (e) => {
     tableContent.style.display = 'none';
 
     searchParams.unitId = e.target.value;
+
+    if (value === 'all') {
+        const response = await getInventoryItemSettingsCommon({ departmentName });
+        renderTable(response);
+        spinner.style.display = 'none';
+        tableContent.style.display = 'block';
+        return;
+    }
 
     const response = await getInventoryItemSettings(searchParams);
     renderTable(response);
@@ -111,18 +130,17 @@ export const renderInventoryItemSettings = async () => {
 
     content.append(tableContent)
 
-    const departmentName = localStorage.getItem('departmentName');
     const units = await getUnits({ departmentName });
     searchParams.unitId = units[0].id; 
 
     renderUnitSelector({
-        units,
+        units: [{ id: 'all', name: 'Все' }, ...units],
         programName: "inventory-item",
         selectListener: async (e) => await changeUnit(e),
         withUpdate: false,
     });
 
-    const response = await getInventoryItemSettings(searchParams);
+    const response = await getInventoryItemSettingsCommon({ departmentName });
     renderTable(response);
 
     spinner.style.display = "none"
