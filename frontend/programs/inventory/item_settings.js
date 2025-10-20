@@ -12,10 +12,11 @@ const generateTHead = () => {
     const tr = components.getTagTR();
     
     const nameTh = components.getTagTH('Наименование');
-    const notifyTh = components.getTagTH('Уведомляем о низких остатках?');
+    const notifyTh = components.getTagTH('Уведомляем пиццерии?');
+    const notifyPRZTh = components.getTagTH('Уведомляем ПРЦ?');
     const controlTh = components.getTagTH('Управление');
 
-    tr.append(nameTh, notifyTh, controlTh);
+    tr.append(nameTh, notifyTh, notifyPRZTh, controlTh);
     thead.append(tr);
     return thead;
 }
@@ -33,7 +34,7 @@ const generateTBody = (response) => {
         const notifyTrueOpt = components.getTagOption('Да', true);
         const notifyFalseOpt = components.getTagOption('Нет', false);
         notifySelect.append(notifyTrueOpt, notifyFalseOpt);
-        notifySelect.value = item.is_notify;
+        notifySelect.value = item.is_notify === true;
         notifyWrap.append(notifySelect);
 
         if (item.items && item.items.length) {
@@ -53,20 +54,77 @@ const generateTBody = (response) => {
 
         notifyTd.append(notifyWrap);
 
+        const notifyPRZTd = components.getTagTD();
+        const notifyPRZWrap = document.createElement('div')
+        notifyPRZWrap.classList.add("d-flex", "align-items-center")
+        const notifyPRZSelect = components.getTagSelect();
+        const notifyPRZTrueOpt = components.getTagOption('Да', true);
+        const notifyPRZFalseOpt = components.getTagOption('Нет', false);
+        notifyPRZSelect.append(notifyPRZTrueOpt, notifyPRZFalseOpt);
+        notifyPRZSelect.value = item.is_notify_prz === true;
+        notifyPRZWrap.append(notifyPRZSelect);
+
+        if (item.itemsPrz && item.itemsPrz.length) {
+            const span = document.createElement('span')
+            span.classList.add('d-inline-block')
+            notifyPRZTd.tabIndex = 0
+            notifyPRZTd.setAttribute('data-bs-toggle', 'popover')
+            notifyPRZTd.setAttribute('data-bs-trigger', 'hover focus')
+            notifyPRZTd.setAttribute('data-bs-content', item.itemsPrz.map((el) => `${el.unitName} - ${el.is_notify_prz ? "Да" : "Нет"};`).join("\n"))
+            const i = document.createElement('i')
+            i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
+            i.style.marginLeft = '10px';
+            span.append(i)
+            notifyPRZWrap.append(span)
+            new bootstrap.Popover(notifyPRZTd)
+        }
+
+        notifyPRZTd.append(notifyPRZWrap);
+
         notifySelect.addEventListener('change', (e) => {
             const value = e.target.value;
             const isNotify = value === 'true';
-
             const currentValue = item.is_notify;
 
-            if (isNotify === currentValue) {
-                saveBtn.disabled = true;
-                saveBtn.classList.remove('unsaved_changes');
+            if (isNotify !== currentValue) {
+                saveBtn.disabled = false;
+                saveBtn.classList.add('unsaved_changes');
                 return;
             }
 
-            saveBtn.disabled = false;
-            saveBtn.classList.add('unsaved_changes');
+            const przValue = item.is_notify_prz === true;
+            const przSelectValue = notifyPRZSelect.value === "true"
+            const isDisabled = isNotify === currentValue && przValue === przSelectValue;
+            saveBtn.disabled = isDisabled;
+
+            if (isDisabled) {
+                saveBtn.classList.remove('unsaved_changes');
+            } else {
+                saveBtn.classList.add('unsaved_changes');
+            }
+        });
+
+        notifyPRZSelect.addEventListener('change', (e) => {
+            const value = e.target.value;
+            const isNotifyPRZ = value === 'true';
+            const currentValue = item.is_notify_prz;
+
+            if (isNotifyPRZ !== currentValue) {
+                saveBtn.disabled = false;
+                saveBtn.classList.add('unsaved_changes');
+                return;
+            }
+
+            const notifyValue = item.is_notify === true
+            const notifySelectValue = notifySelect.value === "true"
+            const isDisabled = isNotifyPRZ === currentValue && notifyValue === notifySelectValue
+            saveBtn.disabled = isDisabled;
+            
+            if (isDisabled) {
+                saveBtn.classList.remove('unsaved_changes');
+            } else {
+                saveBtn.classList.add('unsaved_changes');
+            }
         });
 
         const controlTd = components.getTagTD();
@@ -77,6 +135,7 @@ const generateTBody = (response) => {
             if (searchParams.unitId === 'all') {
                 const request = {
                     is_notify: notifySelect.value === 'true',
+                    is_notify_prz: notifyPRZSelect.value === 'true',
                     departmentName
                 }
 
@@ -84,6 +143,7 @@ const generateTBody = (response) => {
             } else {
                 const request = {
                     is_notify: notifySelect.value === 'true',
+                    is_notify_prz: notifyPRZSelect.value === 'true',
                     unitId: searchParams.unitId
                 }
     
@@ -95,7 +155,7 @@ const generateTBody = (response) => {
         });
         controlTd.append(saveBtn);
 
-        tr.append(nameTd, notifyTd, controlTd);
+        tr.append(nameTd, notifyTd, notifyPRZTd, controlTd);
         tBody.append(tr);
     });
     return tBody;
@@ -155,13 +215,20 @@ const convertAllSettings = (response) => {
     Object.entries(groupedByStockName).forEach(([name, { id_stock, items }]) => {
         const isAllNotify = items.every(item => item.is_notify);
         const isAllNotNotify = items.every(item => !item.is_notify);
+        const isAllNotifyPRZ = items.every(item => item.is_notify_prz);
+        const isAllNotNotifyPRZ = items.every(item => !item.is_notify_prz);
+
         result.push({
             name,
             id_stock,
             is_notify: isAllNotify,
-            items: items.filter(item => !isAllNotNotify && !isAllNotify && !item.is_notify)
+            is_notify_prz: isAllNotifyPRZ,
+            items: isAllNotify || isAllNotNotify ? [] : items,
+            itemsPrz: isAllNotifyPRZ || isAllNotNotifyPRZ ? [] : items,
         })
     })
+
+    console.log("result", result);
 
     return result;
 }
@@ -180,22 +247,18 @@ export const renderInventoryItemSettings = async () => {
     content.append(tableContent)
 
     const units = await getUnits({ departmentName });
-    // searchParams.unitId = "all"; 
-    searchParams.unitId = units[0].id; 
+    searchParams.unitId = "all"; 
 
     renderUnitSelector({
-        // units: [{ id: 'all', name: 'Все' }, ...units],
-        units,
+        units: [{ id: 'all', name: 'Все' }, ...units],
         programName: "inventory-item",
         selectListener: async (e) => await changeUnit(e),
         withUpdate: false,
     });
 
-    // const response = await getInventoryItemSettingsCommon({ departmentName });
-    // console.log("response", response);
-    // renderTable(convertAllSettings(response));
-    const response = await getInventoryItemSettings(searchParams);
-    renderTable(response);
+    const response = await getInventoryItemSettingsCommon({ departmentName });
+    console.log("response", response);
+    renderTable(convertAllSettings(response));
 
     spinner.style.display = "none"
 }

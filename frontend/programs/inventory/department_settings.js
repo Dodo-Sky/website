@@ -8,15 +8,42 @@ const generateTBody = (response) => {
         const tr = components.getTagTR();
         
         const nameTd = components.getTagTD(item.department_name);
+
         const telegramGroupTd = components.getTagTD();
         const telegramGroupInput = components.getTagInput("text", item.id_telegram_supply_department ?? "");
         telegramGroupTd.append(telegramGroupInput);
+
+        const telegramPRZGroupTd = components.getTagTD();
+        const telegramPRZGroupInput = components.getTagInput("text", item.id_telegramm_prz ?? "");
+        telegramPRZGroupTd.append(telegramPRZGroupInput);
 
         const controlTd = components.getTagTD();
         const saveBtn = components.getTagButton('Сохранить');
         saveBtn.classList.add('arrayData-btn-save');
         saveBtn.disabled = true;
         controlTd.append(saveBtn);
+
+        telegramPRZGroupInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            const currentValue = item.id_telegramm_prz ?? "";
+
+            if (value !== currentValue) {
+                saveBtn.disabled = false;
+                saveBtn.classList.add('unsaved_changes');
+                return;
+            }
+
+            const isDisabled = value === currentValue 
+                && telegramGroupInput.value === item.id_telegram_supply_department;
+
+            saveBtn.disabled = isDisabled;
+
+            if (isDisabled) {
+                saveBtn.classList.remove('unsaved_changes');
+            } else {
+                saveBtn.classList.add('unsaved_changes');
+            }
+        });
 
         telegramGroupInput.addEventListener('input', (e) => {
             const value = e.target.value;
@@ -28,7 +55,8 @@ const generateTBody = (response) => {
                 return;
             }
 
-            const isDisabled = value === currentValue;
+            const isDisabled = value === currentValue 
+                && telegramPRZGroupInput.value === item.id_telegramm_prz;
 
             saveBtn.disabled = isDisabled;
 
@@ -41,7 +69,8 @@ const generateTBody = (response) => {
 
         saveBtn.addEventListener('click', async () => {
             const request = {
-                id_telegram_supply_department: telegramGroupInput.value
+                id_telegram_supply_department: telegramGroupInput.value,
+                id_telegramm_prz: telegramPRZGroupInput.value
             }
 
             await updateInventoryDepartmentSettings(item.department_id, request);
@@ -50,7 +79,7 @@ const generateTBody = (response) => {
             saveBtn.classList.remove('unsaved_changes');
         });
 
-        tr.append(nameTd, telegramGroupTd, controlTd);
+        tr.append(nameTd, telegramGroupTd, telegramPRZGroupTd, controlTd);
         tBody.append(tr);
     });
 
@@ -63,9 +92,10 @@ const generateTHead = () => {
     
     const departmentNameTh = components.getTagTH('Департамент');
     const telegramGroupTh = components.getTagTH('Телеграм отдела поставок');
+    const telegramPRZGroupTh = components.getTagTH('Телеграм ПРЗ');
     const controlTh = components.getTagTH('Управление');
     
-    tr.append(departmentNameTh, telegramGroupTh, controlTh);
+    tr.append(departmentNameTh, telegramGroupTh, telegramPRZGroupTh, controlTh);
     thead.append(tr);
     return thead;
 }
