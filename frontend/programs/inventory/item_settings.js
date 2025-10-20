@@ -39,15 +39,12 @@ const generateTBody = (response) => {
 
         if (item.items && item.items.length) {
             const span = document.createElement('span')
-            span.classList.add('d-inline-block')
+            span.classList.add('d-inline-block', 'm-2')
+            span.textContent = '⚠️'
             notifyTd.tabIndex = 0
             notifyTd.setAttribute('data-bs-toggle', 'popover')
             notifyTd.setAttribute('data-bs-trigger', 'hover focus')
             notifyTd.setAttribute('data-bs-content', item.items.map((el) => `${el.unitName} - ${el.is_notify ? "Да" : "Нет"};`).join("\n"))
-            const i = document.createElement('i')
-            i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
-            i.style.marginLeft = '10px';
-            span.append(i)
             notifyWrap.append(span)
             new bootstrap.Popover(notifyTd)
         }
@@ -66,15 +63,12 @@ const generateTBody = (response) => {
 
         if (item.itemsPrz && item.itemsPrz.length) {
             const span = document.createElement('span')
-            span.classList.add('d-inline-block')
+            span.classList.add('d-inline-block', 'm-2')
+            span.textContent = '⚠️'
             notifyPRZTd.tabIndex = 0
             notifyPRZTd.setAttribute('data-bs-toggle', 'popover')
             notifyPRZTd.setAttribute('data-bs-trigger', 'hover focus')
             notifyPRZTd.setAttribute('data-bs-content', item.itemsPrz.map((el) => `${el.unitName} - ${el.is_notify_prz ? "Да" : "Нет"};`).join("\n"))
-            const i = document.createElement('i')
-            i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
-            i.style.marginLeft = '10px';
-            span.append(i)
             notifyPRZWrap.append(span)
             new bootstrap.Popover(notifyPRZTd)
         }
