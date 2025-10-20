@@ -92,7 +92,7 @@ const generateTHead = () => {
     
     const departmentNameTh = components.getTagTH('Департамент');
     const telegramGroupTh = components.getTagTH('Телеграм отдела поставок');
-    const telegramPRZGroupTh = components.getTagTH('Телеграм ПРЗ');
+    const telegramPRZGroupTh = components.getTagTH('id телеграмм ПРЦ');
     const controlTh = components.getTagTH('Управление');
     
     tr.append(departmentNameTh, telegramGroupTh, telegramPRZGroupTh, controlTh);
