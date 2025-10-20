@@ -25,13 +25,33 @@ const generateTBody = (response) => {
     response.forEach(item => {
         const tr = components.getTagTR();
         const nameTd = components.getTagTD(item.name);
+
         const notifyTd = components.getTagTD();
+        const notifyWrap = document.createElement('div')
+        notifyWrap.classList.add("d-flex", "align-items-center")
         const notifySelect = components.getTagSelect();
         const notifyTrueOpt = components.getTagOption('Да', true);
         const notifyFalseOpt = components.getTagOption('Нет', false);
         notifySelect.append(notifyTrueOpt, notifyFalseOpt);
         notifySelect.value = item.is_notify;
-        notifyTd.append(notifySelect);
+        notifyWrap.append(notifySelect);
+
+        if (item.items && item.items.length) {
+            const span = document.createElement('span')
+            span.classList.add('d-inline-block')
+            notifyTd.tabIndex = 0
+            notifyTd.setAttribute('data-bs-toggle', 'popover')
+            notifyTd.setAttribute('data-bs-trigger', 'hover focus')
+            notifyTd.setAttribute('data-bs-content', item.items.map((el) => `${el.unitName} - ${el.is_notify ? "Да" : "Нет"};`).join("\n"))
+            const i = document.createElement('i')
+            i.classList.add('bi', 'bi-exclamation-circle', 'ml-3');
+            i.style.marginLeft = '10px';
+            span.append(i)
+            notifyWrap.append(span)
+            new bootstrap.Popover(notifyTd)
+        }
+
+        notifyTd.append(notifyWrap);
 
         notifySelect.addEventListener('change', (e) => {
             const value = e.target.value;
@@ -104,7 +124,10 @@ const changeUnit = async (e) => {
 
     if (value === 'all') {
         const response = await getInventoryItemSettingsCommon({ departmentName });
-        renderTable(response);
+
+        console.log("response", response);
+
+        renderTable(convertAllSettings(response));
         spinner.style.display = 'none';
         tableContent.style.display = 'block';
         return;
@@ -115,6 +138,32 @@ const changeUnit = async (e) => {
 
     spinner.style.display = 'none';
     tableContent.style.display = 'block';
+}
+
+const convertAllSettings = (response) => {
+    const result = []
+    const groupedByStockName = {}
+
+    response.forEach(item => {
+        if (!groupedByStockName[item.name]) {
+            groupedByStockName[item.name] = { id_stock: item.id_stock, items: [item] }
+        } else {
+            groupedByStockName[item.name].items.push(item)
+        }
+    })
+
+    Object.entries(groupedByStockName).forEach(([name, { id_stock, items }]) => {
+        const isAllNotify = items.every(item => item.is_notify);
+        const isAllNotNotify = items.every(item => !item.is_notify);
+        result.push({
+            name,
+            id_stock,
+            is_notify: isAllNotify,
+            items: items.filter(item => !isAllNotNotify && !isAllNotify && !item.is_notify)
+        })
+    })
+
+    return result;
 }
 
 export const renderInventoryItemSettings = async () => {
@@ -131,16 +180,21 @@ export const renderInventoryItemSettings = async () => {
     content.append(tableContent)
 
     const units = await getUnits({ departmentName });
-    searchParams.unitId = "all"; 
+    // searchParams.unitId = "all"; 
+    searchParams.unitId = units[0].id; 
 
     renderUnitSelector({
-        units: [{ id: 'all', name: 'Все' }, ...units],
+        // units: [{ id: 'all', name: 'Все' }, ...units],
+        units,
         programName: "inventory-item",
         selectListener: async (e) => await changeUnit(e),
         withUpdate: false,
     });
 
-    const response = await getInventoryItemSettingsCommon({ departmentName });
+    // const response = await getInventoryItemSettingsCommon({ departmentName });
+    // console.log("response", response);
+    // renderTable(convertAllSettings(response));
+    const response = await getInventoryItemSettings(searchParams);
     renderTable(response);
 
     spinner.style.display = "none"
