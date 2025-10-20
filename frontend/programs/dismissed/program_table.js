@@ -530,7 +530,6 @@ const generateTBody = (response) => {
 }
 
 const renderTable = async (response) => {
-    console.log("Обзвон уволенных", response)
     const tableContent = document.querySelector('.dismissed-program-content');
     tableContent.innerHTML = '';
 

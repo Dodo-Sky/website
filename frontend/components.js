@@ -1,50 +1,15 @@
-import { clearAuthData } from './auth/login.js';
 import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
+import { clearAuthData } from './auth/login.js';
 
 export {
-  getTagDiv,
-  getTagSpan,
-  getTagSpan_badge,
-  getTagButton,
-  getTagButton_close,
-  getTagButton_dropdown,
-  getTagH,
-  getTagP,
-  getTagNav,
-  getTagUl,
-  getTagLi,
-  getTagUL_nav,
-  getTagUL_dropdownMenu,
-  getTagLI_navItem,
-  getTagLI_nav,
-  getTagLI_dropdownToggle,
-  getTagLI_dropdownItem,
-  getTagLI_breadcrumb,
-  getTagLI_breadcrumbActive,
-  getTagForm,
-  getTagLabel,
-  getTagLabel_checkbox,
-  getTagInput,
-  getTagInput_checkbox,
-  getTagTextarea,
-  getTagSelect,
-  getTagOption,
-  getTagDatalist,
-  getTagDiv_table,
-  getTagTable,
-  getTagCaption,
-  getTagTHead,
-  getTagTBody,
-  getTagTR,
-  getTagTH,
-  getTagTD,
   getCardNav,
-  getCardRow,
-  getTagButton_logout,
-  getTagColFormLabel,
-  getTagButtonLink,
-  getPeriodSelector,
-  getSpinner
+  getCardRow, getPeriodSelector,
+  getSpinner, getTagButton, getTagButtonLink, getTagButton_close,
+  getTagButton_dropdown, getTagButton_logout, getTagCaption, getTagColFormLabel, getTagDatalist, getTagDiv, getTagDiv_table, getTagForm, getTagH, getTagInput,
+  getTagInput_checkbox, getTagLI_breadcrumb,
+  getTagLI_breadcrumbActive, getTagLI_dropdownItem, getTagLI_dropdownToggle, getTagLI_nav, getTagLI_navItem, getTagLabel,
+  getTagLabel_checkbox, getTagLi, getTagNav, getTagOption, getTagP, getTagSelect, getTagSpan,
+  getTagSpan_badge, getTagTBody, getTagTD, getTagTH, getTagTHead, getTagTR, getTagTable, getTagTextarea, getTagUL_dropdownMenu, getTagUL_nav, getTagUl
 };
 
 // Базовая разметка
@@ -348,7 +313,7 @@ function getTagTR() {
   return element;
 }
 
-function getTagTH(textContent, tooltipText) {
+function getTagTH(textContent, tooltipText, placement = 'top') {
   const element = document.createElement('th');
   element.setAttribute('scope', 'col');
   element.classList.add('fs-6');
@@ -359,7 +324,7 @@ function getTagTH(textContent, tooltipText) {
     i.style.marginLeft = '10px';
     element.append(i)
     element.setAttribute('data-bs-toggle', 'tooltip');
-    element.setAttribute('data-bs-placement', 'top');
+    element.setAttribute('data-bs-placement', placement);
     element.setAttribute('title', tooltipText);
     new bootstrap.Tooltip(element)
   }

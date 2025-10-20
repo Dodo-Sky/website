@@ -72,7 +72,7 @@ const buildBody = (staffing, staffingLevelTop, staffingStopTop) => {
         const tr = components.getTagTR();
         const unitName = components.getTagTD(item.unit_name)
         const month = components.getTagTD(getRussianMonth(item.month))
-        const staffingLevelPercent = components.getTagTD(item.staffing_level_percent + "%")
+        const staffingLevelPercent = components.getTagTD(parseInt(item.staffing_level_percent) + "%")
         const medianOrdersCount = components.getTagTD(item.median_orders_count)
         const totalDeliveryPerMonth = components.getTagTD(formatWithSpace(item.total_delivery_per_month))
         const couriersRequired = components.getTagTD(item.couriers_required)
