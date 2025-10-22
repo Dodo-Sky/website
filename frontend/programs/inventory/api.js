@@ -1,4 +1,4 @@
-import { getDataServer, putDataServer } from '../../apiServer';
+import { getDataServer, postDataServer, putDataServer } from '../../apiServer';
 
 export const getUnits = async (params) => {
     return await getDataServer(`inventory-units?departmentName=${params.departmentName}`);
@@ -34,4 +34,8 @@ export const getInventoryDepartmentSettings = async (params) => {
 
 export const updateInventoryDepartmentSettings = async (id, params) => {
     return await putDataServer(`inventory-department-settings/${id}`, params);
+}
+
+export const testSupplyBot = async (payload) => {
+    return await postDataServer(`test_supply_bot`, payload);
 }
