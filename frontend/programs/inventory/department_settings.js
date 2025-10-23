@@ -103,6 +103,8 @@ const generateTBody = (response) => {
 
             saveBtn.disabled = true;
             saveBtn.classList.remove('unsaved_changes');
+
+            await renderInventoryDepartmentSettings()
         });
 
         tr.append(nameTd, telegramGroupTd, testMessageGroupTd, telegramPRZGroupTd, testMessagePRZTd, controlTd);
@@ -143,6 +145,7 @@ export const renderInventoryDepartmentSettings = async () => {
     const tableContent = components.getTagDiv("department-settings-content");
 
     spinner.style.display = "flex"
+    tableContent.style.display = "none"
 
     content.innerHTML = ""
     tableContent.innerHTML = ""
@@ -151,4 +154,5 @@ export const renderInventoryDepartmentSettings = async () => {
     renderTable(response);
 
     spinner.style.display = "none"
+    tableContent.style.display = "flex"
 }
