@@ -1,5 +1,5 @@
 import * as components from '../../components.js';
-import { getInventoryUnitSettings, updateInventoryUnitSettings } from "./api";
+import { getInventoryUnitSettings, testSupplyBot, updateInventoryUnitSettings } from "./api";
 
 const generateTBody = (response) => {
     const tBody = components.getTagTBody();
@@ -25,6 +25,20 @@ const generateTBody = (response) => {
         const telegramGroupInput = components.getTagInput("text", item.id_telegramm_group ?? "");
         telegramGroupTd.append(telegramGroupInput);
         
+        const testMessageTd = components.getTagTD();
+        const btnTest = components.getTagButton('supply_bot');
+        btnTest.classList = 'btn btn-outline-primary btnHR me-2';
+        if (!item.id_telegramm_group) btnTest.disabled = true;
+
+        btnTest.addEventListener('click', async () => {
+            const result = await testSupplyBot({ chatId: item.id_telegramm_group.replace(/\D/g, ''), content: 'Все отлично проверка связи прошла успешно' })
+            if (result) {
+                alert('Сообщение отправлено боту. Проверьте его наличие в телеграмм');
+            }
+        })
+
+        testMessageTd.append(btnTest);
+
         const controlTd = components.getTagTD();
         const saveBtn = components.getTagButton('Сохранить');
         saveBtn.classList.add('arrayData-btn-save');
@@ -135,7 +149,7 @@ const generateTBody = (response) => {
                 select_start_time: startTimeInput.value,
                 select_end_time: endTimeInput.value,
                 min_required_stock: stockInput.value,
-                id_telegramm_group: telegramGroupInput.value.length ? telegramGroupInput.value : null
+                id_telegramm_group: digitsOnly.length ? `-${telegramGroupInput.value.replace(/\D/g, '')}` : null
             }
 
             await updateInventoryUnitSettings(item.unitId, request);
@@ -144,7 +158,7 @@ const generateTBody = (response) => {
             saveBtn.classList.remove('unsaved_changes');
         });
         
-        tr.append(unitNameTd, startTimeTd, endTimeTd, stockTd, telegramGroupTd, controlTd);
+        tr.append(unitNameTd, startTimeTd, endTimeTd, stockTd, telegramGroupTd, testMessageTd, controlTd);
         tBody.append(tr);
     });
 
@@ -160,9 +174,10 @@ const generateTHead = () => {
     const endTimeTh = components.getTagTH('Время окончания работы', 'По истечении этого времени бот перестанет уведомлять о низких остатках сырья', 'bottom');
     const stockTh = components.getTagTH('Минимальный остаток сырья (% от среднедневной нормы расхода сырья)', 'Если ставите 50 то это означает 50% от среднего расхода в день. Например если в среднем сыра моцареллы тратится 40 кг, то 50% составит 20кг. и при уменьшении этого остатка будет уведомление. Если фактический остаток сырья менее минимального остатка то будет сформировано соответствующее сообщение. Учитывается повышенный расход сырья в выходные дни', 'bottom');
     const telegramGroupTh = components.getTagTH('ID телеграмм группы по сырью', 'Оставьте окно пустым и тогда не будет отправляться уведомление по данной пиццерии', 'bottom');
+    const testMessage = components.getTagTH('Проверка связи');
     const controlTh = components.getTagTH('Управление');
 
-    tr.append(unitNameTh, startTimeTh, endTimeTh, stockTh, telegramGroupTh, controlTh);
+    tr.append(unitNameTh, startTimeTh, endTimeTh, stockTh, telegramGroupTh, testMessage, controlTh);
 
     thead.append(tr);
     return thead;

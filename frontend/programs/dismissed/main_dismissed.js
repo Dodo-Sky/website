@@ -130,12 +130,25 @@ const generateTabs = () => {
   return tabsEl;
 }
 
+const generateDocs = () => {
+  const docsCol = components.getTagDiv('col-auto');
+  const docsBtn = components.getTagButton('Справка по программе Проблемные поездки');
+  docsBtn.classList = 'btn btn-outline-secondary reference mb-2';
+  docsCol.append(docsBtn);
+
+  docsBtn.addEventListener('click', () => {
+    window.open('https://docs.google.com/document/d/1PSgVjc3EIlCHv68C7CBucpbZQpWL0i_oKng1Pxve3ME/edit?tab=t.0#heading=h.z681vaf6on3x');
+  });
+
+  return docsCol;
+}
+
 export async function render() {
   content.innerHTML = ""
 
   const title = components.getTagH(3, "Обзвон уволенных", ["text-center", "sticky-top"]);
 
-  content.append(title, generateNav(), generateTabs());
+  content.append(title, generateDocs(), generateNav(), generateTabs());
 
   await renderProgramTable();
 }

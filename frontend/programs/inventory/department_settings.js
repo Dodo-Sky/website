@@ -1,5 +1,5 @@
 import * as components from '../../components.js';
-import { getInventoryDepartmentSettings, updateInventoryDepartmentSettings } from "./api";
+import { getInventoryDepartmentSettings, testSupplyBot, updateInventoryDepartmentSettings } from "./api";
 
 const generateTBody = (response) => {
     const tBody = components.getTagTBody();
@@ -13,9 +13,35 @@ const generateTBody = (response) => {
         const telegramGroupInput = components.getTagInput("text", item.id_telegram_supply_department ?? "");
         telegramGroupTd.append(telegramGroupInput);
 
+        const testMessageGroupTd = components.getTagTD();
+        const btnTestGroup = components.getTagButton('supply_bot');
+        btnTestGroup.classList = 'btn btn-outline-primary btnHR me-2';
+        if (!item.id_telegram_supply_department) btnTestGroup.disabled = true;
+
+        btnTestGroup.addEventListener('click', async () => {
+            const result = await testSupplyBot({ chatId: item.id_telegram_supply_department.replace(/\D/g, ''), content: 'Все отлично проверка связи прошла успешно' })
+            if (result) {
+                alert('Сообщение отправлено боту. Проверьте его наличие в телеграмм');
+            }
+        })
+        testMessageGroupTd.append(btnTestGroup);
+
         const telegramPRZGroupTd = components.getTagTD();
         const telegramPRZGroupInput = components.getTagInput("text", item.id_telegramm_prz ?? "");
         telegramPRZGroupTd.append(telegramPRZGroupInput);
+
+        const testMessagePRZTd = components.getTagTD();
+        const btnTestPRZ = components.getTagButton('supply_bot');
+        btnTestPRZ.classList = 'btn btn-outline-primary btnHR me-2';
+        if (!item.id_telegramm_prz) btnTestPRZ.disabled = true;
+
+        btnTestPRZ.addEventListener('click', async () => {
+            const result = await testSupplyBot({ chatId: item.id_telegramm_prz.replace(/\D/g, ''), content: 'Все отлично проверка связи прошла успешно' })
+            if (result) {
+                alert('Сообщение отправлено боту. Проверьте его наличие в телеграмм');
+            }
+        })
+        testMessagePRZTd.append(btnTestPRZ);
 
         const controlTd = components.getTagTD();
         const saveBtn = components.getTagButton('Сохранить');
@@ -69,8 +95,8 @@ const generateTBody = (response) => {
 
         saveBtn.addEventListener('click', async () => {
             const request = {
-                id_telegram_supply_department: telegramGroupInput.value,
-                id_telegramm_prz: telegramPRZGroupInput.value
+                id_telegram_supply_department: telegramGroupInput.value.length ? `-${telegramGroupInput.value.replace(/\D/g, '')}` : null,
+                id_telegramm_prz: telegramPRZGroupInput.value.length ? `-${telegramPRZGroupInput.value.replace(/\D/g, '')}` : null
             }
 
             await updateInventoryDepartmentSettings(item.department_id, request);
@@ -79,7 +105,7 @@ const generateTBody = (response) => {
             saveBtn.classList.remove('unsaved_changes');
         });
 
-        tr.append(nameTd, telegramGroupTd, telegramPRZGroupTd, controlTd);
+        tr.append(nameTd, telegramGroupTd, testMessageGroupTd, telegramPRZGroupTd, testMessagePRZTd, controlTd);
         tBody.append(tr);
     });
 
@@ -92,10 +118,12 @@ const generateTHead = () => {
     
     const departmentNameTh = components.getTagTH('Департамент');
     const telegramGroupTh = components.getTagTH('Телеграм отдела поставок');
+    const testMessageGroupTh = components.getTagTH('Проверка связи');
     const telegramPRZGroupTh = components.getTagTH('id телеграмм ПРЦ');
+    const testMessagePRZTh = components.getTagTH('Проверка связи');
     const controlTh = components.getTagTH('Управление');
     
-    tr.append(departmentNameTh, telegramGroupTh, telegramPRZGroupTh, controlTh);
+    tr.append(departmentNameTh, telegramGroupTh, testMessageGroupTh, telegramPRZGroupTh, testMessagePRZTh, controlTh);
     thead.append(tr);
     return thead;
 }

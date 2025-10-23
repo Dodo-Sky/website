@@ -37,6 +37,10 @@ const generateTBody = (response) => {
         notifySelect.value = item.is_notify === true;
         notifyWrap.append(notifySelect);
 
+        if (item.is_notify !== true) {
+            notifySelect.classList.add('bg-danger-subtle')
+        }
+
         if (item.items && item.items.length) {
             const span = document.createElement('span')
             span.classList.add('d-inline-block', 'm-2')
@@ -60,6 +64,10 @@ const generateTBody = (response) => {
         notifyPRZSelect.append(notifyPRZTrueOpt, notifyPRZFalseOpt);
         notifyPRZSelect.value = item.is_notify_prz === true;
         notifyPRZWrap.append(notifyPRZSelect);
+
+        if (item.is_notify_prz !== true) {
+            notifyPRZSelect.classList.add('bg-danger-subtle')
+        }
 
         if (item.itemsPrz && item.itemsPrz.length) {
             const span = document.createElement('span')
