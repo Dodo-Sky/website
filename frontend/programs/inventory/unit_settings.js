@@ -156,6 +156,8 @@ const generateTBody = (response) => {
 
             saveBtn.disabled = true;
             saveBtn.classList.remove('unsaved_changes');
+
+            await renderInventoryUnitSettings()
         });
         
         tr.append(unitNameTd, startTimeTd, endTimeTd, stockTd, telegramGroupTd, testMessageTd, controlTd);
@@ -199,6 +201,7 @@ export const renderInventoryUnitSettings = async () => {
     const tableContent = components.getTagDiv("unit-settings-content");
 
     spinner.style.display = "flex"
+    tableContent.style.display = "none"
 
     content.innerHTML = ""
 
@@ -210,4 +213,5 @@ export const renderInventoryUnitSettings = async () => {
     renderTable(response);
 
     spinner.style.display = "none"
+    tableContent.style.display = "flex"
 }

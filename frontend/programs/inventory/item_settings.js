@@ -154,6 +154,8 @@ const generateTBody = (response) => {
 
             saveBtn.disabled = true;
             saveBtn.classList.remove('unsaved_changes');
+
+            await renderInventoryItemSettings()
         });
         controlTd.append(saveBtn);
 
@@ -242,6 +244,7 @@ export const renderInventoryItemSettings = async () => {
     const tableContent = components.getTagDiv("inventory-item-settings-content");
 
     spinner.style.display = "flex"
+    tableContent.style.display = "none"
 
     content.innerHTML = ""
     unitSelector.innerHTML = ""
@@ -263,4 +266,5 @@ export const renderInventoryItemSettings = async () => {
     renderTable(convertAllSettings(response));
 
     spinner.style.display = "none"
+    tableContent.style.display = "flex"
 }
