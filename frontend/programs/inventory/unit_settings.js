@@ -149,7 +149,7 @@ const generateTBody = (response) => {
                 select_start_time: startTimeInput.value,
                 select_end_time: endTimeInput.value,
                 min_required_stock: stockInput.value,
-                id_telegramm_group: digitsOnly.length ? `-${telegramGroupInput.value.replace(/\D/g, '')}` : null
+                id_telegramm_group: telegramGroupInput.value.length ? `-${telegramGroupInput.value.replace(/\D/g, '')}` : null
             }
 
             await updateInventoryUnitSettings(item.unitId, request);
