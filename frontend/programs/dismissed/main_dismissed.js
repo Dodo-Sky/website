@@ -132,7 +132,7 @@ const generateTabs = () => {
 
 const generateDocs = () => {
   const docsCol = components.getTagDiv('col-auto');
-  const docsBtn = components.getTagButton('Справка по программе Обзвон уволенных 1');
+  const docsBtn = components.getTagButton('Справка по программе Обзвон уволенных');
   docsBtn.classList = 'btn btn-outline-secondary reference mb-2';
   docsCol.append(docsBtn);
 
